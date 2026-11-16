@@ -1,0 +1,1025 @@
+﻿# ============================================================
+# ASSIGNMENT 2: INTERACTING WITH WEB APIs
+# ANALYZING WEATHER DATA FROM OPENWEATHERMAP API
+# Subject: Data Modelling and Visualization
+# ============================================================
+
+
+# API key 1: dee2d0d97f23ee4647491b0490d536f7
+# API key 2 : 414b934f2b1fc75f17b21d2082401ffd (use any of the above)
+
+
+# STEP 1: INSTALL REQUIRED LIBRARIES
+
+
+!pip install requests pandas numpy matplotlib seaborn
+
+
+
+
+# STEP 2: IMPORT REQUIRED LIBRARIES
+
+
+import requests
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from getpass import getpass
+
+
+print("Libraries imported successfully!")
+
+
+
+
+# STEP 3: ENTER OPENWEATHERMAP API KEY
+
+
+# Get API key from https://openweathermap.org/api
+
+
+API_KEY = getpass("Enter your OpenWeatherMap API Key: ")
+
+
+print("API key entered successfully!")
+
+
+
+
+# STEP 4: DEFINE CITIES AND API URL
+
+
+cities = ['Pune', 'Mumbai', 'Delhi']
+
+
+BASE_URL = "https://api.openweathermap.org/data/2.5/forecast"
+
+
+print("Cities selected:", cities)
+
+
+
+
+# STEP 5: FETCH WEATHER DATA FROM OPENWEATHERMAP API
+
+
+weather_records = []
+
+
+for city in cities:
+
+
+    params = {
+        'q': city,
+        'appid': API_KEY,
+        'units': 'metric'
+    }
+
+
+    response = requests.get(BASE_URL, params=params)
+
+
+    if response.status_code == 200:
+
+
+        data = response.json()
+
+
+        print("\nWeather data fetched for:", city)
+
+
+        # Extract geographical information
+        latitude = data['city']['coord']['lat']
+        longitude = data['city']['coord']['lon']
+
+
+        # Extract weather information
+        for item in data['list']:
+
+
+            weather_records.append({
+                'City': city,
+                'DateTime': item['dt_txt'],
+                'Temperature': item['main']['temp'],
+                'FeelsLike': item['main']['feels_like'],
+                'Humidity': item['main']['humidity'],
+                'Pressure': item['main']['pressure'],
+                'WindSpeed': item['wind']['speed'],
+                'Rainfall': item.get('rain', {}).get('3h', 0),
+                'Snowfall': item.get('snow', {}).get('3h', 0),
+                'Clouds': item['clouds']['all'],
+                'Weather': item['weather'][0]['description'],
+                'Latitude': latitude,
+                'Longitude': longitude
+            })
+
+
+    else:
+        print("Error fetching data for", city)
+        print("Status Code:", response.status_code)
+        print("Message:", response.text)
+
+
+print("\nTotal weather records fetched:", len(weather_records))
+
+
+
+
+# STEP 6: CONVERT API RESPONSE INTO PANDAS DATAFRAME
+
+
+df = pd.DataFrame(weather_records)
+
+
+print("\nWeather Dataset:")
+display(df.head(10))
+
+
+print("\nDataset Shape:")
+print(df.shape)
+
+
+
+
+# STEP 7: EXPLORE THE WEATHER DATASET
+
+
+# Display first five records
+print("\nFirst Five Records:")
+display(df.head())
+
+
+# Display last five records
+print("\nLast Five Records:")
+display(df.tail())
+
+
+# Display column names
+print("\nColumn Names:")
+print(df.columns)
+
+
+# Display data types
+print("\nData Types:")
+print(df.dtypes)
+
+
+# Display statistical summary
+print("\nStatistical Summary:")
+display(df.describe())
+
+
+# Check missing values
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+
+# Check duplicate records
+print("\nDuplicate Records:")
+print(df.duplicated().sum())
+
+
+
+
+# STEP 8: PERFORM DATA CLEANING AND PREPROCESSING
+
+
+# Remove duplicate records
+df = df.drop_duplicates(subset=['City', 'DateTime'])
+
+
+# Convert DateTime into datetime format
+df['DateTime'] = pd.to_datetime(df['DateTime'])
+
+
+# Handle missing numerical values
+numeric_columns = [
+    'Temperature', 'FeelsLike', 'Humidity',
+    'Pressure', 'WindSpeed', 'Rainfall',
+    'Snowfall', 'Clouds'
+]
+
+
+for column in numeric_columns:
+    df[column] = df[column].fillna(df[column].median())
+
+
+# Handle missing weather descriptions
+df['Weather'] = df['Weather'].fillna('Unknown')
+
+
+# Standardize city names
+df['City'] = df['City'].str.strip().str.title()
+
+
+# Check cleaned dataset
+print("\nCleaned Weather Dataset:")
+display(df.head())
+
+
+print("\nMissing Values After Cleaning:")
+print(df.isnull().sum())
+
+
+print("\nDuplicate Records After Cleaning:")
+print(df.duplicated().sum())
+
+
+
+
+# STEP 9: PERFORM DATA TRANSFORMATION
+
+
+# Extract date, day and month
+df['Date'] = df['DateTime'].dt.date
+
+
+df['Day'] = df['DateTime'].dt.day
+
+
+df['Month'] = df['DateTime'].dt.month_name()
+
+
+# Create temperature category
+df['Temperature_Status'] = np.where(
+    df['Temperature'] >= 30,
+    'Hot',
+    np.where(df['Temperature'] <= 15, 'Cold', 'Moderate')
+)
+
+
+print("\nTransformed Weather Dataset:")
+display(df.head())
+
+
+
+
+# STEP 10: PERFORM WEATHER DATA ANALYSIS
+
+
+# A. Average Temperature
+average_temp = df['Temperature'].mean()
+
+
+print("\nAverage Temperature:",
+      round(average_temp, 2), "°C")
+
+
+
+
+# B. Maximum Temperature
+max_temp = df['Temperature'].max()
+
+
+print("Maximum Temperature:",
+      round(max_temp, 2), "°C")
+
+
+
+
+# C. Minimum Temperature
+min_temp = df['Temperature'].min()
+
+
+print("Minimum Temperature:",
+      round(min_temp, 2), "°C")
+
+
+
+
+# D. Average Humidity
+average_humidity = df['Humidity'].mean()
+
+
+print("Average Humidity:",
+      round(average_humidity, 2), "%")
+
+
+
+
+# E. Average Wind Speed
+average_wind = df['WindSpeed'].mean()
+
+
+print("Average Wind Speed:",
+      round(average_wind, 2), "m/s")
+
+
+
+
+# F. City-wise Average Temperature
+city_temperature = df.groupby('City')['Temperature'].mean()
+
+
+print("\nCity-wise Average Temperature:")
+display(city_temperature)
+
+
+
+
+# G. City-wise Average Humidity
+city_humidity = df.groupby('City')['Humidity'].mean()
+
+
+print("\nCity-wise Average Humidity:")
+display(city_humidity)
+
+
+
+
+# H. Daily Average Temperature
+daily_temperature = df.groupby('Date')['Temperature'].mean()
+
+
+print("\nDaily Average Temperature:")
+display(daily_temperature)
+
+
+
+
+# I. City-wise Rainfall
+city_rainfall = df.groupby('City')['Rainfall'].sum()
+
+
+print("\nCity-wise Rainfall:")
+display(city_rainfall)
+
+
+
+
+# STEP 11: CREATE WEATHER DATA VISUALIZATIONS
+
+
+# A. Line Chart - Temperature Changes Over Time
+
+
+plt.figure(figsize=(10, 5))
+
+
+for city in cities:
+
+
+    city_data = df[df['City'] == city]
+
+
+    plt.plot(
+        city_data['DateTime'],
+        city_data['Temperature'],
+        marker='o',
+        label=city
+    )
+
+
+plt.title('Temperature Changes Over Time')
+plt.xlabel('Date and Time')
+plt.ylabel('Temperature (°C)')
+plt.legend()
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+
+
+# B. Bar Chart - City-wise Average Temperature
+
+
+plt.figure(figsize=(8, 5))
+
+
+city_temperature.plot(kind='bar')
+
+
+plt.title('City-wise Average Temperature')
+plt.xlabel('City')
+plt.ylabel('Temperature (°C)')
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+
+
+
+
+# C. Bar Chart - City-wise Average Humidity
+
+
+plt.figure(figsize=(8, 5))
+
+
+city_humidity.plot(kind='bar')
+
+
+plt.title('City-wise Average Humidity')
+plt.xlabel('City')
+plt.ylabel('Humidity (%)')
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+
+
+
+
+# D. Scatter Plot - Temperature vs Humidity
+
+
+plt.figure(figsize=(8, 5))
+
+
+sns.scatterplot(
+    data=df,
+    x='Temperature',
+    y='Humidity',
+    hue='City'
+)
+
+
+plt.title('Temperature vs Humidity')
+plt.xlabel('Temperature (°C)')
+plt.ylabel('Humidity (%)')
+plt.show()
+
+
+
+
+# E. Box Plot - Temperature Distribution
+
+
+plt.figure(figsize=(8, 5))
+
+
+sns.boxplot(
+    data=df,
+    x='City',
+    y='Temperature'
+)
+
+
+plt.title('Temperature Distribution by City')
+plt.xlabel('City')
+plt.ylabel('Temperature (°C)')
+plt.show()
+
+
+
+
+# F. Heatmap - Correlation Between Weather Attributes
+
+
+plt.figure(figsize=(9, 6))
+
+
+correlation = df[numeric_columns].corr()
+
+
+sns.heatmap(
+    correlation,
+    annot=True,
+    cmap='coolwarm',
+    fmt='.2f'
+)
+
+
+plt.title('Weather Attributes Correlation Heatmap')
+plt.tight_layout()
+plt.show()
+
+
+
+
+# G. Bar Chart - City-wise Rainfall
+
+
+plt.figure(figsize=(8, 5))
+
+
+city_rainfall.plot(kind='bar')
+
+
+plt.title('City-wise Total Forecast Rainfall')
+plt.xlabel('City')
+plt.ylabel('Rainfall (mm)')
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+
+
+
+
+# STEP 12: GEOGRAPHICAL WEATHER VISUALIZATION
+
+
+plt.figure(figsize=(8, 5))
+
+
+scatter = plt.scatter(
+    df['Longitude'],
+    df['Latitude'],
+    c=df['Temperature'],
+    cmap='coolwarm',
+    s=100
+)
+
+
+plt.colorbar(scatter, label='Temperature (°C)')
+
+
+plt.title('Geographical Weather Distribution')
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.grid(True)
+plt.show()
+
+
+
+
+# STEP 13: SAVE THE WEATHER DATASET
+
+
+df.to_csv('weather_data.csv', index=False)
+
+
+df.to_excel('weather_data.xlsx', index=False)
+
+
+print("\nWeather dataset saved successfully!")
+
+
+
+
+# STEP 14: GENERATE FINAL WEATHER REPORT
+
+
+print("\n========== WEATHER ANALYSIS REPORT ==========")
+
+
+print("Total Weather Records:", len(df))
+
+
+print("Cities Analyzed:", df['City'].nunique())
+
+
+print("Average Temperature:",
+      round(df['Temperature'].mean(), 2), "°C")
+
+
+print("Maximum Temperature:",
+      round(df['Temperature'].max(), 2), "°C")
+
+
+print("Minimum Temperature:",
+      round(df['Temperature'].min(), 2), "°C")
+
+
+print("Average Humidity:",
+      round(df['Humidity'].mean(), 2), "%")
+
+
+print("Average Wind Speed:",
+      round(df['WindSpeed'].mean(), 2), "m/s")
+
+
+print("\nHottest City in the Forecast:")
+print(city_temperature.idxmax())
+
+
+print("\nHighest Average Humidity City:")
+print(city_humidity.idxmax())
+
+
+print("\n==============================================")
+
+
+
+
+# ============================================================
+# END OF ASSIGNMENT 2
+# ============================================================
+
+
+
+
+Assignment 2 – Expected Practical Viva Questions
+Topic: Interacting with Web APIs – Analyzing Weather Data from OpenWeatherMap API
+These are the most expected oral questions for your practical exam, with short and easy-to-remember answers.
+1. Basic Concepts
+Q1. What is OpenWeatherMap?
+OpenWeatherMap is an online weather service that provides weather information through APIs.
+Q2. What is an API?
+API stands for Application Programming Interface. It allows two different software applications to communicate and exchange data.
+Q3. What is a Web API?
+A Web API allows applications to communicate and exchange data over the internet.
+Q4. What is an API key?
+An API key is a unique authentication code used to identify and authorize API requests.
+Q5. Why did you use OpenWeatherMap API?
+To retrieve weather information such as temperature, humidity, wind speed, and rainfall.
+Q6. What is an API endpoint?
+An API endpoint is a specific URL through which we access data from an API.
+Q7. What is JSON?
+JSON stands for JavaScript Object Notation. It is a lightweight format used to exchange data between applications.
+2. Python Libraries
+Q8. Which libraries did you use in this practical?
+•        Requests
+•        Pandas
+•        NumPy
+•        Matplotlib
+•        Seaborn
+Q9. What is the Requests library?
+Requests is a Python library used to send HTTP requests and receive responses from web servers.
+Q10. What is the use of Pandas?
+Pandas is used for data manipulation, cleaning, and analysis.
+Q11. What is the use of NumPy?
+NumPy is used for numerical calculations and mathematical operations.
+Q12. What is the use of Matplotlib?
+Matplotlib is used to create graphs and charts.
+Q13. What is Seaborn?
+Seaborn is a Python library used for statistical data visualization.
+3. API Interaction
+Q14. Which HTTP method did you use?
+GET method.
+Q15. What is the GET method?
+GET is an HTTP method used to retrieve information from a server.
+Q16. What is an HTTP request?
+An HTTP request is a message sent by a client to a server to retrieve or send information.
+Q17. What is an HTTP response?
+An HTTP response is the data or status returned by the server after receiving a request.
+Q18. What is the use of requests.get()?
+It sends a GET request to the specified API URL.
+Q19. What is the use of response.json()?
+It converts the JSON response into Python dictionaries and lists.
+Q20. What is the use of response.status_code?
+It tells us whether the API request was successful or encountered an error.
+Q21. What does status code 200 mean?
+The request was successful.
+Q22. What does status code 401 mean?
+Unauthorized. It generally indicates an invalid or missing API key or an authentication issue.
+Q23. What does status code 404 mean?
+The requested resource or endpoint was not found.
+Q24. What is an API request parameter?
+It is additional information sent with an API request, such as city name, API key, and temperature unit.
+Q25. Why did you use units: metric?
+To retrieve temperature in Celsius instead of Kelvin and wind speed in metres per second.
+4. Weather Data Extraction
+Q26. Which weather attributes did you extract?
+•        Temperature
+•        Feels Like
+•        Humidity
+•        Pressure
+•        Wind Speed
+•        Rainfall
+•        Snowfall
+•        Cloud Coverage
+Q27. What is humidity?
+Humidity is the amount of water vapour present in the air.
+Q28. What is atmospheric pressure?
+It is the pressure exerted by the weight of the atmosphere.
+Q29. What is wind speed?
+It is the speed at which air moves in the atmosphere.
+Q30. What is rainfall?
+Rainfall is the amount of precipitation received in the form of rain.
+Q31. What is the difference between temperature and feels-like temperature?
+Temperature is the actual measured air temperature, while feels-like temperature considers factors that affect how warm or cold it feels.
+Q32. What is latitude and longitude?
+•        Latitude identifies a location north or south of the Equator.
+•        Longitude identifies a location east or west of the Prime Meridian.
+5. Data Cleaning and Transformation
+Q33. Why is data cleaning important?
+It improves data quality by handling missing, duplicate, and inconsistent values.
+Q34. How did you remove duplicate records?
+Using drop_duplicates().
+Q35. How did you handle missing values?
+Using fillna().
+Q36. What is the use of pd.to_datetime()?
+It converts date and time values into datetime format.
+Q37. What is the use of groupby()?
+It groups data based on a specific column to perform calculations and aggregation.
+Q38. What is data aggregation?
+Data aggregation is the process of summarizing data using operations such as sum, average, minimum, and maximum.
+Q39. What is the use of np.where()?
+It applies conditional logic to create or assign values based on a condition.
+6. Data Analysis and Visualization
+Q40. How did you calculate average temperature?
+Using:
+df['Temperature'].mean()
+Q41. How did you find maximum temperature?
+Using:
+df['Temperature'].max()
+Q42. How did you find minimum temperature?
+Using:
+df['Temperature'].min()
+Q43. Which visualizations did you create?
+•        Line Chart
+•        Bar Chart
+•        Scatter Plot
+•        Box Plot
+•        Heatmap
+Q44. What is a Line Chart?
+A line chart represents changes and trends over time.
+Q45. What is a Bar Chart?
+A bar chart compares values across different categories.
+Q46. What is a Scatter Plot?
+A scatter plot represents the relationship between two numerical variables.
+Q47. What is a Box Plot?
+A box plot represents data distribution and helps identify outliers.
+Q48. What is a Heatmap?
+A heatmap represents numerical relationships using different colors.
+Q49. What is correlation?
+Correlation measures the strength and direction of the relationship between two variables.
+Q50. What is the purpose of a correlation matrix?
+It shows the correlation between multiple numerical variables.
+7. Important Practical Code Questions
+These commands are particularly important because the examiner may ask you to write them.
+Question        Answer
+Send API request?        requests.get()
+Convert API response to JSON?        response.json()
+Check response status?        response.status_code
+Create DataFrame?        pd.DataFrame()
+Display first five records?        df.head()
+Check missing values?        df.isnull().sum()
+Remove duplicates?        df.drop_duplicates()
+Handle missing values?        df.fillna()
+Convert date?        pd.to_datetime()
+Calculate average?        df.mean()
+Calculate maximum?        df.max()
+Calculate minimum?        df.min()
+Group weather data?        df.groupby()
+Calculate correlation?        df.corr()
+Create heatmap?        sns.heatmap()
+Save CSV?        df.to_csv()
+
+
+
+
+Practical Explnation:
+
+
+Practical 2: Interacting with Web APIs – Analyzing Weather Data from OpenWeatherMap API
+
+
+Aim:
+To interact with the OpenWeatherMap API to retrieve weather data for specific locations and perform data cleaning, preprocessing, transformation, analysis, and visualization using Python.
+
+
+Description:
+In this practical, we use the OpenWeatherMap API to retrieve weather forecast data for three cities: Pune, Mumbai, and Delhi.
+
+
+We first obtain an API key from OpenWeatherMap and use the Requests library to send HTTP GET requests to the API. The API returns weather information in JSON format, which is extracted and converted into a Pandas DataFrame.
+
+
+We explore the weather dataset by examining its structure, data types, statistical summary, missing values, and duplicate records.
+
+
+Next, we perform data cleaning by removing duplicate records, handling missing values, converting date and time columns, and standardizing city names.
+
+
+We transform the dataset by extracting date, day, and month information and categorizing temperatures into Hot, Cold, and Moderate conditions.
+
+
+We then analyze weather patterns by calculating average, maximum, and minimum temperatures, average humidity, wind speed, city-wise temperature, humidity, and rainfall.
+
+
+Finally, we create visualizations using line charts, bar charts, scatter plots, box plots, heatmaps, and geographical scatter plots to understand and compare weather patterns across different cities.
+
+
+The processed weather dataset is exported into CSV and Excel formats, and a final weather analysis report is generated.
+Libraries Used
+1. Requests: To send HTTP requests and retrieve weather data from the OpenWeatherMap API.
+2. Pandas: To load, manipulate, clean, and analyze weather data.
+3. NumPy: To perform numerical operations and categorize temperatures.
+4. Matplotlib: To create graphs and visualizations.
+5. Seaborn: To create statistical visualizations such as scatter plots, box plots, and heatmaps.
+6. Getpass: To securely enter the API key without displaying it on the screen.
+
+
+Result
+Successfully retrieved weather forecast data for Pune, Mumbai, and Delhi using the OpenWeatherMap API. Performed data cleaning, preprocessing, transformation, and analysis, generated various weather visualizations, and exported the processed dataset into CSV and Excel formats.
+
+
+
+
+CODE EXPLNATION:
+
+
+Practical 2: Code Explanation
+Interacting with Web APIs – Analyzing Weather Data from OpenWeatherMap API
+
+
+Let's understand the code step by step, in the same sequence as the practical.
+Step 1: Installing Required Libraries
+!pip install requests pandas numpy matplotlib seaborn
+
+
+
+
+
+
+Explanation:
+- requests: Used to send HTTP requests and fetch weather data from the OpenWeatherMap API.
+- pandas: Used to store, manipulate, and analyze weather data.
+- numpy: Used for numerical operations and conditional transformations.
+- matplotlib: Used to create graphs and charts.
+- seaborn: Used to create advanced statistical visualizations.
+The !pip install command installs these libraries in the Jupyter Notebook environment.
+Step 2: Importing Libraries
+import requestsimport pandas as pdimport numpy as npimport matplotlib.pyplot as pltimport seaborn as snsfrom getpass import getpass
+
+
+
+
+
+
+Explanation:
+- requests is used to communicate with the weather API.
+- pandas is imported as pd for data manipulation.
+- numpy is imported as np for numerical calculations.
+- matplotlib.pyplot is imported as plt for plotting graphs.
+- seaborn is imported as sns for statistical visualizations.
+- getpass is used to securely accept the API key without displaying it while typing.
+Step 3: Entering API Key and Defining Cities
+API_KEY = getpass("Enter your OpenWeatherMap API Key: ")cities = ['Pune', 'Mumbai', 'Delhi']BASE_URL = "https://api.openweathermap.org/data/2.5/forecast"
+
+
+
+
+
+
+Explanation:
+- API_KEY stores the API key required to access OpenWeatherMap services.
+- getpass() accepts the API key securely without showing the entered characters.
+- cities stores the names of the cities for which weather information is required.
+- BASE_URL stores the URL of the OpenWeatherMap 5-day forecast API.
+The API key is used to authenticate the request.
+Step 4: Fetching Weather Data from API
+weather_records = []for city in cities:    params = {        'q': city,        'appid': API_KEY,        'units': 'metric'    }    response = requests.get(BASE_URL, params=params)    if response.status_code == 200:        data = response.json()        latitude = data['city']['coord']['lat']        longitude = data['city']['coord']['lon']        for item in data['list']:            weather_records.append({                'City': city,                'DateTime': item['dt_txt'],                'Temperature': item['main']['temp'],                'FeelsLike': item['main']['feels_like'],                'Humidity': item['main']['humidity'],                'Pressure': item['main']['pressure'],                'WindSpeed': item['wind']['speed'],                'Rainfall': item.get('rain', {}).get('3h', 0),                'Snowfall': item.get('snow', {}).get('3h', 0),                'Clouds': item['clouds']['all'],                'Weather': item['weather'][0]['description'],                'Latitude': latitude,                'Longitude': longitude            })
+
+
+
+
+
+
+Explanation:
+1. weather_records = [] creates an empty list to store weather information.
+2. for city in cities iterates through each city: Pune, Mumbai, and Delhi.
+3. params creates the parameters required by the API:
+   - q: City name.
+   - appid: API authentication key.
+   - units: Specifies metric units such as Celsius for temperature.
+4. requests.get() sends an HTTP GET request to the API.
+5. response.status_code == 200 checks whether the request was successful.
+6. response.json() converts the API response into a Python dictionary.
+7. Latitude and longitude are extracted from the city's coordinates.
+8. for item in data['list'] iterates through the available forecast records.
+9. weather_records.append() adds each forecast record as a dictionary to the list.
+Understanding the weather fields:
+Field        Description
+City        Name of the city
+DateTime        Forecast date and time
+Temperature        Actual forecast temperature
+FeelsLike        Feels-like temperature
+Humidity        Humidity percentage
+Pressure        Atmospheric pressure
+WindSpeed        Wind speed
+Rainfall        Forecast rainfall in 3 hours
+Snowfall        Forecast snowfall in 3 hours
+Clouds        Cloudiness percentage
+Weather        Weather description
+Latitude        Geographic latitude
+Longitude        Geographic longitude
+
+
+Important concepts:
+- item.get('rain', {}).get('3h', 0) safely extracts rainfall. If rainfall information is unavailable, it returns 0.
+- The same logic is used for snowfall.
+- response.status_code == 200 indicates that the API request was successful.
+- The forecast API generally provides weather predictions at 3-hour intervals for up to five days.
+Step 5: Creating a DataFrame
+df = pd.DataFrame(weather_records)print(df.head())print("Dataset Shape:", df.shape)
+
+
+
+
+
+
+Explanation:
+- pd.DataFrame() converts the list of dictionaries into a Pandas DataFrame.
+- df.head() displays the first five records.
+- df.shape returns the number of rows and columns in the dataset.
+For example, if the dataset contains 120 records and 13 columns, the shape will be (120, 13).
+Step 6: Exploring the Dataset
+print(df.head())print(df.tail())print(df.columns)print(df.dtypes)print(df.describe())print(df.isnull().sum())print(df.duplicated().sum())
+
+
+
+
+
+
+Explanation:
+
+
+This step helps us understand the structure and quality of the collected weather data.
+- df.head() displays the first five records.
+- df.tail() displays the last five records.
+- df.columns displays all column names.
+- df.dtypes displays the data type of each column.
+- df.describe() provides statistical information such as mean, minimum, maximum, and standard deviation.
+- df.isnull().sum() counts missing values in each column.
+- df.duplicated().sum() counts duplicate rows.
+This process is called Exploratory Data Analysis (EDA).
+Step 7: Data Cleaning and Preprocessing
+df = df.drop_duplicates(subset=['City', 'DateTime'])df['DateTime'] = pd.to_datetime(df['DateTime'])numeric_columns = [    'Temperature', 'FeelsLike', 'Humidity', 'Pressure',    'WindSpeed', 'Rainfall', 'Snowfall', 'Clouds']for col in numeric_columns:    df[col] = df[col].fillna(df[col].median())df['Weather'] = df['Weather'].fillna('Unknown')df['City'] = df['City'].str.strip().str.title()print(df.head())print(df.isnull().sum())print(df.duplicated().sum())
+
+
+
+
+
+
+Explanation:
+
+
+This step cleans the dataset and prepares it for further analysis.
+1. Removing duplicates
+   df.drop_duplicates(subset=['City', 'DateTime'])
+   
+   
+   
+   Removes duplicate records based on city and forecast date/time. It keeps the first occurrence.
+2. Converting date and time
+   df['DateTime'] = pd.to_datetime(df['DateTime'])
+   
+   
+   
+   Converts the DateTime column into Pandas datetime format so that date-related operations can be performed.
+3. Selecting numerical columns
+   numeric_columns = [...]
+   
+   
+   
+   Stores all numerical columns in a list.
+4. Handling missing numerical values
+   df[col] = df[col].fillna(df[col].median())
+   
+   
+   
+   Replaces missing values with the median of the respective column.
+   
+   Median is preferred because it is less affected by extreme values than the mean.
+5. Handling missing categorical values
+   df['Weather'] = df['Weather'].fillna('Unknown')
+   
+   
+   
+   Replaces missing weather descriptions with Unknown.
+6. Standardizing city names
+   df['City'] = df['City'].str.strip().str.title()
+   
+   
+   
+   - str.strip() removes unnecessary spaces.
+   - str.title() converts city names into title case.
+7. Finally, missing values and duplicate records are checked again to verify the cleaning process.
+Step 8: Data Transformation
+df['Date'] = df['DateTime'].dt.datedf['Day'] = df['DateTime'].dt.daydf['Month'] = df['DateTime'].dt.month_name()df['Temperature_Status'] = np.where(    df['Temperature'] >= 30,    'Hot',    np.where(df['Temperature'] <= 15, 'Cold', 'Moderate'))
+
+
+
+
+
+
+Explanation:
+
+
+Data transformation means creating new columns or modifying existing data to make analysis easier.
+1. df['DateTime'].dt.date extracts the date from the DateTime column.
+2. df['DateTime'].dt.day extracts the day of the month.
+3. df['DateTime'].dt.month_name() extracts the month name.
+4. np.where() applies conditions to classify temperatures.
+Temperature classification:
+Condition        Category
+Temperature >= 30°C        Hot
+
+
+| Temperature
+OpenWeatherMap API
+
+
+Fetch Weather Data using Requests
+
+
+Create Pandas DataFrame
+
+
+Data Exploration and Cleaning
+
+
+Data Transformation and Analysis
+
+
+Data Visualization
+
+
+Export Dataset and Generate Report
+
+
+This completes the code explanation for Practical 2.

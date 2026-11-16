@@ -1,0 +1,806 @@
+
+# ============================================================
+# ASSIGNMENT 1: ANALYZING SALES DATA FROM MULTIPLE FILE FORMATS
+# Subject: Data Modelling and Visualization
+# ============================================================
+
+
+# STEP 1: INSTALL REQUIRED LIBRARIES
+
+!pip install pandas numpy matplotlib seaborn openpyxl
+
+
+# STEP 2: IMPORT REQUIRED LIBRARIES
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+print("Libraries imported successfully!")
+
+
+# STEP 3: CREATE SALES DATASETS IN DIFFERENT FORMATS
+
+# CSV Dataset
+csv_data = {
+    'OrderID': [101, 102, 103, 104, 105],
+    'OrderDate': ['2026-01-05', '2026-01-10', '2026-01-15',
+                  '2026-02-02', '2026-02-10'],
+    'Product': ['Laptop', 'Mobile', 'Tablet', 'Laptop', 'Headphones'],
+    'Category': ['Electronics', 'electronics', 'Electronics',
+                 'Electronics', 'Accessories'],
+    'Region': ['Pune', 'Mumbai', 'Delhi', 'Pune', 'Mumbai'],
+    'Quantity': [2, 3, 1, 2, 5],
+    'UnitPrice': [50000, 20000, 30000, 50000, 2000],
+    'Discount': [0.10, 0.05, 0, 0.10, 0.05],
+    'CustomerID': ['C01', 'C02', 'C03', 'C04', 'C05']
+}
+
+df_csv = pd.DataFrame(csv_data)
+df_csv.to_csv('sales_data.csv', index=False)
+
+
+# Excel Dataset
+excel_data = {
+    'OrderID': [106, 107, 108, 109, 110],
+    'OrderDate': ['2026-02-15', '2026-03-01', '2026-03-05',
+                  '2026-03-10', '2026-03-15'],
+    'Product': ['Mobile', 'Laptop', 'Headphones', 'Tablet', 'Mobile'],
+    'Category': ['Electronics', 'ELECTRONICS', 'Accessories',
+                 'electronics', 'Electronics'],
+    'Region': ['Delhi', 'Pune', 'Mumbai', 'Delhi', 'Pune'],
+    'Quantity': [2, 1, 4, np.nan, 3],
+    'UnitPrice': [20000, 50000, 2000, 30000, 20000],
+    'Discount': [0.05, 0.10, 0, 0.05, np.nan],
+    'CustomerID': ['C06', 'C07', 'C08', 'C09', None]
+}
+
+df_excel = pd.DataFrame(excel_data)
+df_excel.to_excel('sales_data.xlsx', index=False)
+
+
+# JSON Dataset
+json_data = {
+    'OrderID': [111, 112, 113, 114, 101],
+    'OrderDate': ['2026-04-01', '2026-04-05', '2026-04-10',
+                  '2026-04-15', '2026-01-05'],
+    'Product': ['Laptop', 'Mobile', 'Tablet', 'Headphones', 'Laptop'],
+    'Category': ['electronics', 'Electronics', 'Electronics',
+                 'Accessories', 'Electronics'],
+    'Region': ['Mumbai', 'Delhi', 'Pune', 'Mumbai', 'Pune'],
+    'Quantity': [1, 2, 3, 5, 2],
+    'UnitPrice': [50000, 20000, 30000, 2000, 50000],
+    'Discount': [0.10, 0.05, 0, 0.05, 0.10],
+    'CustomerID': ['C10', 'C11', 'C12', 'C13', 'C01']
+}
+
+df_json = pd.DataFrame(json_data)
+df_json.to_json('sales_data.json', orient='records', indent=4)
+
+print("CSV, Excel and JSON files created successfully!")
+
+
+# STEP 4: LOAD DATA FROM CSV, EXCEL AND JSON
+
+df_csv = pd.read_csv('sales_data.csv')
+df_excel = pd.read_excel('sales_data.xlsx')
+df_json = pd.read_json('sales_data.json')
+
+print("\nCSV Data:")
+display(df_csv)
+
+print("\nExcel Data:")
+display(df_excel)
+
+print("\nJSON Data:")
+display(df_json)
+
+
+# STEP 5: EXPLORE THE DATASETS
+
+print("\nFirst Five Records:")
+display(df_csv.head())
+
+print("\nDataset Shapes:")
+print("CSV:", df_csv.shape)
+print("Excel:", df_excel.shape)
+print("JSON:", df_json.shape)
+
+print("\nColumn Names:")
+print(df_csv.columns)
+
+print("\nData Types:")
+print(df_csv.dtypes)
+
+print("\nStatistical Summary:")
+display(df_csv.describe(include='all'))
+
+print("\nMissing Values:")
+print("CSV:\n", df_csv.isnull().sum())
+print("Excel:\n", df_excel.isnull().sum())
+print("JSON:\n", df_json.isnull().sum())
+
+print("\nDuplicate Records:")
+print("CSV:", df_csv.duplicated().sum())
+print("Excel:", df_excel.duplicated().sum())
+print("JSON:", df_json.duplicated().sum())
+
+
+# STEP 6: COMBINE ALL DATASETS
+
+df = pd.concat(
+    [df_csv, df_excel, df_json],
+    ignore_index=True
+)
+
+print("\nCombined Sales Dataset:")
+display(df)
+
+print("Total Rows:", df.shape[0])
+print("Total Columns:", df.shape[1])
+
+
+# STEP 7: PERFORM DATA CLEANING
+
+# Remove duplicate orders
+df = df.drop_duplicates(subset='OrderID', keep='first')
+
+# Handle missing values
+df['Quantity'] = df['Quantity'].fillna(df['Quantity'].median())
+df['UnitPrice'] = df['UnitPrice'].fillna(df['UnitPrice'].median())
+df['Discount'] = df['Discount'].fillna(0)
+df['CustomerID'] = df['CustomerID'].fillna('Unknown')
+
+# Standardize text values
+df['Category'] = df['Category'].str.strip().str.title()
+df['Product'] = df['Product'].str.strip().str.title()
+df['Region'] = df['Region'].str.strip().str.title()
+
+# Convert data types
+df['OrderDate'] = pd.to_datetime(df['OrderDate'])
+df['Quantity'] = df['Quantity'].astype(int)
+
+print("\nCleaned Dataset:")
+display(df)
+
+print("\nMissing Values After Cleaning:")
+print(df.isnull().sum())
+
+print("\nDuplicate Orders After Cleaning:")
+print(df.duplicated(subset='OrderID').sum())
+
+
+# STEP 8: PERFORM DATA TRANSFORMATION
+
+# Calculate total sales after discount
+df['TotalSales'] = (
+    df['Quantity'] *
+    df['UnitPrice'] *
+    (1 - df['Discount'])
+)
+
+# Extract year and month
+df['Year'] = df['OrderDate'].dt.year
+df['Month'] = df['OrderDate'].dt.month_name()
+
+print("\nTransformed Sales Dataset:")
+display(df)
+
+
+# STEP 9: PERFORM SALES DATA ANALYSIS
+
+# A. Total Sales
+total_sales = df['TotalSales'].sum()
+print("\nTotal Sales Revenue: ₹", round(total_sales, 2))
+
+# B. Average Order Value
+average_order_value = df['TotalSales'].mean()
+print("Average Order Value: ₹", round(average_order_value, 2))
+
+# C. Total Orders
+total_orders = df['OrderID'].nunique()
+print("Total Orders:", total_orders)
+
+# D. Product-wise Sales
+product_sales = df.groupby('Product')['TotalSales'].sum()
+print("\nProduct-wise Sales:")
+display(product_sales)
+
+# E. Region-wise Sales
+region_sales = df.groupby('Region')['TotalSales'].sum()
+print("\nRegion-wise Sales:")
+display(region_sales)
+
+# F. Category-wise Sales
+category_sales = df.groupby('Category')['TotalSales'].sum()
+print("\nCategory-wise Sales:")
+display(category_sales)
+
+# G. Monthly Sales Analysis
+monthly_sales = df.groupby('Month')['TotalSales'].sum()
+
+month_order = [
+    'January', 'February', 'March', 'April',
+    'May', 'June', 'July', 'August',
+    'September', 'October', 'November', 'December'
+]
+
+monthly_sales = monthly_sales.reindex(
+    [m for m in month_order if m in monthly_sales.index]
+)
+
+print("\nMonthly Sales:")
+display(monthly_sales)
+
+
+# STEP 10: CREATE DATA VISUALIZATIONS
+
+# A. Bar Chart - Product-wise Sales
+plt.figure(figsize=(8, 5))
+product_sales.plot(kind='bar')
+plt.title('Product-wise Sales Analysis')
+plt.xlabel('Product')
+plt.ylabel('Total Sales (₹)')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+
+# B. Pie Chart - Category-wise Sales
+plt.figure(figsize=(7, 7))
+category_sales.plot(
+    kind='pie',
+    autopct='%1.1f%%',
+    startangle=90
+)
+plt.title('Category-wise Sales Distribution')
+plt.ylabel('')
+plt.show()
+
+
+# C. Line Chart - Monthly Sales Trend
+plt.figure(figsize=(9, 5))
+monthly_sales.plot(kind='line', marker='o')
+plt.title('Monthly Sales Trend')
+plt.xlabel('Month')
+plt.ylabel('Total Sales (₹)')
+plt.grid(True)
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+
+# D. Box Plot - Sales Distribution
+plt.figure(figsize=(8, 5))
+sns.boxplot(x=df['TotalSales'])
+plt.title('Sales Distribution and Outliers')
+plt.xlabel('Total Sales (₹)')
+plt.show()
+
+
+# STEP 11: SAVE THE CLEANED DATASET
+
+df.to_csv('cleaned_sales_data.csv', index=False)
+df.to_excel('cleaned_sales_data.xlsx', index=False)
+
+print("\nCleaned sales data saved successfully!")
+
+
+# STEP 12: GENERATE FINAL SALES REPORT
+
+print("\n========== SALES ANALYSIS REPORT ==========")
+
+print("Total Orders:", df['OrderID'].nunique())
+
+print("Total Revenue: ₹",
+      round(df['TotalSales'].sum(), 2))
+
+print("Average Order Value: ₹",
+      round(df['TotalSales'].mean(), 2))
+
+print("\nHighest Selling Product:")
+print(product_sales.idxmax())
+
+print("\nBest Performing Region:")
+print(region_sales.idxmax())
+
+print("\nHighest Revenue Category:")
+print(category_sales.idxmax())
+
+print("\n==========================================")
+
+# ============================================================
+# END OF ASSIGNMENT 1
+# ============================================================
+
+from google.colab import files
+
+uploaded = files.upload()
+
+
+Assignment 1 – Practical Viva Questions
+Topic: Analyzing Sales Data from Multiple File Formats
+These are the most expected oral/viva questions for your practical exam, with short, interview-style answers.
+1. Basic Concepts
+Q1. What is Data Visualization?
+Data Visualization is the graphical representation of data using charts, graphs, and plots.
+Q2. What is Data Analysis?
+Data Analysis is the process of cleaning, processing, and examining data to extract useful information.
+Q3. What is Data Cleaning?
+Data Cleaning is the process of identifying and correcting missing, duplicate, incorrect, or inconsistent data.
+Q4. What is Data Transformation?
+Data Transformation is the process of converting data into a suitable format for analysis.
+Q5. What is a Dataset?
+A dataset is a collection of related data organized in rows and columns.
+2. Python Libraries
+Q6. Which programming language did you use?
+Python.
+Q7. Which libraries did you use in this practical?
+•	Pandas
+•	NumPy
+•	Matplotlib
+•	Seaborn
+•	OpenPyXL
+Q8. What is Pandas?
+Pandas is a Python library used for data manipulation and analysis.
+Q9. What is NumPy?
+NumPy is a Python library used for numerical calculations and array operations.
+Q10. What is Matplotlib?
+Matplotlib is a Python library used to create graphs and visualizations.
+Q11. What is Seaborn?
+Seaborn is a Python visualization library built on Matplotlib.
+Q12. What is OpenPyXL?
+OpenPyXL is a Python library used to read and write Excel files.
+3. File Formats and Data Loading
+Q13. Which three file formats did you use?
+CSV, Excel, and JSON.
+Q14. What is a CSV file?
+CSV stands for Comma-Separated Values. It stores data in a tabular format separated by commas.
+Q15. What is an Excel file?
+An Excel file stores data in spreadsheets organized into rows and columns.
+Q16. What is a JSON file?
+JSON stands for JavaScript Object Notation. It stores data in a structured key-value format.
+Q17. Which Pandas functions are used to read these files?
+•	CSV: pd.read_csv()
+•	Excel: pd.read_excel()
+•	JSON: pd.read_json()
+Q18. Which functions are used to save these files?
+•	CSV: to_csv()
+•	Excel: to_excel()
+•	JSON: to_json()
+Q19. What is a DataFrame?
+A DataFrame is a two-dimensional tabular data structure in Pandas consisting of rows and columns.
+4. Data Exploration and Cleaning
+Q20. What is the purpose of head()?
+It displays the first five rows of a DataFrame by default.
+Q21. What does shape return?
+It returns the number of rows and columns.
+Q22. What is the use of info()?
+It provides information about columns, data types, and non-null values.
+Q23. What is the use of describe()?
+It provides statistical information such as mean, standard deviation, minimum, and maximum.
+Q24. How do you identify missing values?
+Using isnull() or isna().
+Q25. How do you handle missing values?
+Using fillna() or dropna().
+Q26. How do you remove duplicate records?
+Using drop_duplicates().
+Q27. Why do we remove duplicates?
+To avoid repeated records and incorrect calculations.
+Q28. What is data inconsistency?
+Data inconsistency occurs when the same information is represented in different formats, such as Male, male, and MALE.
+Q29. What is the use of astype()?
+It converts a column into a specified data type.
+Q30. What is the use of str.title()?
+It converts the first character of each word to uppercase and the remaining characters to lowercase.
+5. Data Combining and Transformation
+Q31. How did you combine the three datasets?
+Using pd.concat().
+Q32. What is the difference between concat() and merge()?
+•	concat() combines DataFrames along rows or columns.
+•	merge() combines DataFrames based on common columns or keys.
+Q33. What is data transformation?
+It changes the structure or format of data to make it suitable for analysis.
+Q34. How did you calculate TotalSales?
+Using the formula:
+\[ TotalSales = Quantity \times UnitPrice \times (1-Discount) \]
+Q35. What is the use of pd.to_datetime()?
+It converts a column into a datetime format.
+Q36. What is the use of groupby()?
+It groups data based on a particular column and allows aggregation.
+Q37. How did you extract the month from the date?
+Using:
+df['OrderDate'].dt.month_name()
+6. Sales Analysis
+Q38. What is Total Sales?
+It is the total revenue generated from all orders.
+Q39. What is Average Order Value (AOV)?
+It is the average revenue generated per order.
+\[ AOV = \frac{Total\ Revenue}{Number\ of\ Orders} \]
+Q40. How did you calculate product-wise sales?
+Using:
+df.groupby('Product')['TotalSales'].sum()
+Q41. How did you calculate region-wise sales?
+Using:
+df.groupby('Region')['TotalSales'].sum()
+Q42. What is descriptive statistics?
+It summarizes data using measures such as mean, median, mode, and standard deviation.
+7. Data Visualization
+Q43. Which visualizations did you create?
+•	Bar Chart
+•	Pie Chart
+•	Line Chart
+•	Box Plot
+Q44. What is a Bar Chart?
+A bar chart represents and compares values across different categories.
+Q45. What is a Pie Chart?
+A pie chart represents the proportion of different categories as parts of a whole.
+Q46. What is a Line Chart?
+A line chart displays trends and changes over time.
+Q47. What is a Box Plot?
+A box plot displays the distribution of numerical data and helps identify outliers.
+Q48. What is an Outlier?
+An outlier is a data value that is significantly different from other observations.
+Q49. Which library did you use for creating a box plot?
+Seaborn.
+Q50. What is the purpose of plt.show()?
+It displays the generated visualization.
+8. Practical Code-Based Questions
+These are particularly important because examiners may ask you to write or explain a single command.
+Question	Answer
+Read a CSV file?	pd.read_csv()
+Read an Excel file?	pd.read_excel()
+Read a JSON file?	pd.read_json()
+Display first five rows?	df.head()
+Display last five rows?	df.tail()
+Find dataset dimensions?	df.shape
+Find column names?	df.columns
+Check missing values?	df.isnull().sum()
+Remove duplicates?	df.drop_duplicates()
+Fill missing values?	df.fillna()
+Combine DataFrames?	pd.concat()
+Group data?	df.groupby()
+Calculate sum?	df.sum()
+Calculate average?	df.mean()
+Find maximum?	df.max()
+Convert date?	pd.to_datetime()
+Save CSV?	df.to_csv()
+Save Excel?	df.to_excel()
+
+
+PRACTICAL EXPLNATION
+
+Practical 1: Analyzing Sales Data from Multiple File Formats
+
+Aim:
+To load and analyze sales data from different file formats (CSV, Excel, and JSON) and perform data cleaning, data transformation, data analysis, and data visualization using Python.
+
+Description:
+In this practical, we create sales datasets in three different file formats: CSV, Excel, and JSON. Using the Pandas library, we load these datasets and combine them into a single DataFrame.
+
+We perform data exploration to understand the dataset's structure, identify missing values, and detect duplicate records. We then clean the data by handling missing values, removing duplicate orders, standardizing text values, and converting data types.
+
+After cleaning, we transform the data by calculating total sales after discounts and extracting year and month information from order dates.
+
+We analyze the sales data to calculate total revenue, average order value, total orders, product-wise sales, region-wise sales, category-wise sales, and monthly sales.
+
+Finally, we visualize the results using different charts, including bar charts, pie charts, line charts, and box plots. The cleaned dataset is exported into CSV and Excel formats, and a final sales analysis report is generated.
+Libraries Used
+1. Pandas: For data loading, manipulation, cleaning, and analysis.
+2. NumPy: For numerical operations and handling missing values.
+3. Matplotlib: For creating data visualizations.
+4. Seaborn: For statistical data visualization.
+5. Openpyxl: For reading and writing Excel files.
+
+Result
+Successfully created, loaded, combined, cleaned, transformed, and analyzed sales datasets from CSV, Excel, and JSON formats. Generated various visualizations and exported the cleaned dataset into CSV and Excel files.
+
+CODE EXPLNATION:
+
+Code Explanation – Practical 1
+Analyzing Sales Data from Multiple File Formats
+Step 1: Install Required Libraries
+!pip install pandas numpy matplotlib seaborn openpyxl
+
+
+
+Installs the required Python libraries:
+- Pandas: Data manipulation and analysis.
+- NumPy: Numerical calculations.
+- Matplotlib: Data visualization.
+- Seaborn: Statistical visualization.
+- Openpyxl: Reading and writing Excel files.
+Step 2: Import Required Libraries
+import pandas as pdimport numpy as npimport matplotlib.pyplot as pltimport seaborn as sns
+
+
+
+Imports the required libraries into the program.
+- pd is the alias for Pandas.
+- np is the alias for NumPy.
+- plt is used for creating graphs using Matplotlib.
+- sns is used for statistical graphs using Seaborn.
+Step 3: Create Sales Datasets in Different Formats
+Three datasets are created using Python dictionaries.
+- CSV Dataset: Contains sales records from OrderID 101 to 105.
+- Excel Dataset: Contains sales records from OrderID 106 to 110, including some missing values.
+- JSON Dataset: Contains sales records from OrderID 111 to 114 and one duplicate order.
+Creating DataFrames:
+df_csv = pd.DataFrame(csv_data)df_excel = pd.DataFrame(excel_data)df_json = pd.DataFrame(json_data)
+
+
+
+pd.DataFrame() converts Python dictionaries into tabular DataFrames.
+
+Saving datasets:
+df_csv.to_csv('sales_data.csv', index=False)df_excel.to_excel('sales_data.xlsx', index=False)df_json.to_json('sales_data.json', orient='records', indent=4)
+
+
+
+- to_csv() saves data in CSV format.
+- to_excel() saves data in Excel format.
+- to_json() saves data in JSON format.
+- index=False prevents an additional index column in CSV and Excel files.
+- orient='records' stores JSON data as a list of records.
+- indent=4 formats JSON data with indentation for readability.
+Step 4: Load Data from CSV, Excel and JSON
+df_csv = pd.read_csv('sales_data.csv')df_excel = pd.read_excel('sales_data.xlsx')df_json = pd.read_json('sales_data.json')
+
+
+
+Loads the previously created files into Pandas DataFrames.
+- read_csv() reads CSV files.
+- read_excel() reads Excel files.
+- read_json() reads JSON files.
+The display() function is used to display the loaded datasets.
+Step 5: Explore the Datasets
+This step helps us understand the structure and quality of the datasets.
+
+1. First five records
+df_csv.head()
+
+
+
+Displays the first five rows of the dataset.
+
+2. Dataset shape
+df_csv.shape
+
+
+
+Returns the number of rows and columns in the dataset.
+
+3. Column names
+df_csv.columns
+
+
+
+Displays all column names.
+
+4. Data types
+df_csv.dtypes
+
+
+
+Displays the data type of each column.
+
+5. Statistical summary
+df_csv.describe(include='all')
+
+
+
+Provides statistical information about the dataset, such as count, mean, minimum, maximum and other descriptive statistics.
+
+6. Missing values
+df_csv.isnull().sum()
+
+
+
+Identifies the number of missing values in each column.
+
+7. Duplicate records
+df_csv.duplicated().sum()
+
+
+
+Counts the number of duplicate rows in the dataset.
+Step 6: Combine All Datasets
+df = pd.concat(    [df_csv, df_excel, df_json],    ignore_index=True)
+
+
+
+Combines all three DataFrames into a single DataFrame.
+- pd.concat() combines multiple DataFrames.
+- ignore_index=True creates a new continuous index for the combined dataset.
+The combined dataset contains 15 rows and 9 columns before duplicate removal.
+Step 7: Perform Data Cleaning
+Data cleaning is performed to improve data quality and consistency.
+
+1. Remove duplicate orders
+df = df.drop_duplicates(subset='OrderID', keep='first')
+
+
+
+Removes duplicate orders based on the OrderID column while keeping the first occurrence.
+
+2. Handle missing values
+df['Quantity'] = df['Quantity'].fillna(df['Quantity'].median())df['UnitPrice'] = df['UnitPrice'].fillna(df['UnitPrice'].median())df['Discount'] = df['Discount'].fillna(0)df['CustomerID'] = df['CustomerID'].fillna('Unknown')
+
+
+
+- fillna() replaces missing values.
+- median() calculates the middle value and is used to fill missing numerical values.
+- Missing discounts are replaced with 0.
+- Missing customer IDs are replaced with 'Unknown'.
+3. Standardize text values
+df['Category'] = df['Category'].str.strip().str.title()df['Product'] = df['Product'].str.strip().str.title()df['Region'] = df['Region'].str.strip().str.title()
+
+
+
+- str.strip() removes unwanted leading and trailing spaces.
+- str.title() converts text into title case.
+This ensures consistent values, such as electronics, ELECTRONICS and Electronics becoming Electronics.
+
+4. Convert data types
+df['OrderDate'] = pd.to_datetime(df['OrderDate'])df['Quantity'] = df['Quantity'].astype(int)
+
+
+
+- pd.to_datetime() converts the OrderDate column into datetime format.
+- astype(int) converts Quantity into integer format.
+Finally, the cleaned dataset is displayed and checked again for missing values and duplicate orders.
+Step 8: Perform Data Transformation
+Data transformation involves creating new columns and modifying existing data to make analysis easier.
+
+1. Calculate total sales
+df['TotalSales'] = (    df['Quantity'] *    df['UnitPrice'] *    (1 - df['Discount']))
+
+
+
+Calculates the total sales amount after applying the discount.
+
+Formula:
+\[
+TotalSales = Quantity \times UnitPrice \times (1-Discount)
+\]
+
+2. Extract year and month
+df['Year'] = df['OrderDate'].dt.yeardf['Month'] = df['OrderDate'].dt.month_name()
+
+
+
+- .dt.year extracts the year from the order date.
+- .dt.month_name() extracts the month name from the order date.
+These columns help in performing time-based sales analysis.
+Step 9: Perform Sales Data Analysis
+This step analyzes sales performance using Pandas functions.
+
+A. Total Sales
+total_sales = df['TotalSales'].sum()
+
+
+
+Calculates the total revenue generated from all orders.
+
+B. Average Order Value
+average_order_value = df['TotalSales'].mean()
+
+
+
+Calculates the average sales revenue per order.
+
+C. Total Orders
+total_orders = df['OrderID'].nunique()
+
+
+
+Counts the total number of unique orders.
+
+D. Product-wise Sales
+product_sales = df.groupby('Product')['TotalSales'].sum()
+
+
+
+Groups sales by product and calculates the total revenue generated by each product.
+
+E. Region-wise Sales
+region_sales = df.groupby('Region')['TotalSales'].sum()
+
+
+
+Groups sales by region and calculates the revenue generated in each region.
+
+F. Category-wise Sales
+category_sales = df.groupby('Category')['TotalSales'].sum()
+
+
+
+Calculates total revenue for each product category.
+
+G. Monthly Sales Analysis
+monthly_sales = df.groupby('Month')['TotalSales'].sum()
+
+
+
+Groups sales by month and calculates monthly revenue.
+
+The reindex() function is used with a predefined month list to arrange the monthly sales in chronological order.
+Step 10: Create Data Visualizations
+Data visualization represents sales information graphically to make analysis easier.
+
+A. Bar Chart – Product-wise Sales
+plt.figure(figsize=(8, 5))product_sales.plot(kind='bar')plt.title('Product-wise Sales Analysis')plt.xlabel('Product')plt.ylabel('Total Sales (₹)')plt.xticks(rotation=45)plt.tight_layout()plt.show()
+
+
+
+Displays product-wise sales using a bar chart to compare revenue generated by different products.
+
+B. Pie Chart – Category-wise Sales
+plt.figure(figsize=(7, 7))category_sales.plot(    kind='pie',    autopct='%1.1f%%',    startangle=90)plt.title('Category-wise Sales Distribution')plt.ylabel('')plt.show()
+
+
+
+Displays the percentage contribution of each product category to total sales.
+
+C. Line Chart – Monthly Sales Trend
+plt.figure(figsize=(9, 5))monthly_sales.plot(kind='line', marker='o')plt.title('Monthly Sales Trend')plt.xlabel('Month')plt.ylabel('Total Sales (₹)')plt.grid(True)plt.xticks(rotation=45)plt.tight_layout()plt.show()
+
+
+
+Displays monthly sales trends and helps identify changes in revenue over time.
+
+D. Box Plot – Sales Distribution
+plt.figure(figsize=(8, 5))sns.boxplot(x=df['TotalSales'])plt.title('Sales Distribution and Outliers')plt.xlabel('Total Sales (₹)')plt.show()
+
+
+
+Displays the distribution of sales values and helps identify potential outliers.
+Step 11: Save the Cleaned Dataset
+df.to_csv('cleaned_sales_data.csv', index=False)df.to_excel('cleaned_sales_data.xlsx', index=False)
+
+
+
+Exports the cleaned and transformed dataset into CSV and Excel formats.
+
+This allows the processed data to be reused for future analysis.
+Step 12: Generate Final Sales Report
+This step generates a summary report containing important sales information.
+print("Total Orders:", df['OrderID'].nunique())print("Total Revenue:", round(df['TotalSales'].sum(), 2))print("Average Order Value:", round(df['TotalSales'].mean(), 2))
+
+
+
+Displays total orders, total revenue and average order value.
+
+Identify the best performers:
+print(product_sales.idxmax())print(region_sales.idxmax())print(category_sales.idxmax())
+
+
+
+- idxmax() returns the name of the item with the highest value.
+- It identifies the highest-selling product, best-performing region and highest-revenue category.
+round() is used to round numerical results to two decimal places.
+
+Important functions used in this practical
+Function	Purpose
+pd.DataFrame()	Creates a DataFrame
+pd.read_csv()	Reads CSV files
+pd.read_excel()	Reads Excel files
+pd.read_json()	Reads JSON files
+pd.concat()	Combines DataFrames
+head()	Displays first five rows
+shape	Returns rows and columns
+describe()	Generates statistical summary
+isnull()	Checks missing values
+fillna()	Replaces missing values
+drop_duplicates()	Removes duplicate records
+groupby()	Groups data
+sum()	Calculates total
+mean()	Calculates average
+nunique()	Counts unique values
+idxmax()	Returns index of maximum value
+to_datetime()	Converts values to datetime
+astype()	Changes data type
+
+Note: This explanation follows your actual code and its execution order. One small technical point: the duplicate OrderID 101 in the JSON dataset is removed because keep='first' retains the earlier CSV record. Also, the median used for missing Quantity and UnitPrice is calculated after duplicate removal.
+

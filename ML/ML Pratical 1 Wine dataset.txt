@@ -1,0 +1,378 @@
+﻿# ============================================================
+# ML PRACTICAL 1: PRINCIPAL COMPONENT ANALYSIS (PCA)
+# Dataset: Wine Dataset
+#
+# Aim:
+# To reduce the dimensionality of the Wine dataset from
+# 13 features to 2 principal components using PCA and
+# visualize the result using a scatter plot.
+# ============================================================
+
+
+
+
+# -------------------- 1. INSTALL / IMPORT LIBRARIES --------------------
+
+
+# If any library is missing, run this command in a separate notebook cell:
+# %pip install pandas numpy matplotlib scikit-learn
+
+
+import numpy as np                       # Used for numerical operations
+import pandas as pd                      # Used to load and handle tabular data
+import matplotlib.pyplot as plt          # Used to create graphs
+
+
+from tkinter import Tk                   # Used to open a file selection window
+from tkinter.filedialog import askopenfilename
+from sklearn.preprocessing import StandardScaler  # Standardizes feature values
+from sklearn.decomposition import PCA              # Performs PCA
+
+
+
+
+# -------------------- 2. UPLOAD / SELECT THE WINE DATASET --------------------
+
+
+# STEP 2: LOAD THE DATASET
+
+
+# Read the downloaded CSV file from the current folder.
+df = pd.read_csv("wine.csv")
+
+
+# Display first five rows.
+print("First five rows:")
+print(df.head())
+
+
+# Display number of rows and columns.
+print("Dataset shape:", df.shape)
+
+
+# Display column names.
+print("Column names:")
+print(df.columns)
+
+
+
+
+
+
+# -------------------- 3. UNDERSTAND AND CHECK THE DATASET --------------------
+
+
+print("\nDataset Information:")
+df.info()  # Shows column names, data types, and non-null values
+
+
+print("\nMissing Values:")
+print(df.isnull().sum())  # Counts missing values in each column
+
+
+# Fill missing numeric values with the mean of their respective columns.
+# This keeps the rows instead of deleting them.
+numeric_columns = df.select_dtypes(include=np.number).columns
+df[numeric_columns] = df[numeric_columns].fillna(df[numeric_columns].mean())
+
+
+# Check missing values again after handling them
+print("\nMissing Values After Handling:")
+print(df.isnull().sum())
+
+
+
+
+# -------------------- 4. SEPARATE FEATURES AND TARGET --------------------
+
+
+# The Wine dataset has 13 input features and one target/class column.
+# The last column is treated as the target label.
+X = df.iloc[:, :-1]  # All columns except the last one
+y = df.iloc[:, -1]   # Only the last column
+
+
+print("\nFeatures Shape:", X.shape)
+print("Target Shape:", y.shape)
+
+
+# PCA requires numeric input features.
+# Convert feature columns to numeric values if they were read as text.
+X = X.apply(pd.to_numeric, errors="coerce")
+
+
+# Fill any values that could not be converted, using the column mean.
+X = X.fillna(X.mean())
+
+
+
+
+# -------------------- 5. STANDARDIZE THE FEATURES --------------------
+
+
+# StandardScaler changes the feature values so that each feature
+# has approximately mean 0 and standard deviation 1.
+# Standardization is important because PCA is affected by feature scales.
+
+
+scaler = StandardScaler()
+
+
+# fit_transform() learns the mean and standard deviation,
+# then standardizes the feature values.
+X_scaled = scaler.fit_transform(X)
+
+
+print("\nFirst 5 rows of standardized data:")
+print(X_scaled[:5])
+
+
+
+
+# -------------------- 6. APPLY PRINCIPAL COMPONENT ANALYSIS --------------------
+
+
+# n_components=2 means we want to reduce the 13 features to 2 components.
+pca = PCA(n_components=2)
+
+
+# PCA learns the principal components and transforms the data
+# from 13 dimensions into 2 dimensions.
+X_pca = pca.fit_transform(X_scaled)
+
+
+print("\nOriginal Data Shape:", X.shape)
+print("Reduced Data Shape:", X_pca.shape)
+
+
+
+
+# -------------------- 7. DISPLAY EXPLAINED VARIANCE --------------------
+
+
+# explained_variance_ratio_ tells us how much information (variance)
+# is represented by each principal component.
+print("\nExplained Variance Ratio:")
+print(pca.explained_variance_ratio_)
+
+
+# Add both values to find the total variance retained by two components.
+print("\nTotal Variance Explained:")
+print(pca.explained_variance_ratio_.sum())
+
+
+
+
+# -------------------- 8. CREATE A PCA DATAFRAME --------------------
+
+
+# Store the two principal components in a new DataFrame.
+pca_df = pd.DataFrame(
+    X_pca,
+    columns=["Principal Component 1", "Principal Component 2"]
+)
+
+
+# Add the original class labels so they can be used in the graph.
+pca_df["Target"] = y.values
+
+
+print("\nPCA DataFrame:")
+print(pca_df.head())
+
+
+
+
+# -------------------- 9. VISUALIZE THE PCA RESULT --------------------
+
+
+# Create a scatter plot of the two principal components.
+plt.figure(figsize=(8, 6))
+
+
+scatter = plt.scatter(
+    X_pca[:, 0],       # First principal component on the x-axis
+    X_pca[:, 1],       # Second principal component on the y-axis
+    c=pd.factorize(y)[0],  # Give each target class a different color
+    cmap="viridis"
+)
+
+
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA - Wine Dataset")
+plt.colorbar(scatter, label="Target Class")
+plt.grid(True)
+plt.show()
+
+
+
+
+# -------------------- 10. DISPLAY FINAL RESULT --------------------
+
+
+print("\nPCA completed successfully.")
+print("Original number of features:", X.shape[1])
+print("Number of features after PCA:", X_pca.shape[1])
+print("Total variance retained:", round(pca.explained_variance_ratio_.sum() * 100, 2), "%")
+
+
+
+
+# ============================================================
+# VIVA / ORAL QUESTIONS WITH ANSWERS
+# These are comments and do not affect program execution.
+# ============================================================
+
+
+# Q1. What is PCA?
+# Ans: PCA stands for Principal Component Analysis. It is a technique
+# used to reduce the number of features in a dataset.
+
+
+# Q2. Why is PCA used?
+# Ans: PCA reduces the number of features, simplifies data,
+# helps visualization, and can reduce computational cost.
+
+
+# Q3. What is dimensionality reduction?
+# Ans: It is the process of reducing the number of input features
+# while keeping as much important information as possible.
+
+
+# Q4. What is a principal component?
+# Ans: A principal component is a new feature created from a
+# combination of the original features.
+
+
+# Q5. What is the first principal component?
+# Ans: It is the component that captures the maximum variance
+# (maximum information) in the data.
+
+
+# Q6. What is the second principal component?
+# Ans: It captures the next highest variance and is perpendicular
+# (orthogonal) to the first principal component.
+
+
+# Q7. Why do we use StandardScaler before PCA?
+# Ans: PCA is affected by feature scales. StandardScaler puts
+# features on a comparable scale.
+
+
+# Q8. What does StandardScaler do?
+# Ans: It transforms values so that each feature has approximately
+# mean 0 and standard deviation 1.
+
+
+# Q9. What does n_components=2 mean?
+# Ans: It tells PCA to keep only two principal components.
+
+
+# Q10. What is the difference between X and y?
+# Ans: X contains input features, while y contains the target labels.
+
+
+# Q11. What does df.shape return?
+# Ans: It returns the number of rows and columns in the dataset.
+
+
+# Q12. What does df.head() do?
+# Ans: It displays the first five rows of the dataset.
+
+
+# Q13. What does df.info() show?
+# Ans: It shows column names, data types, non-null counts,
+# and memory usage.
+
+
+# Q14. What does df.isnull().sum() do?
+# Ans: It counts missing values in each column.
+
+
+# Q15. How are missing numeric values handled in this practical?
+# Ans: Missing numeric values are replaced with the mean of their column.
+
+
+# Q16. What does fit_transform() do?
+# Ans: It first learns the required information from the data
+# and then applies the transformation.
+
+
+# Q17. What does pca.fit_transform(X_scaled) do?
+# Ans: It learns the principal components and transforms the
+# standardized data into the selected number of components.
+
+
+# Q18. What is explained_variance_ratio_?
+# Ans: It shows the proportion of total variance explained
+# by each principal component.
+
+
+# Q19. What does explained_variance_ratio_.sum() tell us?
+# Ans: It tells us the total proportion of variance retained
+# by the selected principal components.
+
+
+# Q20. What is a scatter plot?
+# Ans: It is a graph that displays data points using two axes.
+
+
+# Q21. Is PCA supervised or unsupervised?
+# Ans: PCA is an unsupervised learning technique because it does
+# not use target labels to find the principal components.
+
+
+# Q22. Does PCA use the target column to create components?
+# Ans: No. PCA is applied only to the input features X.
+# The target labels are used only to color the scatter plot.
+
+
+# Q23. Why are two components used in this practical?
+# Ans: Two components allow us to represent high-dimensional data
+# in a 2D scatter plot.
+
+
+# Q24. What is the shape of the Wine dataset used in the original practical?
+# Ans: The original dataset has 178 rows and 14 columns.
+
+
+# Q25. What are the shapes of X, y, and X_pca in the original dataset?
+# Ans: X has shape (178, 13), y has shape (178,), and
+# X_pca has shape (178, 2).
+
+
+# Q26. What is the final result of this practical?
+# Ans: The 13 input features are reduced to 2 principal components,
+# and the reduced data is displayed in a scatter plot.
+
+
+# -------------------- END OF PRACTICAL 1 --------------------
+
+
+PRACTICAL EXPLNATION:
+
+### 1. Aim
+To apply the Principal Component Analysis (PCA) algorithm for dimensionality reduction on the Wine dataset, reducing 13 original features to 2 principal components while retaining maximum possible information and visualizing the results.
+
+### 2. Description
+This practical uses the Wine dataset, which contains different chemical measurements of wine, such as alcohol, ash, magnesium, and other attributes.
+
+The dataset is first loaded and explored to understand its structure, data types, and missing values. Missing numerical values are handled using the mean.
+
+Next, the input features are separated from the target column and standardized using StandardScaler so that all features have a comparable scale.
+
+Principal Component Analysis (PCA) is then applied to reduce the dataset from 13 dimensions to 2 principal components. These components capture as much of the original data variation as possible.
+
+The explained variance ratio is calculated to understand how much information is retained by the two components. Finally, a scatter plot is created using Matplotlib to visualize the reduced data and distinguish different target classes.
+
+### 3. Libraries Used
+- **NumPy:** Used for numerical operations and handling numerical data.
+- **Pandas:** Used for loading, exploring, and manipulating the dataset.
+- **Matplotlib:** Used to visualize the PCA results through a scatter plot.
+- **Scikit-learn:** Used for data standardization and applying the PCA algorithm.
+  - `StandardScaler`: Standardizes the input features.
+  - `PCA`: Performs dimensionality reduction.
+
+### 4. Result
+Successfully applied the PCA algorithm to the Wine dataset and reduced its dimensionality from 13 original features to 2 principal components. Calculated the explained variance to measure the information retained and visualized the reduced dataset using a scatter plot.

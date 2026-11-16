@@ -1,0 +1,723 @@
+# ============================================================
+# ML PRACTICAL 6: TIC-TAC-TOE USING REINFORCEMENT LEARNING
+# Algorithm: Q-Learning
+#
+# Aim:
+# To build a Tic-Tac-Toe game in which an AI agent learns
+# how to play by using rewards and penalties through Q-Learning.
+#
+# Tasks:
+# 1. Setting up the environment
+# 2. Defining the Tic-Tac-Toe game
+# 3. Building the Q-Learning agent
+# 4. Training the agent
+# 5. Testing the trained agent
+# ============================================================
+
+
+# -------------------- 1. IMPORT REQUIRED LIBRARIES --------------------
+
+# If NumPy is not installed, run this command in a separate notebook cell:
+# %pip install numpy
+
+import numpy as np
+import random
+from collections import defaultdict
+
+
+# -------------------- 2. DEFINE THE TIC-TAC-TOE ENVIRONMENT --------------------
+
+class TicTacToe:
+
+    def __init__(self):
+        # reset() creates a new empty game board.
+        self.reset()
+
+    def reset(self):
+        # The board contains 9 positions.
+        # 0 means empty, 1 means AI, and -1 means opponent.
+        self.board = [0] * 9
+        return self.get_state()
+
+    def get_state(self):
+        # Convert the board into a tuple so it can be used as a Q-table key.
+        return tuple(self.board)
+
+    def available_actions(self):
+        # Return the positions that are currently empty.
+        # Positions are represented internally from 0 to 8.
+        return [i for i in range(9) if self.board[i] == 0]
+
+    def make_move(self, action, player):
+        # Check whether the selected position is empty and valid.
+        if action not in self.available_actions():
+            return False
+
+        # Place the player's mark in the selected position.
+        self.board[action] = player
+        return True
+
+    def check_winner(self):
+        # All possible winning combinations (rows, columns, and diagonals).
+        winning_positions = [
+            (0, 1, 2),
+            (3, 4, 5),
+            (6, 7, 8),
+            (0, 3, 6),
+            (1, 4, 7),
+            (2, 5, 8),
+            (0, 4, 8),
+            (2, 4, 6)
+        ]
+
+        # Check each winning combination.
+        for a, b, c in winning_positions:
+            if (
+                self.board[a] != 0
+                and self.board[a] == self.board[b]
+                and self.board[b] == self.board[c]
+            ):
+                return self.board[a]
+
+        # If there are no empty positions and nobody has won, it is a draw.
+        if 0 not in self.board:
+            return 0
+
+        # None means the game is still continuing.
+        return None
+
+    def display(self):
+        # Convert numeric values into symbols for displaying the board.
+        symbols = {
+            1: "X",    # AI mark
+            -1: "O",   # Opponent / human mark
+            0: " "     # Empty position
+        }
+
+        print()
+
+        # Print the board in three rows.
+        for i in range(0, 9, 3):
+            print(
+                f" {symbols[self.board[i]]} |"
+                f" {symbols[self.board[i + 1]]} |"
+                f" {symbols[self.board[i + 2]]} "
+            )
+
+            if i < 6:
+                print("---+---+---")
+
+        print()
+
+
+# -------------------- 3. BUILD THE Q-LEARNING AGENT --------------------
+
+class QLearningAgent:
+
+    def __init__(
+        self,
+        learning_rate=0.1,
+        discount_factor=0.9,
+        epsilon=1.0,
+        epsilon_decay=0.9995,
+        epsilon_min=0.01
+    ):
+        # Q-table stores a value for every state-action pair.
+        # Each new state gets 9 initial action values, all set to zero.
+        self.q_table = defaultdict(lambda: np.zeros(9))
+
+        # Alpha: how strongly new information changes the old Q-value.
+        self.alpha = learning_rate
+
+        # Gamma: importance of future rewards.
+        self.gamma = discount_factor
+
+        # Epsilon: probability of choosing a random action (exploration).
+        self.epsilon = epsilon
+
+        # Epsilon decay gradually reduces exploration during training.
+        self.epsilon_decay = epsilon_decay
+
+        # Epsilon will not be reduced below this minimum value.
+        self.epsilon_min = epsilon_min
+
+    # -------------------- CHOOSE AN ACTION --------------------
+
+    def choose_action(self, state, actions, training=True):
+        # Exploration: during training, sometimes choose a random move.
+        if training and random.random() < self.epsilon:
+            return random.choice(actions)
+
+        # Exploitation: choose the action with the highest learned Q-value.
+        q_values = self.q_table[state]
+
+        # Find the highest Q-value among only the legal actions.
+        best_value = max(q_values[action] for action in actions)
+
+        # If multiple actions have the same best value, choose among them randomly.
+        best_actions = [
+            action for action in actions
+            if q_values[action] == best_value
+        ]
+
+        return random.choice(best_actions)
+
+    # -------------------- UPDATE THE Q-VALUE --------------------
+
+    def update(self, state, action, reward, next_state, next_actions, done):
+        # Get the current Q-value for the state and selected action.
+        current_q = self.q_table[state][action]
+
+        # If the game is over, there is no future reward to add.
+        if done:
+            target = reward
+        else:
+            # If the game continues, find the best future Q-value.
+            if next_actions:
+                future_q = max(
+                    self.q_table[next_state][a]
+                    for a in next_actions
+                )
+            else:
+                future_q = 0
+
+            # Q-learning target = immediate reward + discounted future reward.
+            target = reward + self.gamma * future_q
+
+        # Q-learning update rule:
+        # New Q = Old Q + learning rate * (Target - Old Q)
+        self.q_table[state][action] = (
+            current_q + self.alpha * (target - current_q)
+        )
+
+    # -------------------- REDUCE EXPLORATION --------------------
+
+    def decay_epsilon(self):
+        # Reduce random exploration after each training episode.
+        self.epsilon = max(
+            self.epsilon_min,
+            self.epsilon * self.epsilon_decay
+        )
+
+
+# -------------------- 4. CREATE A RANDOM OPPONENT --------------------
+
+def random_opponent(game):
+    # The opponent chooses randomly from the available empty positions.
+    actions = game.available_actions()
+
+    if actions:
+        return random.choice(actions)
+
+    return None
+
+
+# -------------------- 5. TRAIN THE Q-LEARNING AGENT --------------------
+
+def train_agent(agent, episodes=50000):
+
+    print("\n===================================")
+    print("       TRAINING THE TIC-TAC-TOE AGENT")
+    print("===================================\n")
+
+    # Each episode is one complete game between the AI and random opponent.
+    for episode in range(episodes):
+
+        # Start a new game with an empty board.
+        game = TicTacToe()
+        state = game.reset()
+
+        while True:
+
+            # ---------------- AI MOVE ----------------
+
+            # Get all legal moves available to the AI.
+            actions = game.available_actions()
+
+            if not actions:
+                break
+
+            # Select a move using epsilon-greedy policy.
+            action = agent.choose_action(
+                state,
+                actions,
+                training=True
+            )
+
+            # Save the current state before making the move.
+            current_state = state
+
+            # AI uses X, represented by 1.
+            game.make_move(action, 1)
+
+            # Check whether the AI has won or the game is a draw.
+            result = game.check_winner()
+            next_state = game.get_state()
+
+            # If AI wins, give +1 reward.
+            if result == 1:
+                agent.update(
+                    current_state, action, 1,
+                    next_state, [], True
+                )
+                break
+
+            # If the board is full, give a draw reward of 0.
+            if result == 0:
+                agent.update(
+                    current_state, action, 0,
+                    next_state, [], True
+                )
+                break
+
+            # ---------------- OPPONENT MOVE ----------------
+
+            # The random opponent uses O, represented by -1.
+            opponent_action = random_opponent(game)
+
+            if opponent_action is not None:
+                game.make_move(opponent_action, -1)
+
+            # Check the result after the opponent's move.
+            result = game.check_winner()
+            next_state = game.get_state()
+
+            # If the opponent wins, give the AI a penalty of -1.
+            if result == -1:
+                agent.update(
+                    current_state, action, -1,
+                    next_state, [], True
+                )
+                break
+
+            # If the game is a draw, give reward 0.
+            if result == 0:
+                agent.update(
+                    current_state, action, 0,
+                    next_state, [], True
+                )
+                break
+
+            # The game continues. Update the Q-value using future legal moves.
+            next_actions = game.available_actions()
+
+            agent.update(
+                current_state,
+                action,
+                0,
+                next_state,
+                next_actions,
+                False
+            )
+
+            # Move to the new state for the next AI turn.
+            state = next_state
+
+        # Reduce exploration after every completed episode.
+        agent.decay_epsilon()
+
+        # Display training progress after every 5000 episodes.
+        if (episode + 1) % 5000 == 0:
+            print(
+                f"Episode {episode + 1}: "
+                f"Epsilon = {agent.epsilon:.4f}"
+            )
+
+    print("\nTraining completed successfully.")
+
+
+# -------------------- 6. TEST THE TRAINED AGENT --------------------
+
+def test_agent(agent, games=1000):
+
+    wins = 0
+    losses = 0
+    draws = 0
+
+    # Test the trained agent for the specified number of games.
+    for _ in range(games):
+
+        game = TicTacToe()
+        state = game.reset()
+
+        while True:
+
+            # ---------------- AI MOVE ----------------
+
+            actions = game.available_actions()
+
+            if not actions:
+                draws += 1
+                break
+
+            # training=False means the AI uses its learned Q-values
+            # without making random exploration moves.
+            action = agent.choose_action(
+                state,
+                actions,
+                training=False
+            )
+
+            game.make_move(action, 1)
+
+            result = game.check_winner()
+
+            if result == 1:
+                wins += 1
+                break
+
+            if result == 0:
+                draws += 1
+                break
+
+            # ---------------- RANDOM OPPONENT MOVE ----------------
+
+            opponent_action = random_opponent(game)
+
+            if opponent_action is not None:
+                game.make_move(opponent_action, -1)
+
+            result = game.check_winner()
+
+            if result == -1:
+                losses += 1
+                break
+
+            if result == 0:
+                draws += 1
+                break
+
+            # Update the current state for the next AI turn.
+            state = game.get_state()
+
+    # Calculate the percentage of games won.
+    win_rate = (wins / games) * 100
+
+    print("\n===================================")
+    print("           TESTING RESULTS")
+    print("===================================")
+    print("Total Games :", games)
+    print("Wins        :", wins)
+    print("Losses      :", losses)
+    print("Draws       :", draws)
+    print("Win Rate    :", round(win_rate, 2), "%")
+
+
+# -------------------- 7. DISPLAY BOARD POSITION NUMBERS --------------------
+
+def display_numbered_board():
+
+    # These numbers show the positions a human can select.
+    print("\nBoard Positions:")
+    print(" 1 | 2 | 3 ")
+    print("---+---+---")
+    print(" 4 | 5 | 6 ")
+    print("---+---+---")
+    print(" 7 | 8 | 9 ")
+    print()
+
+
+# -------------------- 8. PLAY AGAINST THE TRAINED AI --------------------
+
+def play_against_ai(agent):
+
+    game = TicTacToe()
+
+    print("\n===================================")
+    print("          PLAY AGAINST AI")
+    print("===================================")
+    print("You are O")
+    print("AI is X")
+
+    display_numbered_board()
+
+    while True:
+
+        # Display the current game board.
+        game.display()
+
+        result = game.check_winner()
+
+        if result == 1:
+            print("AI WINS!")
+            break
+
+        if result == -1:
+            print("YOU WIN!")
+            break
+
+        if result == 0:
+            print("GAME DRAW!")
+            break
+
+        # ---------------- HUMAN MOVE ----------------
+
+        while True:
+            try:
+                # The user enters a position from 1 to 9.
+                position = int(input("Enter your position (1-9): "))
+
+                # Convert the human-friendly position (1-9)
+                # into the internal list index (0-8).
+                action = position - 1
+
+                # Accept the move only if it is valid and empty.
+                if action in game.available_actions():
+                    break
+                else:
+                    print("Invalid position! Choose an empty position.")
+
+            except ValueError:
+                print("Please enter a number between 1 and 9.")
+
+        # Human uses O, represented by -1.
+        game.make_move(action, -1)
+
+        result = game.check_winner()
+
+        if result == -1:
+            game.display()
+            print("YOU WIN!")
+            break
+
+        if result == 0:
+            game.display()
+            print("GAME DRAW!")
+            break
+
+        # ---------------- AI MOVE ----------------
+
+        print("\nAI is thinking...")
+
+        state = game.get_state()
+        actions = game.available_actions()
+
+        # The trained AI chooses the best learned move.
+        ai_action = agent.choose_action(
+            state,
+            actions,
+            training=False
+        )
+
+        game.make_move(ai_action, 1)
+
+        print("AI chose position:", ai_action + 1)
+
+        result = game.check_winner()
+
+        if result == 1:
+            game.display()
+            print("AI WINS!")
+            break
+
+        if result == 0:
+            game.display()
+            print("GAME DRAW!")
+            break
+
+
+# -------------------- 9. MAIN PROGRAM --------------------
+
+print("\n TIC-TAC-TOE USING REINFORCEMENT LEARNING ")
+print("==========================================")
+
+# Create the Q-Learning agent.
+agent = QLearningAgent()
+
+# Train the agent by playing 50,000 games against a random opponent.
+train_agent(
+    agent,
+    episodes=50000
+)
+
+# Test the trained agent against a random opponent for 1,000 games.
+test_agent(
+    agent,
+    games=1000
+)
+
+# Ask whether the user wants to play against the trained AI.
+choice = input("\nDo you want to play against the AI? (yes/no): ").lower()
+
+if choice == "yes":
+    play_against_ai(agent)
+else:
+    print("\nProgram completed successfully.")
+
+
+# ============================================================
+# VIVA / ORAL QUESTIONS WITH ANSWERS
+# ============================================================
+
+# Q1. What is Reinforcement Learning?
+# Ans: Reinforcement Learning is a type of machine learning in which
+# an agent learns by taking actions and receiving rewards or penalties.
+
+# Q2. How is Reinforcement Learning different from supervised learning?
+# Ans: Supervised learning learns from labelled examples.
+# Reinforcement Learning learns through interaction and feedback
+# in the form of rewards and penalties.
+
+# Q3. How is Reinforcement Learning different from unsupervised learning?
+# Ans: Unsupervised learning finds patterns in unlabelled data.
+# Reinforcement Learning learns actions that maximize rewards.
+
+# Q4. What is an agent?
+# Ans: An agent is the learner or decision-maker that interacts
+# with the environment.
+
+# Q5. What is an environment?
+# Ans: The environment is the system in which the agent takes actions.
+# In this practical, the Tic-Tac-Toe game is the environment.
+
+# Q6. What is a state?
+# Ans: A state represents the current situation of the environment.
+# Here, the state is the current arrangement of the nine board positions.
+
+# Q7. What is an action?
+# Ans: An action is a move that the agent can perform.
+# Here, an action is choosing an empty position on the board.
+
+# Q8. What is a reward?
+# Ans: A reward is feedback given to the agent after an action.
+# A positive reward encourages good actions and a negative reward
+# discourages bad outcomes.
+
+# Q9. What is a policy?
+# Ans: A policy is the strategy used by an agent to choose an action
+# for a given state.
+
+# Q10. What is a Q-table?
+# Ans: A Q-table stores the estimated value of taking each possible
+# action in each state.
+
+# Q11. What is Q-Learning?
+# Ans: Q-Learning is a model-free Reinforcement Learning algorithm
+# that learns the value of state-action pairs to select better actions.
+
+# Q12. What is the Q-function?
+# Ans: The Q-function estimates the expected future reward for
+# taking a particular action in a particular state and then
+# following the learned policy.
+
+# Q13. What is the Q-Learning update formula?
+# Ans: Q(s,a) = Q(s,a) + alpha * [reward + gamma * max Q(next_state, next_action)
+# - Q(s,a)].
+# If the state is terminal, there is no future Q-value to add.
+
+# Q14. What is the learning rate (alpha)?
+# Ans: The learning rate controls how much new information changes
+# the existing Q-value.
+
+# Q15. What is the discount factor (gamma)?
+# Ans: The discount factor controls the importance of future rewards
+# compared with immediate rewards.
+
+# Q16. What is epsilon in Q-Learning?
+# Ans: Epsilon is the probability of selecting a random action
+# during exploration.
+
+# Q17. What is exploration?
+# Ans: Exploration means trying random actions to discover
+# their results and learn new strategies.
+
+# Q18. What is exploitation?
+# Ans: Exploitation means choosing the action with the highest
+# known Q-value.
+
+# Q19. What is the exploration-exploitation trade-off?
+# Ans: It is the balance between trying new actions and using
+# the actions that the agent has already learned are useful.
+
+# Q20. What is epsilon decay?
+# Ans: Epsilon decay gradually reduces random exploration
+# as the agent gains experience.
+
+# Q21. What is an episode?
+# Ans: An episode is one complete game from the initial state
+# until a win, loss, or draw.
+
+# Q22. What is the purpose of the reward values in this practical?
+# Ans: The AI receives +1 for winning, -1 for losing, and 0 for a draw.
+# These rewards guide the agent's learning.
+
+# Q23. Why is the opponent random during training?
+# Ans: A random opponent provides different game situations
+# so the agent can learn from repeated interactions.
+
+# Q24. What does defaultdict do?
+# Ans: defaultdict automatically creates a default value when
+# a new state is accessed. Here, it creates an array of nine zeros
+# for a new Q-table state.
+
+# Q25. Why is the board represented using a list of 9 elements?
+# Ans: A list of nine elements represents the nine Tic-Tac-Toe
+# positions in a simple way.
+
+# Q26. What do 1, -1, and 0 represent in the board?
+# Ans: 1 represents the AI's X, -1 represents the opponent's O,
+# and 0 represents an empty position.
+
+# Q27. What does available_actions() return?
+# Ans: It returns the positions that are empty and can be selected.
+
+# Q28. What does check_winner() do?
+# Ans: It checks all rows, columns, and diagonals to identify
+# a winner, a draw, or a game that is still continuing.
+
+# Q29. Why do we reduce epsilon during training?
+# Ans: At the beginning, the agent needs more exploration.
+# Later, it should use the knowledge it has learned.
+
+# Q30. Why do we test the trained agent?
+# Ans: Testing checks how well the agent performs on games
+# after the training process is complete.
+
+# Q31. What is the win rate?
+# Ans: Win rate is the percentage of games won out of the
+# total number of games played.
+
+# Q32. What is the difference between training and testing?
+# Ans: During training, the agent updates its Q-values and explores.
+# During testing, it uses learned Q-values without exploration
+# and does not update the Q-table.
+
+# Q33. What is a terminal state?
+# Ans: A terminal state is a state in which the game has ended
+# with a win, loss, or draw.
+
+# Q34. What is the role of the discount factor in the update formula?
+# Ans: It reduces the value of future rewards according to how far
+# in the future they are expected.
+
+# Q35. What is the final outcome of this practical?
+# Ans: The Q-Learning agent learns to play Tic-Tac-Toe through
+# repeated games, is tested against a random opponent, and can
+# also play a game against a human user.
+
+# -------------------- END OF PRACTICAL 6 --------------------
+
+
+
+ML Practical 6: Tic-Tac-Toe Using Reinforcement Learning
+1. Aim
+To develop a Tic-Tac-Toe game using Reinforcement Learning in Python, where an AI agent learns to play through rewards and penalties using the Q-Learning algorithm.
+2. Description
+This practical implements a Tic-Tac-Toe game in which an AI agent learns to make better moves by playing multiple games against a random opponent.
+
+The Q-Learning algorithm is used to train the agent. It maintains a Q-table that stores the expected value of taking an action in a particular game state. Based on rewards and penalties, the agent gradually learns which moves are more beneficial.
+
+The practical consists of the following tasks:
+1. Setting up the environment: Import the required libraries, including NumPy, Random, and Collections.
+2. Defining the Tic-Tac-Toe game: Create the game board, define valid moves, check winning conditions, detect draws, and display the board.
+3. Building the reinforcement learning model: Implement a Q-Learning agent with a Q-table, learning rate, discount factor, and epsilon-greedy strategy.
+4. Training the model: Train the AI agent by playing 50,000 games against a random opponent. The agent receives rewards for winning, penalties for losing, and zero reward for draws.
+5. Testing the model: Evaluate the trained agent by playing 1,000 games against a random opponent and calculate its win rate. The user can also choose to play against the trained AI.
+3. Libraries Used
+Library	Purpose
+NumPy	Used for numerical operations and storing Q-values.
+Random	Used to generate random moves and support exploration.
+Collections (defaultdict)	Used to maintain the Q-table for different game states.
+
+4. Result
+Successfully implemented a Tic-Tac-Toe game using the Q-Learning algorithm. The AI agent was trained through repeated games against a random opponent and evaluated based on its wins, losses, draws, and win rate. The trained agent can also play against a human player.

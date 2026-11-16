@@ -1,0 +1,2006 @@
+﻿# ============================================================
+# ASSIGNMENT 5: DATA VISUALIZATION USING MATPLOTLIB
+# ANALYZING AIR QUALITY INDEX (AQI) TRENDS IN A CITY
+# ============================================================
+
+
+
+
+# STEP 1: INSTALL REQUIRED LIBRARIES
+
+
+!pip install pandas numpy matplotlib
+
+
+
+
+# STEP 2: IMPORT REQUIRED LIBRARIES
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+print("Libraries imported successfully!")
+
+
+
+
+
+
+
+
+# STEP 4: LOAD THE DATASET
+
+
+data = pd.read_csv(“file_name”)
+
+
+print("\nAir Quality Dataset:")
+display(data.head())
+
+
+
+
+# STEP 5: EXPLORE THE DATASET
+
+
+print("\nFirst Five Records:")
+display(data.head())
+
+
+print("\nLast Five Records:")
+display(data.tail())
+
+
+print("\nDataset Shape:")
+print(data.shape)
+
+
+print("\nColumn Names:")
+print(data.columns.tolist())
+
+
+print("\nData Types:")
+print(data.dtypes)
+
+
+print("\nStatistical Summary:")
+display(data.describe(include='all'))
+
+
+print("\nMissing Values:")
+print(data.isnull().sum())
+
+
+
+
+# STEP 6: IDENTIFY RELEVANT COLUMNS
+
+
+# Clean column names first
+
+
+data.columns = (
+    data.columns.str.strip()
+    .str.lower()
+    .str.replace(r'[^a-z0-9]+', '_', regex=True)
+    .str.strip('_')
+)
+
+
+def find_column(possible_names):
+    for col in possible_names:
+        if col in data.columns:
+            return col
+    return None
+
+
+date_col = find_column([
+    'date', 'datetime', 'date_time',
+    'timestamp', 'time'
+])
+
+
+aqi_col = find_column([
+    'aqi', 'air_quality_index',
+    'airqualityindex'
+])
+
+
+pm25_col = find_column([
+    'pm2_5', 'pm25', 'pm2_5_concentration'
+])
+
+
+pm10_col = find_column([
+    'pm10', 'pm10_concentration'
+])
+
+
+co_col = find_column([
+    'co', 'carbon_monoxide'
+])
+
+
+no2_col = find_column([
+    'no2', 'nitrogen_dioxide'
+])
+
+
+so2_col = find_column([
+    'so2', 'sulphur_dioxide', 'sulfur_dioxide'
+])
+
+
+o3_col = find_column([
+    'o3', 'ozone'
+])
+
+
+pollutant_columns = [
+    col for col in [
+        pm25_col, pm10_col, co_col,
+        no2_col, so2_col, o3_col
+    ]
+    if col is not None
+]
+
+
+print("\nDetected Columns:")
+print("Date:", date_col)
+print("AQI:", aqi_col)
+print("Pollutants:", pollutant_columns)
+
+
+
+
+# STEP 7: HANDLE MISSING VALUES AND CONVERT DATA TYPES
+
+
+if date_col is not None:
+
+
+    data[date_col] = pd.to_datetime(
+        data[date_col],
+        errors='coerce'
+    )
+
+
+numeric_columns = [
+    col for col in [aqi_col] + pollutant_columns
+    if col is not None
+]
+
+
+for col in numeric_columns:
+
+
+    data[col] = pd.to_numeric(
+        data[col],
+        errors='coerce'
+    )
+
+
+    data[col] = data[col].fillna(
+        data[col].median()
+    )
+
+
+if date_col is not None:
+    data = data.dropna(subset=[date_col])
+
+
+data = data.drop_duplicates()
+
+
+print("\nMissing Values After Cleaning:")
+print(data.isnull().sum())
+
+
+print("\nCleaned Dataset:")
+display(data.head())
+
+
+
+
+# STEP 8: SORT DATA BY DATE
+
+
+if date_col is not None:
+
+
+    data = data.sort_values(
+        by=date_col
+    )
+
+
+    data['year'] = data[date_col].dt.year
+    data['month'] = data[date_col].dt.month
+    data['month_name'] = data[date_col].dt.strftime('%b')
+
+
+print("\nDate-wise Sorted Dataset:")
+display(data.head())
+
+
+
+
+# STEP 9: VISUALIZE OVERALL AQI TREND USING LINE PLOT
+
+
+if date_col is not None and aqi_col is not None:
+
+
+    plt.figure(figsize=(12, 5))
+
+
+    plt.plot(
+        data[date_col],
+        data[aqi_col],
+        marker='o',
+        linestyle='-',
+        color='blue',
+        label='AQI'
+    )
+
+
+    plt.title('Overall AQI Trend Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Air Quality Index')
+
+
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+
+    plt.show()
+
+
+else:
+    print("Date or AQI column not found. Line plot skipped.")
+
+
+
+
+# STEP 10: PLOT INDIVIDUAL POLLUTANT LEVELS
+
+
+for col in pollutant_columns:
+
+
+    if date_col is not None:
+
+
+        plt.figure(figsize=(10, 4))
+
+
+        plt.plot(
+            data[date_col],
+            data[col],
+            marker='o',
+            label=col.upper()
+        )
+
+
+        plt.title(f'{col.upper()} Levels Over Time')
+        plt.xlabel('Date')
+        plt.ylabel('Pollutant Level')
+
+
+        plt.legend()
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+
+
+        plt.show()
+
+
+
+
+# STEP 11: COMPARE AQI VALUES USING BAR PLOT
+
+
+if date_col is not None and aqi_col is not None:
+
+
+    # Group AQI by date
+
+
+    daily_aqi = (
+        data.groupby(data[date_col].dt.date)[aqi_col]
+        .mean()
+        .head(15)
+    )
+
+
+    plt.figure(figsize=(12, 5))
+
+
+    plt.bar(
+        daily_aqi.index.astype(str),
+        daily_aqi.values,
+        color='green',
+        label='Average AQI'
+    )
+
+
+    plt.title('Average AQI Across Dates')
+    plt.xlabel('Date')
+    plt.ylabel('Average AQI')
+
+
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
+    plt.tight_layout()
+
+
+    plt.show()
+
+
+
+
+# STEP 12: CREATE BOX PLOT FOR AQI DISTRIBUTION
+
+
+if aqi_col is not None:
+
+
+    plt.figure(figsize=(7, 5))
+
+
+    plt.boxplot(
+        data[aqi_col].dropna(),
+        patch_artist=True
+    )
+
+
+    plt.title('Distribution of AQI Values')
+    plt.ylabel('AQI')
+
+
+    plt.grid(True)
+    plt.show()
+
+
+
+
+# STEP 13: CREATE SCATTER PLOTS
+# Explore relationship between AQI and pollutants
+
+
+if aqi_col is not None:
+
+
+    for col in pollutant_columns:
+
+
+        plt.figure(figsize=(7, 5))
+
+
+        plt.scatter(
+            data[col],
+            data[aqi_col],
+            alpha=0.6,
+            color='red',
+            label=col.upper()
+        )
+
+
+        plt.title(f'AQI vs {col.upper()}')
+        plt.xlabel(f'{col.upper()} Level')
+        plt.ylabel('AQI')
+
+
+        plt.legend()
+        plt.grid(True)
+
+
+        plt.show()
+
+
+
+
+# STEP 14: CREATE MONTHLY AQI TREND
+
+
+if date_col is not None and aqi_col is not None:
+
+
+    monthly_aqi = (
+        data.groupby(data[date_col].dt.month)[aqi_col]
+        .mean()
+    )
+
+
+    plt.figure(figsize=(9, 5))
+
+
+    plt.plot(
+        monthly_aqi.index,
+        monthly_aqi.values,
+        marker='o',
+        color='purple',
+        label='Monthly Average AQI'
+    )
+
+
+    plt.title('Monthly Average AQI Trend')
+    plt.xlabel('Month')
+    plt.ylabel('Average AQI')
+
+
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(range(1, 13))
+
+
+    plt.show()
+
+
+
+
+# STEP 15: CREATE SUBPLOTS
+
+
+available_plot_columns = [
+    col for col in [aqi_col] + pollutant_columns
+    if col is not None
+]
+
+
+if available_plot_columns:
+
+
+    fig, axes = plt.subplots(
+        len(available_plot_columns),
+        1,
+        figsize=(10, 4 * len(available_plot_columns))
+    )
+
+
+    if len(available_plot_columns) == 1:
+        axes = [axes]
+
+
+    for ax, col in zip(axes, available_plot_columns):
+
+
+        ax.hist(
+            data[col].dropna(),
+            bins=20,
+            edgecolor='black'
+        )
+
+
+        ax.set_title(f'Distribution of {col.upper()}')
+        ax.set_xlabel(col.upper())
+        ax.set_ylabel('Frequency')
+
+
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+# STEP 16: CORRELATION HEATMAP USING MATPLOTLIB
+
+
+if len(numeric_columns) >= 2:
+
+
+    correlation = data[numeric_columns].corr()
+
+
+    plt.figure(figsize=(8, 6))
+
+
+    image = plt.imshow(
+        correlation,
+        cmap='coolwarm',
+        interpolation='nearest'
+    )
+
+
+    plt.colorbar(image, label='Correlation')
+
+
+    plt.xticks(
+        range(len(correlation.columns)),
+        correlation.columns,
+        rotation=45
+    )
+
+
+    plt.yticks(
+        range(len(correlation.columns)),
+        correlation.columns
+    )
+
+
+    plt.title('Correlation Between AQI and Pollutants')
+
+
+    for i in range(len(correlation.columns)):
+        for j in range(len(correlation.columns)):
+
+
+            plt.text(
+                j,
+                i,
+                round(correlation.iloc[i, j], 2),
+                ha='center',
+                va='center'
+            )
+
+
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+# STEP 17: EXPORT CLEANED DATASET
+
+
+data.to_csv(
+    'cleaned_city_air_quality.csv',
+    index=False
+)
+
+
+print("\nCleaned dataset exported successfully!")
+
+
+
+
+# STEP 18: GENERATE FINAL REPORT
+
+
+print("\n========== AIR QUALITY ANALYSIS REPORT ==========")
+
+
+print("Total Records:", len(data))
+
+
+if aqi_col is not None:
+
+
+    print("Average AQI:", round(data[aqi_col].mean(), 2))
+
+
+    print("Maximum AQI:", round(data[aqi_col].max(), 2))
+
+
+    print("Minimum AQI:", round(data[aqi_col].min(), 2))
+
+
+for col in pollutant_columns:
+
+
+    print(
+        f"Average {col.upper()}:",
+        round(data[col].mean(), 2)
+    )
+
+
+print("\nPollutants Analyzed:", pollutant_columns)
+
+
+print("\nCleaned file: cleaned_city_air_quality.csv")
+
+
+print("\n=================================================")
+print("AQI VISUALIZATION COMPLETED SUCCESSFULLY!")
+
+
+
+
+# ============================================================
+# END OF ASSIGNMENT 5
+# ============================================================
+
+
+PART 2: EXPLANATION OF EACH STEP
+Step        What we performed        Why we performed it
+1. Install Libraries        Installed Pandas, NumPy and Matplotlib.        To load, process and visualize data.
+2. Import Libraries        Imported the required Python libraries.        To use their functions.
+3. Upload Dataset        Uploaded the CSV file.        To access air quality data in Colab.
+4. Load Dataset        Loaded the CSV using pd.read_csv().        To convert the data into a DataFrame.
+5. Explore Dataset        Checked rows, columns, data types and statistics.        To understand the dataset.
+6. Identify Variables        Identified date, AQI and pollutant columns.        To select relevant variables for visualization.
+7. Handle Missing Values        Converted numerical values and filled missing values using median.        To prepare complete data for plotting.
+8. Sort by Date        Sorted records chronologically and extracted year and month.        To analyze time-based trends.
+9. AQI Line Plot        Created a line graph of AQI over time.        To understand how air quality changes.
+10. Pollutant Line Plots        Created separate line graphs for PM2.5, PM10, CO, etc.        To study individual pollutant trends.
+11. Bar Plot        Compared average AQI across dates.        To compare air quality on different dates.
+12. Box Plot        Displayed AQI distribution.        To understand spread, median and potential outliers.
+13. Scatter Plot        Compared AQI with individual pollutant levels.        To examine relationships between AQI and pollutants.
+14. Monthly AQI Trend        Calculated and plotted monthly average AQI.        To identify monthly patterns.
+15. Subplots        Displayed multiple pollutant distributions in one figure.        To compare different variables.
+16. Correlation Heatmap        Visualized correlations between numerical variables.        To understand relationships between pollutants and AQI.
+17. Export Dataset        Saved cleaned data as CSV.        To reuse the prepared dataset.
+18. Final Report        Calculated average, maximum and minimum AQI.        To summarize the analysis.
+PART 3: IMPORTANT MATPLOTLIB CODE EXPLANATIONS
+These are the commands the examiner may ask you to explain.
+Code        Explanation
+plt.figure()        Creates a new figure or plotting canvas.
+plt.plot()        Creates a line plot.
+plt.bar()        Creates a bar chart.
+plt.scatter()        Creates a scatter plot.
+plt.boxplot()        Creates a box plot.
+plt.hist()        Creates a histogram.
+plt.subplots()        Creates multiple plots in one figure.
+plt.title()        Adds a title to the plot.
+plt.xlabel()        Adds a label to the X-axis.
+plt.ylabel()        Adds a label to the Y-axis.
+plt.legend()        Displays the legend.
+plt.grid()        Displays grid lines.
+plt.xticks()        Customizes X-axis tick positions or labels.
+plt.colorbar()        Displays a color scale.
+plt.imshow()        Displays data as an image, useful for heatmaps.
+plt.text()        Adds text inside a plot.
+plt.tight_layout()        Adjusts spacing to prevent overlapping elements.
+plt.show()        Displays the plot.
+figsize=(10,5)        Sets figure width and height.
+marker='o'        Displays circular markers on a line plot.
+alpha=0.6        Controls transparency.
+data.corr()        Calculates correlations between numerical columns.
+pd.to_datetime()        Converts values into date-time format.
+groupby()        Groups records for calculations.
+PART 4: EXPECTED ORAL / VIVA QUESTIONS
+A. Basic concepts
+Q1. What is Data Visualization?
+Data Visualization is the graphical representation of data using charts, graphs and plots to understand patterns, trends and relationships.
+Q2. Why is Data Visualization important?
+It helps us understand complex data, identify patterns, communicate findings and make better decisions.
+Q3. What is Matplotlib?
+Matplotlib is an open-source Python library used to create static, interactive and animated visualizations.
+Q4. Which library did you use in this practical?
+Matplotlib, along with Pandas and NumPy for data handling.
+Q5. What is AQI?
+AQI stands for Air Quality Index. It represents the level of air pollution and indicates how clean or polluted the air is.
+Q6. What is the objective of AQI analysis?
+To understand air quality trends, identify pollution patterns and assess potential environmental and public health risks.
+B. Python visualization libraries
+Q7. What are the different data visualization libraries in Python?
+•        Matplotlib
+•        Seaborn
+•        Plotly
+•        Bokeh
+•        Altair
+Q8. What is the difference between Matplotlib and Seaborn?
+Matplotlib is a general-purpose visualization library, whereas Seaborn provides a higher-level interface for creating statistical visualizations.
+Q9. Which library is used for data manipulation?
+Pandas.
+Q10. Which library is used for numerical calculations?
+NumPy.
+C. Matplotlib concepts
+Q11. What are the main components of Matplotlib?
+•        Figure
+•        Axes
+•        Axis
+•        Plot elements
+Q12. What is a Figure?
+A Figure is the overall canvas that contains one or more plots.
+Q13. What are Axes?
+Axes represent the actual plotting area where data is displayed.
+Q14. What is an Axis?
+An Axis represents the X-axis or Y-axis, including tick marks and labels.
+Q15. What are Subplots?
+Subplots allow us to display multiple plots inside a single figure.
+Q16. What are Colormaps?
+Colormaps are color schemes used to represent data values with different colors.
+Q17. What is a Legend?
+A legend explains the meaning of different lines, markers or data series in a graph.
+D. Different types of plots
+Q18. What is a Line Plot?
+A line plot connects data points using lines and is useful for showing trends over time.
+Q19. What is a Bar Plot?
+A bar plot uses rectangular bars to compare values across different categories.
+Q20. What is a Scatter Plot?
+A scatter plot displays individual points to show the relationship between two numerical variables.
+Q21. What is a Box Plot?
+A box plot summarizes the distribution of data using the median, quartiles and potential outliers.
+Q22. What is a Histogram?
+A histogram shows the frequency distribution of numerical data.
+Q23. What is the difference between a Bar Plot and a Histogram?
+•        Bar Plot: Compares different categories.
+•        Histogram: Shows the frequency distribution of numerical data.
+Q24. What is a Bubble Chart?
+A bubble chart is a scatter plot in which the size of each point represents an additional variable.
+E. AQI and pollutant-related questions
+Q25. What is PM2.5?
+PM2.5 refers to fine particulate matter with a diameter of 2.5 micrometers or smaller.
+Q26. What is PM10?
+PM10 refers to particulate matter with a diameter of 10 micrometers or smaller.
+Q27. What is CO?
+CO stands for Carbon Monoxide, a harmful gas produced mainly by incomplete combustion.
+Q28. What is NO2?
+NO2 stands for Nitrogen Dioxide, an air pollutant commonly associated with vehicle and industrial emissions.
+Q29. What is SO2?
+SO2 stands for Sulfur Dioxide, a gas commonly released from burning sulfur-containing fuels.
+Q30. What is O3?
+O3 stands for Ozone. Ground-level ozone is an air pollutant that can affect human health.
+Q31. Why did you create separate pollutant plots?
+To understand how individual pollutants change over time.
+Q32. Why did you compare AQI with PM2.5 and PM10?
+To examine whether changes in particulate matter levels are associated with changes in AQI.
+F. Data analysis and plotting
+Q33. What is a Time Series Plot?
+A time series plot displays data points in chronological order to understand changes over time.
+Q34. Why did you sort data by date?
+To ensure that the time-based plots display observations in chronological order.
+Q35. What is Correlation?
+Correlation measures the strength and direction of the relationship between two numerical variables.
+Q36. What is a Heatmap?
+A heatmap represents numerical values using colors.
+Q37. What is the use of plt.figure()?
+It creates a new figure for plotting.
+Q38. What is the use of plt.show()?
+It displays the generated visualization.
+Q39. What is the use of plt.legend()?
+It identifies the different data series shown in a graph.
+Q40. What is the use of plt.tight_layout()?
+It adjusts the spacing between plot elements to avoid overlapping.
+PART 5: PRACTICAL-BASED QUESTIONS
+Question        Answer
+Which dataset did you use?        City_Air_Quality.csv
+What does AQI stand for?        Air Quality Index.
+Which library is used for visualization?        Matplotlib.
+Which function loads the CSV file?        pd.read_csv().
+Which function creates a line plot?        plt.plot().
+Which function creates a bar chart?        plt.bar().
+Which function creates a scatter plot?        plt.scatter().
+Which function creates a box plot?        plt.boxplot().
+Which function creates a histogram?        plt.hist().
+Which function creates subplots?        plt.subplots().
+Which function adds a title?        plt.title().
+Which function labels the X-axis?        plt.xlabel().
+Which function labels the Y-axis?        plt.ylabel().
+Which function displays the legend?        plt.legend().
+Which function displays the graph?        plt.show().
+Which function converts a column into dates?        pd.to_datetime().
+Which function calculates correlation?        data.corr().
+What is the final output?        AQI and pollutant visualizations and a cleaned CSV file.
+PART 6: TOP 15 QUESTIONS – REVISE FIRST
+High priority
+1.        What is Data Visualization?
+2.        What is Matplotlib?
+3.        What are the different visualization libraries in Python?
+4.        What are Figure and Axes?
+5.        What are Subplots?
+6.        What are Colormaps?
+7.        What is AQI?
+8.        What is the difference between PM2.5 and PM10?
+9.        What is a Line Plot?
+10.        What is a Bar Plot?
+11.        What is a Scatter Plot?
+12.        What is a Box Plot?
+13.        What is a Histogram?
+14.        What is a Heatmap?
+15.        Why do we use time series plots for AQI analysis?
+PART 7: EXPLAIN YOUR PRACTICAL IN THE EXAM
+If the examiner asks, "Explain your practical", you can answer:
+"We performed Data Visualization on a City Air Quality dataset using Python and Matplotlib. First, we imported and explored the dataset using Pandas. Then, we identified relevant variables such as date, AQI, PM2.5, PM10 and CO. We handled missing values, converted date and numerical columns into appropriate data types and sorted the data by date. After that, we created line plots to visualize AQI and pollutant trends, bar plots to compare AQI values, box plots to understand data distribution and scatter plots to examine relationships between AQI and pollutants. We also created monthly trends, subplots and a correlation heatmap. Finally, we exported the cleaned dataset."
+PART 8: CONCLUSION
+Thus, we successfully visualized and analyzed Air Quality Index trends using Matplotlib in Python. We created different types of plots, including line plots, bar plots, box plots, scatter plots, histograms and heatmaps, to understand AQI trends, pollutant distributions and relationships between air quality measurements.
+FINAL EXAM REMINDER
+•        plt.plot() = Line Plot.
+•        plt.bar() = Bar Plot.
+•        plt.scatter() = Scatter Plot.
+•        plt.boxplot() = Box Plot.
+•        plt.hist() = Histogram.
+•        plt.subplots() = Multiple plots in one figure.
+•        plt.title() = Graph title.
+•        plt.legend() = Graph legend.
+•        plt.show() = Display graph.
+•        plt.imshow() = Display data as an image, useful for heatmaps.
+•        AQI = Air Quality Index.
+•        PM2.5 and PM10 = Particulate matter pollutants.
+
+
+
+
+
+
+PRACTICAL EXPLNATION:
+
+
+Assignment 5: Data Visualization Using Matplotlib – Analyzing Air Quality Index (AQI) Trends in a City
+1. Aim
+To analyze Air Quality Index (AQI) trends and pollutant levels in a city using Python's Matplotlib library and create visualizations to understand air quality patterns over time.
+2. Description
+In this practical, the City_Air_Quality.csv dataset is used to analyze air quality measurements, including AQI, PM2.5, PM10, CO, NO2, SO2, and O3.
+
+
+The dataset is explored, cleaned, and processed by handling missing values, converting data types, removing duplicates, and sorting records by date.
+
+
+Various visualizations are created using Matplotlib, including:
+- Line Plot: To analyze overall AQI and pollutant trends over time.
+- Bar Plot: To compare average AQI values across different dates.
+- Box Plot: To understand the distribution and variation of AQI values.
+- Scatter Plot: To study the relationship between AQI and pollutant levels.
+- Monthly Trend Plot: To analyze monthly average AQI patterns.
+- Histograms: To understand the distribution of AQI and pollutant values.
+- Correlation Heatmap: To identify relationships between AQI and different pollutants.
+Finally, the cleaned dataset is exported into a CSV file, and a summary report is generated.
+3. Libraries Used
+Library        Purpose
+Pandas        Loading, cleaning, and manipulating datasets
+NumPy        Numerical operations
+Matplotlib        Creating different types of visualizations
+
+
+4. Result
+Successfully analyzed the Air Quality Index (AQI) dataset and visualized air quality trends using different Matplotlib plots. Identified pollutant patterns, AQI variations, monthly trends, and correlations between pollutants. The cleaned dataset was exported successfully for further analysis.
+
+
+
+
+
+
+CODE EXPLNATION:
+
+
+# Assignment 5: Data Visualization Using Matplotlib – AQI Trends
+
+
+## STEP 1: Install Required Libraries
+
+
+```python
+!pip install pandas numpy matplotlib
+```
+
+
+This command installs the required Python libraries.
+
+
+- **Pandas:** Used for loading, cleaning, and manipulating tabular data.
+- **NumPy:** Used for numerical calculations.
+- **Matplotlib:** Used for creating graphs and visualizations.
+
+
+The `!` symbol executes a terminal command inside Jupyter or Google Colab.
+
+
+## STEP 2: Import Required Libraries
+
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+print("Libraries imported successfully!")
+```
+
+
+Explanation:
+
+
+- `pandas as pd`: Imports Pandas for data manipulation.
+- `numpy as np`: Imports NumPy for numerical operations.
+- `matplotlib.pyplot as plt`: Imports Matplotlib's plotting module.
+
+
+The aliases `pd`, `np`, and `plt` make it easier to use library functions.
+
+
+The `print()` statement displays a confirmation message.
+
+
+## STEP 3: Upload the Dataset
+
+
+```python
+from google.colab import files
+
+
+uploaded = files.upload()
+
+
+print("Dataset uploaded successfully!")
+```
+
+
+Explanation:
+
+
+- `from google.colab import files`: Imports the file-upload functionality from Google Colab.
+- `files.upload()`: Opens a file selection dialog.
+- `uploaded`: Stores the uploaded file information.
+- `print()`: Displays a success message.
+
+
+**Important:** This step is specifically for Google Colab. If you are using Jupyter Notebook locally, you can place the CSV file in the notebook's working directory and skip this upload step.
+
+
+## STEP 4: Load the Dataset
+
+
+```python
+csv_files = [
+    f for f in uploaded.keys()
+    if f.lower().endswith('.csv')
+]
+```
+
+
+This code identifies uploaded files that have the `.csv` extension.
+
+
+- `uploaded.keys()` returns the names of uploaded files.
+- `f.lower()` converts the filename to lowercase.
+- `endswith('.csv')` checks whether the filename ends with `.csv`.
+
+
+Next:
+
+
+```python
+if not csv_files:
+    raise ValueError("Please upload a CSV file.")
+```
+
+
+Checks whether at least one CSV file was uploaded. If not, it raises an error.
+
+
+Next:
+
+
+```python
+file_name = next(
+    (f for f in csv_files if 'city_air_quality' in f.lower()),
+    csv_files[0]
+)
+```
+
+
+This selects the file whose name contains `city_air_quality`.
+
+
+If no matching filename is found, it selects the first CSV file.
+
+
+Finally:
+
+
+```python
+data = pd.read_csv(file_name)
+display(data.head())
+```
+
+
+- `pd.read_csv()` loads the CSV file into a DataFrame named `data`.
+- `display(data.head())` displays the first five records.
+
+
+**Purpose:** Load the air quality dataset into Python for analysis.
+
+
+## STEP 5: Explore the Dataset
+
+
+This step helps us understand the dataset's structure and quality.
+
+
+```python
+data.head()
+```
+Displays the first five records.
+
+
+```python
+data.tail()
+```
+Displays the last five records.
+
+
+```python
+data.shape
+```
+Returns the number of rows and columns.
+
+
+Example: `(1000, 8)` means 1000 records and 8 columns.
+
+
+```python
+data.columns.tolist()
+```
+Displays all column names as a Python list.
+
+
+```python
+data.dtypes
+```
+Displays the data type of each column.
+
+
+Examples:
+- `int64`: Integer values.
+- `float64`: Decimal values.
+- `object`: Text or mixed values.
+- `datetime64`: Date and time values.
+
+
+```python
+data.describe(include='all')
+```
+Generates statistical information about numerical and categorical columns.
+
+
+```python
+data.isnull().sum()
+```
+Counts missing values in each column.
+
+
+**Purpose:** Understand the dataset before cleaning and visualization.
+
+
+## STEP 6: Identify Relevant Columns
+
+
+First, column names are standardized.
+
+
+```python
+data.columns = (
+    data.columns.str.strip()
+    .str.lower()
+    .str.replace(r'[^a-z0-9]+', '_', regex=True)
+    .str.strip('_')
+)
+```
+
+
+Explanation:
+
+
+- `str.strip()` removes unnecessary spaces.
+- `str.lower()` converts column names into lowercase.
+- `str.replace()` replaces special characters and spaces with underscores.
+- The final `str.strip('_')` removes underscores from the beginning and end.
+
+
+Example:
+
+
+`PM2.5 Concentration` becomes `pm2_5_concentration`.
+
+
+### Finding columns automatically
+
+
+```python
+def find_column(possible_names):
+    for col in possible_names:
+        if col in data.columns:
+            return col
+    return None
+```
+
+
+This function searches for a column using a list of possible names.
+
+
+- `for col in possible_names`: Checks each candidate name.
+- `if col in data.columns`: Checks whether the column exists.
+- `return col`: Returns the first matching column.
+- `return None`: Returns None if no matching column is found.
+
+
+The function is used to identify:
+
+
+- `date_col`: Date or timestamp column.
+- `aqi_col`: Air Quality Index column.
+- `pm25_col`: PM2.5 concentration.
+- `pm10_col`: PM10 concentration.
+- `co_col`: Carbon monoxide.
+- `no2_col`: Nitrogen dioxide.
+- `so2_col`: Sulphur dioxide.
+- `o3_col`: Ozone.
+
+
+### Creating the pollutant list
+
+
+```python
+pollutant_columns = [
+    col for col in [
+        pm25_col, pm10_col, co_col,
+        no2_col, so2_col, o3_col
+    ]
+    if col is not None
+]
+```
+
+
+This creates a list containing only pollutant columns that actually exist in the dataset.
+
+
+The condition `if col is not None` excludes columns that were not found.
+
+
+**Purpose:** Make the code flexible enough to work with different column names and datasets.
+
+
+## STEP 7: Handle Missing Values and Convert Data Types
+
+
+### A. Convert date into datetime format
+
+
+```python
+if date_col is not None:
+    data[date_col] = pd.to_datetime(
+        data[date_col],
+        errors='coerce'
+    )
+```
+
+
+- `pd.to_datetime()` converts date values into datetime format.
+- `errors='coerce'` converts invalid date values into `NaT` (Not a Time).
+- The `if` condition ensures the operation happens only if a date column exists.
+
+
+### B. Identify numerical columns
+
+
+```python
+numeric_columns = [
+    col for col in [aqi_col] + pollutant_columns
+    if col is not None
+]
+```
+
+
+Creates a list containing AQI and all available pollutant columns.
+
+
+### C. Convert numerical values
+
+
+```python
+for col in numeric_columns:
+    data[col] = pd.to_numeric(
+        data[col],
+        errors='coerce'
+    )
+```
+
+
+- `pd.to_numeric()` converts values into numeric format.
+- `errors='coerce'` converts invalid values into `NaN`.
+
+
+Example:
+
+
+| Original value | Converted value |
+|---|---:|
+| 45 | 45 |
+| 78.5 | 78.5 |
+| Unknown | NaN |
+
+
+### D. Fill missing numerical values
+
+
+```python
+data[col] = data[col].fillna(
+    data[col].median()
+)
+```
+
+
+Replaces missing numerical values with the median of that column.
+
+
+**Median:** The middle value after arranging the values in ascending order.
+
+
+Example:
+
+
+`[10, 20, 30, 40, 100]`
+
+
+Median = 30.
+
+
+Median is useful because it is less affected by extreme values than the mean.
+
+
+### E. Remove rows with invalid dates
+
+
+```python
+if date_col is not None:
+    data = data.dropna(subset=[date_col])
+```
+
+
+Removes records where the date value is missing or invalid.
+
+
+### F. Remove duplicate records
+
+
+```python
+data = data.drop_duplicates()
+```
+
+
+Removes duplicate rows from the dataset.
+
+
+Finally, the code displays the missing-value count and cleaned data.
+
+
+**Purpose:** Prepare reliable numerical and date data for visualization.
+
+
+## STEP 8: Sort Data by Date
+
+
+```python
+if date_col is not None:
+    data = data.sort_values(by=date_col)
+```
+
+
+`sort_values()` arranges records in ascending date order.
+
+
+Next:
+
+
+```python
+data['year'] = data[date_col].dt.year
+data['month'] = data[date_col].dt.month
+data['month_name'] = data[date_col].dt.strftime('%b')
+```
+
+
+These statements create three new columns.
+
+
+- `.dt.year`: Extracts the year.
+- `.dt.month`: Extracts the month number.
+- `.dt.strftime('%b')`: Extracts the abbreviated month name.
+
+
+Example:
+
+
+Date: `2025-03-15`
+
+
+- Year = 2025
+- Month = 3
+- Month name = Mar
+
+
+**Purpose:** Arrange records chronologically and create date-related features for trend analysis.
+
+
+## STEP 9: Visualize Overall AQI Trend Using Line Plot
+
+
+```python
+if date_col is not None and aqi_col is not None:
+    plt.figure(figsize=(12, 5))
+
+
+    plt.plot(
+        data[date_col],
+        data[aqi_col],
+        marker='o',
+        linestyle='-',
+        color='blue',
+        label='AQI'
+    )
+
+
+    plt.title('Overall AQI Trend Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Air Quality Index')
+
+
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+
+    plt.show()
+```
+
+
+Explanation:
+
+
+- `plt.figure(figsize=(12, 5))`: Creates a figure with width 12 inches and height 5 inches.
+- `plt.plot()`: Creates a line graph.
+- `data[date_col]`: Represents the X-axis.
+- `data[aqi_col]`: Represents the Y-axis.
+- `marker='o'`: Displays circular markers at data points.
+- `linestyle='-'`: Connects points using a solid line.
+- `color='blue'`: Sets the line color.
+- `label='AQI'`: Sets the legend label.
+- `plt.title()`: Adds a graph title.
+- `plt.xlabel()`: Adds the X-axis label.
+- `plt.ylabel()`: Adds the Y-axis label.
+- `plt.legend()`: Displays the legend.
+- `plt.grid(True)`: Displays grid lines.
+- `plt.xticks(rotation=45)`: Rotates date labels by 45 degrees.
+- `plt.tight_layout()`: Adjusts spacing to prevent overlapping.
+- `plt.show()`: Displays the graph.
+
+
+The `else` block prints a message if the date or AQI column is unavailable.
+
+
+**Purpose:** Understand how AQI changes over time.
+
+
+## STEP 10: Plot Individual Pollutant Levels
+
+
+```python
+for col in pollutant_columns:
+    if date_col is not None:
+        plt.figure(figsize=(10, 4))
+
+
+        plt.plot(
+            data[date_col],
+            data[col],
+            marker='o',
+            label=col.upper()
+        )
+
+
+        plt.title(f'{col.upper()} Levels Over Time')
+        plt.xlabel('Date')
+        plt.ylabel('Pollutant Level')
+
+
+        plt.legend()
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+
+
+        plt.show()
+```
+
+
+Explanation:
+
+
+- `for col in pollutant_columns`: Iterates through each available pollutant.
+- `plt.figure()`: Creates a separate figure for each pollutant.
+- `plt.plot()`: Creates a line graph showing pollutant levels over time.
+- `data[date_col]`: Represents dates on the X-axis.
+- `data[col]`: Represents pollutant measurements on the Y-axis.
+- `col.upper()`: Converts pollutant names into uppercase.
+- `f-string`: Dynamically creates graph titles and labels.
+
+
+For example, separate graphs are generated for PM2.5, PM10, CO, NO2, SO2, and O3, depending on which columns are available.
+
+
+**Purpose:** Analyze how individual pollutant concentrations change over time.
+
+
+## STEP 11: Compare AQI Values Using Bar Plot
+
+
+```python
+daily_aqi = (
+    data.groupby(data[date_col].dt.date)[aqi_col]
+    .mean()
+    .head(15)
+)
+```
+
+
+Explanation:
+
+
+- `groupby()`: Groups records based on date.
+- `.dt.date`: Extracts the date without the time component.
+- `[aqi_col]`: Selects the AQI column.
+- `.mean()`: Calculates average AQI for each date.
+- `.head(15)`: Selects the first 15 dates.
+
+
+Next:
+
+
+```python
+plt.figure(figsize=(12, 5))
+
+
+plt.bar(
+    daily_aqi.index.astype(str),
+    daily_aqi.values,
+    color='green',
+    label='Average AQI'
+)
+```
+
+
+- `plt.bar()`: Creates a bar chart.
+- `daily_aqi.index.astype(str)`: Provides dates for the X-axis.
+- `daily_aqi.values`: Provides average AQI values for the Y-axis.
+- `color='green'`: Sets the bar color.
+
+
+The remaining statements add the title, axis labels, legend, rotated date labels, grid lines, and display the graph.
+
+
+**Purpose:** Compare average AQI values across different dates.
+
+
+## STEP 12: Create Box Plot for AQI Distribution
+
+
+```python
+if aqi_col is not None:
+    plt.figure(figsize=(7, 5))
+
+
+    plt.boxplot(
+        data[aqi_col].dropna(),
+        patch_artist=True
+    )
+
+
+    plt.title('Distribution of AQI Values')
+    plt.ylabel('AQI')
+
+
+    plt.grid(True)
+    plt.show()
+```
+
+
+Explanation:
+
+
+- `plt.figure()`: Creates a figure.
+- `data[aqi_col]`: Selects the AQI column.
+- `.dropna()`: Removes missing values before plotting.
+- `plt.boxplot()`: Creates a box plot.
+- `patch_artist=True`: Allows the box to be filled with color.
+- `plt.title()`: Sets the title.
+- `plt.ylabel()`: Sets the Y-axis label.
+- `plt.grid(True)`: Displays grid lines.
+- `plt.show()`: Displays the graph.
+
+
+### What does a box plot show?
+
+
+A box plot represents the distribution of data using:
+
+
+- Minimum value (excluding separately plotted outliers).
+- First quartile (Q1).
+- Median (Q2).
+- Third quartile (Q3).
+- Maximum value (excluding separately plotted outliers).
+- Potential outliers.
+
+
+**Purpose:** Understand the spread, central value, and potential outliers in AQI measurements.
+
+
+## STEP 13: Create Scatter Plots
+
+
+```python
+if aqi_col is not None:
+    for col in pollutant_columns:
+        plt.figure(figsize=(7, 5))
+
+
+        plt.scatter(
+            data[col],
+            data[aqi_col],
+            alpha=0.6,
+            color='red',
+            label=col.upper()
+        )
+
+
+        plt.title(f'AQI vs {col.upper()}')
+        plt.xlabel(f'{col.upper()} Level')
+        plt.ylabel('AQI')
+
+
+        plt.legend()
+        plt.grid(True)
+
+
+        plt.show()
+```
+
+
+Explanation:
+
+
+- `for col in pollutant_columns`: Iterates through all available pollutants.
+- `plt.scatter()`: Creates a scatter plot.
+- `data[col]`: Represents pollutant levels on the X-axis.
+- `data[aqi_col]`: Represents AQI on the Y-axis.
+- `alpha=0.6`: Controls transparency of points. Values range from 0 (transparent) to 1 (opaque).
+- `color='red'`: Sets point color.
+- `label`: Adds the pollutant name to the legend.
+
+
+Each pollutant gets a separate scatter plot.
+
+
+**Purpose:** Understand the relationship between AQI and pollutant concentrations.
+
+
+For example, if points generally move upward as PM2.5 increases, it suggests a positive relationship between PM2.5 and AQI.
+
+
+## STEP 14: Create Monthly AQI Trend
+
+
+```python
+monthly_aqi = (
+    data.groupby(data[date_col].dt.month)[aqi_col]
+    .mean()
+)
+```
+
+
+This groups the data by month number and calculates the average AQI for each month.
+
+
+Example:
+
+
+| Month | Average AQI |
+|---|---:|
+| 1 | 120 |
+| 2 | 135 |
+| 3 | 110 |
+
+
+Next:
+
+
+```python
+plt.figure(figsize=(9, 5))
+
+
+plt.plot(
+    monthly_aqi.index,
+    monthly_aqi.values,
+    marker='o',
+    color='purple',
+    label='Monthly Average AQI'
+)
+```
+
+
+Creates a line graph showing monthly average AQI.
+
+
+- `monthly_aqi.index`: Month numbers on the X-axis.
+- `monthly_aqi.values`: Average AQI on the Y-axis.
+- `marker='o'`: Displays circular markers.
+- `color='purple'`: Sets the line color.
+
+
+```python
+plt.xticks(range(1, 13))
+```
+
+
+Displays month numbers from 1 to 12 on the X-axis.
+
+
+The remaining commands add the title, labels, legend, grid, and display the graph.
+
+
+**Purpose:** Identify monthly patterns and seasonal changes in air quality.
+
+
+Note: This code groups by month number across all years. If the dataset contains multiple years, January values from different years are combined.
+
+
+## STEP 15: Create Subplots
+
+
+Subplots allow multiple graphs to be displayed in one figure.
+
+
+First:
+
+
+```python
+available_plot_columns = [
+    col for col in [aqi_col] + pollutant_columns
+    if col is not None
+]
+```
+
+
+Creates a list containing the available AQI and pollutant columns.
+
+
+Next:
+
+
+```python
+fig, axes = plt.subplots(
+    len(available_plot_columns),
+    1,
+    figsize=(10, 4 * len(available_plot_columns))
+)
+```
+
+
+Explanation:
+
+
+- `plt.subplots()` creates multiple plots in a single figure.
+- `len(available_plot_columns)` determines the number of rows.
+- `1` means there is only one column of plots.
+- `fig` represents the complete figure.
+- `axes` represents the individual plotting areas.
+- `figsize` determines the overall figure size.
+
+
+For example, if there are five available columns, five graphs are created vertically.
+
+
+```python
+if len(available_plot_columns) == 1:
+    axes = [axes]
+```
+
+
+When only one plot exists, Matplotlib returns a single Axes object instead of a list. This condition converts it into a list so that the loop works consistently.
+
+
+Next:
+
+
+```python
+for ax, col in zip(axes, available_plot_columns):
+```
+
+
+`zip()` combines each plotting area with its corresponding column name.
+
+
+Inside the loop:
+
+
+```python
+ax.hist(
+    data[col].dropna(),
+    bins=20,
+    edgecolor='black'
+)
+```
+
+
+- `ax.hist()`: Creates a histogram inside the selected subplot.
+- `dropna()`: Removes missing values.
+- `bins=20`: Divides the data into 20 intervals.
+- `edgecolor='black'`: Adds black borders to histogram bars.
+
+
+The remaining statements set the title and axis labels for each histogram.
+
+
+Finally:
+
+
+```python
+plt.tight_layout()
+plt.show()
+```
+
+
+Adjusts spacing and displays all subplots together.
+
+
+**Purpose:** Compare the distributions of AQI and different pollutants in one figure.
+
+
+## STEP 16: Correlation Heatmap Using Matplotlib
+
+
+First:
+
+
+```python
+if len(numeric_columns) >= 2:
+    correlation = data[numeric_columns].corr()
+```
+
+
+- Checks whether at least two numerical columns exist.
+- `.corr()` calculates the correlation between numerical variables.
+- The result is stored in `correlation`, a correlation matrix.
+
+
+Correlation values range from -1 to +1:
+
+
+- +1: Perfect positive relationship.
+- 0: No linear relationship.
+- -1: Perfect negative relationship.
+
+
+Next:
+
+
+```python
+plt.figure(figsize=(8, 6))
+```
+
+
+Creates a figure.
+
+
+```python
+image = plt.imshow(
+    correlation,
+    cmap='coolwarm',
+    interpolation='nearest'
+)
+```
+
+
+- `plt.imshow()`: Displays the correlation matrix as a colored image.
+- `cmap='coolwarm'`: Uses a color scheme to represent different correlation values.
+- `interpolation='nearest'`: Displays the matrix cells without smoothing.
+- `image`: Stores the returned image object.
+
+
+Next:
+
+
+```python
+plt.colorbar(image, label='Correlation')
+```
+
+
+Displays a color scale explaining the correlation values.
+
+
+### Setting axis labels
+
+
+```python
+plt.xticks(
+    range(len(correlation.columns)),
+    correlation.columns,
+    rotation=45
+)
+```
+
+
+Displays column names on the X-axis and rotates them by 45 degrees.
+
+
+```python
+plt.yticks(
+    range(len(correlation.columns)),
+    correlation.columns
+)
+```
+
+
+Displays column names on the Y-axis.
+
+
+### Adding correlation values inside cells
+
+
+```python
+for i in range(len(correlation.columns)):
+    for j in range(len(correlation.columns)):
+        plt.text(
+            j,
+            i,
+            round(correlation.iloc[i, j], 2),
+            ha='center',
+            va='center'
+        )
+```
+
+
+Explanation:
+
+
+- The outer loop moves through matrix rows.
+- The inner loop moves through matrix columns.
+- `correlation.iloc[i, j]` accesses the correlation value at row `i` and column `j`.
+- `round(..., 2)` rounds the value to two decimal places.
+- `plt.text()` writes the value inside the corresponding cell.
+- `ha='center'` aligns the text horizontally.
+- `va='center'` aligns the text vertically.
+
+
+Finally:
+
+
+```python
+plt.tight_layout()
+plt.show()
+```
+
+
+Adjusts the figure layout and displays the heatmap.
+
+
+**Purpose:** Identify relationships between AQI and different pollutants using correlation values.
+
+
+## STEP 17: Export Cleaned Dataset
+
+
+```python
+data.to_csv(
+    'cleaned_city_air_quality.csv',
+    index=False
+)
+```
+
+
+Explanation:
+
+
+- `to_csv()` exports the DataFrame into a CSV file.
+- `'cleaned_city_air_quality.csv'` is the output filename.
+- `index=False` prevents the DataFrame row index from being saved as an extra column.
+
+
+The file contains the cleaned dataset, including the date-related columns created during processing.
+
+
+**Purpose:** Save the cleaned dataset for future analysis.
+
+
+## STEP 18: Generate Final Report
+
+
+```python
+print("\n========== AIR QUALITY ANALYSIS REPORT ==========")
+
+
+print("Total Records:", len(data))
+```
+
+
+- `len(data)` returns the total number of records.
+- `print()` displays the report heading and record count.
+
+
+Next:
+
+
+```python
+if aqi_col is not None:
+    print("Average AQI:", round(data[aqi_col].mean(), 2))
+    print("Maximum AQI:", round(data[aqi_col].max(), 2))
+    print("Minimum AQI:", round(data[aqi_col].min(), 2))
+```
+
+
+Calculates and displays:
+
+
+- `mean()`: Average AQI.
+- `max()`: Maximum AQI.
+- `min()`: Minimum AQI.
+- `round(..., 2)`: Rounds the result to two decimal places.
+
+
+Next:
+
+
+```python
+for col in pollutant_columns:
+    print(
+        f"Average {col.upper()}:",
+        round(data[col].mean(), 2)
+    )
+```
+
+
+This loop calculates and displays the average concentration of every available pollutant.
+
+
+Finally:
+
+
+```python
+print("\nPollutants Analyzed:", pollutant_columns)
+print("\nCleaned file: cleaned_city_air_quality.csv")
+```
+
+
+Displays the pollutant columns analyzed and the exported filename.
+
+
+The last print statements display the completion message.
+
+
+**Purpose:** Generate a final summary of the AQI analysis and confirm successful completion.
+
+
+---
+
+
+# IMPORTANT CONCEPTS TO REMEMBER
+
+
+| Concept | Meaning |
+|---|---|
+| DataFrame | Two-dimensional tabular data structure |
+| `read_csv()` | Reads a CSV file |
+| `to_datetime()` | Converts values into datetime format |
+| `to_numeric()` | Converts values into numerical format |
+| `fillna()` | Replaces missing values |
+| `drop_duplicates()` | Removes duplicate records |
+| `sort_values()` | Sorts data |
+| `groupby()` | Groups records based on a column |
+| `mean()` | Calculates average |
+| `median()` | Finds the middle value |
+| Line Plot | Shows trends over time |
+| Bar Plot | Compares values across categories |
+| Box Plot | Shows data distribution and potential outliers |
+| Scatter Plot | Shows relationships between two numerical variables |
+| Histogram | Shows frequency distribution |
+| Subplots | Displays multiple graphs in one figure |
+| Heatmap | Represents numerical values using colors |
+| Correlation | Measures the direction and strength of a linear relationship |
+| `to_csv()` | Exports a DataFrame into a CSV file |
+
+
+# OVERALL WORKFLOW
+
+
+1. Install and import libraries.
+2. Upload and load the AQI dataset.
+3. Explore the dataset.
+4. Identify date, AQI, and pollutant columns.
+5. Handle missing values and convert data types.
+6. Sort records by date.
+7. Create visualizations using Matplotlib.
+8. Analyze AQI trends and pollutant relationships.
+9. Generate a correlation heatmap.
+10. Export the cleaned dataset.
+11. Generate the final analysis report.
+
+
+**Final Understanding:** This practical uses Matplotlib to visualize AQI trends, pollutant variations, monthly patterns, data distributions, and relationships between pollutants. It performs data cleaning and exploratory visualization but does not train a machine learning model.

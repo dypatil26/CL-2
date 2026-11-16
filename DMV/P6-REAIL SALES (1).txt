@@ -1,0 +1,1766 @@
+﻿# ============================================================
+# ASSIGNMENT 6: DATA AGGREGATION
+# ANALYZING SALES PERFORMANCE BY REGION
+# ============================================================
+
+
+
+
+# STEP 1: INSTALL REQUIRED LIBRARIES
+
+
+!pip install pandas numpy matplotlib
+
+
+
+
+# STEP 2: IMPORT REQUIRED LIBRARIES
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+print("Libraries imported successfully!")
+
+
+
+
+
+
+# STEP 4: LOAD THE DATASET
+
+
+df = pd.read_csv(file_name)
+
+
+print("\nRetail Sales Dataset:")
+display(df.head())
+
+
+
+
+# STEP 5: EXPLORE THE DATASET
+
+
+print("\nFirst Five Records:")
+display(df.head())
+
+
+print("\nLast Five Records:")
+display(df.tail())
+
+
+print("\nDataset Shape:")
+print(df.shape)
+
+
+print("\nColumn Names:")
+print(df.columns.tolist())
+
+
+print("\nData Types:")
+print(df.dtypes)
+
+
+print("\nStatistical Summary:")
+display(df.describe(include='all'))
+
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+
+print("\nDuplicate Records:")
+print(df.duplicated().sum())
+
+
+
+
+# STEP 6: IDENTIFY RELEVANT COLUMNS
+
+
+# Clean column names
+
+
+df.columns = (
+    df.columns.str.strip()
+    .str.lower()
+    .str.replace(r'[^a-z0-9]+', '_', regex=True)
+    .str.strip('_')
+)
+
+
+
+
+def find_column(possible_names):
+    for col in possible_names:
+        if col in df.columns:
+            return col
+    return None
+
+
+
+
+region_col = find_column([
+    'region', 'sales_region',
+    'geographical_region', 'area'
+])
+
+
+sales_col = find_column([
+    'sales_amount', 'sales',
+    'total_sales', 'revenue',
+    'amount', 'sales_revenue'
+])
+
+
+category_col = find_column([
+    'product_category', 'category',
+    'product_type', 'product'
+])
+
+
+quantity_col = find_column([
+    'quantity', 'quantity_sold',
+    'units_sold'
+])
+
+
+date_col = find_column([
+    'transaction_date', 'date',
+    'order_date', 'sales_date'
+])
+
+
+print("\nDetected Columns:")
+print("Region:", region_col)
+print("Sales Amount:", sales_col)
+print("Product Category:", category_col)
+print("Quantity:", quantity_col)
+print("Transaction Date:", date_col)
+
+
+
+
+# STEP 7: HANDLE MISSING VALUES AND DATA TYPES
+
+
+if sales_col is not None:
+    df[sales_col] = pd.to_numeric(
+        df[sales_col].astype(str).str.replace(',', '', regex=False),
+        errors='coerce'
+    )
+
+
+if quantity_col is not None:
+    df[quantity_col] = pd.to_numeric(
+        df[quantity_col],
+        errors='coerce'
+    )
+
+
+if date_col is not None:
+    df[date_col] = pd.to_datetime(
+        df[date_col],
+        errors='coerce'
+    )
+
+
+numeric_columns = df.select_dtypes(
+    include=np.number
+).columns
+
+
+categorical_columns = df.select_dtypes(
+    include=['object', 'category']
+).columns
+
+
+for col in numeric_columns:
+    df[col] = df[col].fillna(df[col].median())
+
+
+for col in categorical_columns:
+    if df[col].isnull().any() and not df[col].mode().empty:
+        df[col] = df[col].fillna(df[col].mode()[0])
+
+
+if date_col is not None:
+    df = df.dropna(subset=[date_col])
+
+
+print("\nMissing Values After Handling:")
+print(df.isnull().sum())
+
+
+
+
+# STEP 8: REMOVE DUPLICATE RECORDS
+
+
+df = df.drop_duplicates()
+
+
+print("\nDuplicate Records After Cleaning:")
+print(df.duplicated().sum())
+
+
+print("Updated Dataset Shape:", df.shape)
+
+
+
+
+# STEP 9: STANDARDIZE CATEGORICAL DATA
+
+
+for col in [region_col, category_col]:
+    if col is not None:
+        df[col] = (
+            df[col].astype(str)
+            .str.strip()
+            .str.title()
+        )
+
+
+print("\nStandardized Dataset:")
+display(df.head())
+
+
+
+
+# STEP 10: IDENTIFY VALID SALES RECORDS
+
+
+if region_col is None or sales_col is None:
+    raise ValueError(
+        "Region or sales amount column not found. "
+        "Update the column names in Step 6."
+    )
+
+
+df = df.dropna(
+    subset=[region_col, sales_col]
+)
+
+
+df = df[df[sales_col] >= 0]
+
+
+print("\nValid Sales Records:")
+display(df.head())
+
+
+print("Valid Records:", len(df))
+
+
+
+
+# STEP 11: GROUP SALES BY REGION
+
+
+region_sales = (
+    df.groupby(region_col)[sales_col]
+    .sum()
+    .sort_values(ascending=False)
+)
+
+
+print("\nTotal Sales Amount by Region:")
+display(region_sales)
+
+
+
+
+# STEP 12: VISUALIZE SALES BY REGION USING BAR CHART
+
+
+plt.figure(figsize=(10, 5))
+
+
+plt.bar(
+    region_sales.index,
+    region_sales.values,
+    color='skyblue',
+    label='Total Sales'
+)
+
+
+plt.title('Total Sales by Region')
+plt.xlabel('Region')
+plt.ylabel('Total Sales Amount')
+
+
+plt.legend()
+plt.xticks(rotation=45)
+plt.grid(axis='y')
+plt.tight_layout()
+
+
+plt.show()
+
+
+
+
+# STEP 13: VISUALIZE SALES DISTRIBUTION USING PIE CHART
+
+
+plt.figure(figsize=(8, 8))
+
+
+plt.pie(
+    region_sales.values,
+    labels=region_sales.index,
+    autopct='%1.1f%%',
+    startangle=90
+)
+
+
+plt.title('Sales Distribution by Region')
+
+
+plt.show()
+
+
+
+
+# STEP 14: IDENTIFY TOP-PERFORMING REGION
+
+
+top_region = region_sales.idxmax()
+top_sales = region_sales.max()
+
+
+print("\nTop Performing Region:", top_region)
+
+
+print("Highest Sales Amount:", top_sales)
+
+
+print("\nRegion-wise Sales Ranking:")
+display(region_sales.rank(
+    ascending=False,
+    method='dense'
+).sort_values())
+
+
+
+
+# STEP 15: GROUP SALES BY REGION AND PRODUCT CATEGORY
+
+
+if category_col is not None:
+
+
+    region_category_sales = (
+        df.groupby([region_col, category_col])[sales_col]
+        .sum()
+        .unstack(fill_value=0)
+    )
+
+
+    print("\nSales by Region and Product Category:")
+    display(region_category_sales)
+
+
+else:
+    print("\nProduct category column not found. Grouping skipped.")
+
+
+
+
+# STEP 16: CREATE STACKED BAR CHART
+
+
+if category_col is not None:
+
+
+    region_category_sales.plot(
+        kind='bar',
+        stacked=True,
+        figsize=(11, 6)
+    )
+
+
+    plt.title('Sales by Region and Product Category')
+    plt.xlabel('Region')
+    plt.ylabel('Total Sales Amount')
+
+
+    plt.legend(
+        title='Product Category',
+        bbox_to_anchor=(1.05, 1),
+        loc='upper left'
+    )
+
+
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
+    plt.tight_layout()
+
+
+    plt.show()
+
+
+
+
+# STEP 17: CREATE GROUPED BAR CHART
+
+
+if category_col is not None:
+
+
+    region_category_sales.plot(
+        kind='bar',
+        stacked=False,
+        figsize=(11, 6)
+    )
+
+
+    plt.title('Grouped Sales Comparison by Region and Category')
+    plt.xlabel('Region')
+    plt.ylabel('Total Sales Amount')
+
+
+    plt.legend(
+        title='Product Category',
+        bbox_to_anchor=(1.05, 1),
+        loc='upper left'
+    )
+
+
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
+    plt.tight_layout()
+
+
+    plt.show()
+
+
+
+
+# STEP 18: ADDITIONAL SALES AGGREGATION
+
+
+if quantity_col is not None:
+
+
+    print("\nTotal Quantity Sold by Region:")
+
+
+    region_quantity = (
+        df.groupby(region_col)[quantity_col]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+
+    display(region_quantity)
+
+
+
+
+if category_col is not None:
+
+
+    print("\nTotal Sales by Product Category:")
+
+
+    category_sales = (
+        df.groupby(category_col)[sales_col]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+
+    display(category_sales)
+
+
+
+
+# STEP 19: MONTHLY SALES ANALYSIS
+
+
+if date_col is not None:
+
+
+    df['month'] = df[date_col].dt.to_period('M').astype(str)
+
+
+    monthly_sales = (
+        df.groupby('month')[sales_col]
+        .sum()
+    )
+
+
+    plt.figure(figsize=(11, 5))
+
+
+    plt.plot(
+        monthly_sales.index,
+        monthly_sales.values,
+        marker='o',
+        color='purple',
+        label='Monthly Sales'
+    )
+
+
+    plt.title('Monthly Sales Trend')
+    plt.xlabel('Month')
+    plt.ylabel('Total Sales Amount')
+
+
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+
+    plt.show()
+
+
+
+
+# STEP 20: EXPORT AGGREGATED DATASETS
+
+
+region_sales.to_csv(
+    'sales_by_region.csv',
+    header=['Total_Sales']
+)
+
+
+if category_col is not None:
+
+
+    region_category_sales.to_csv(
+        'sales_by_region_and_category.csv'
+    )
+
+
+df.to_csv(
+    'cleaned_retail_sales.csv',
+    index=False
+)
+
+
+print("\nAll datasets exported successfully!")
+
+
+
+
+# STEP 21: GENERATE FINAL REPORT
+
+
+print("\n========== RETAIL SALES PERFORMANCE REPORT ==========")
+
+
+print("Total Transactions:", len(df))
+
+
+print("Number of Regions:", df[region_col].nunique())
+
+
+print("Total Sales:", round(df[sales_col].sum(), 2))
+
+
+print("Average Sales per Transaction:",
+      round(df[sales_col].mean(), 2))
+
+
+print("\nTop Performing Region:", top_region)
+
+
+print("Highest Regional Sales:", round(top_sales, 2))
+
+
+print("\nRegion-wise Sales:")
+display(region_sales)
+
+
+print("\n======================================================")
+
+
+print("DATA AGGREGATION COMPLETED SUCCESSFULLY!")
+
+
+
+
+# ============================================================
+# END OF ASSIGNMENT 6
+# ============================================================
+
+
+PART 2: EXPLANATION OF EACH STEP
+Step        What we performed        Why we performed it
+1. Install Libraries        Installed Pandas, NumPy and Matplotlib.        To manipulate and visualize data.
+2. Import Libraries        Imported required Python libraries.        To use their functions.
+3. Upload Dataset        Uploaded the retail sales CSV file.        To access sales data in Colab.
+4. Load Dataset        Loaded CSV using pd.read_csv().        To convert data into a DataFrame.
+5. Explore Dataset        Checked rows, columns, data types and statistics.        To understand the dataset.
+6. Identify Variables        Identified region, sales, category, quantity and date columns.        To select variables needed for aggregation.
+7. Handle Missing Values        Filled missing numerical and categorical values.        To prepare complete data for analysis.
+8. Remove Duplicates        Removed repeated records.        To avoid counting the same transaction multiple times.
+9. Standardize Data        Standardized region and category names.        To prevent inconsistent category grouping.
+10. Filter Valid Records        Kept records with valid regions and non-negative sales.        To exclude invalid sales records.
+11. Group by Region        Calculated total sales for each region.        To compare regional performance.
+12. Bar Chart        Visualized total sales by region.        To compare sales amounts.
+13. Pie Chart        Displayed each region's percentage of total sales.        To understand sales distribution.
+14. Top Region        Identified the region with maximum sales.        To find the best-performing region.
+15. Group by Region and Category        Calculated sales for each region-category combination.        To compare product category performance across regions.
+16. Stacked Bar Chart        Displayed category contributions within each region.        To compare total sales and category composition.
+17. Grouped Bar Chart        Displayed separate bars for each category in every region.        To compare categories side by side.
+18. Additional Aggregation        Calculated quantity sold and sales by category.        To gain additional business insights.
+19. Monthly Sales        Calculated and plotted monthly sales.        To identify sales trends over time.
+20. Export Data        Saved aggregated and cleaned CSV files.        To reuse the results.
+21. Final Report        Displayed total sales and top-performing region.        To summarize the analysis.
+PART 3: IMPORTANT CODE EXPLANATIONS
+These are the commands an examiner may ask you to explain.
+Code        Explanation
+pd.read_csv()        Reads a CSV file into a DataFrame.
+df.head()        Displays the first five rows.
+df.shape        Returns the number of rows and columns.
+df.describe()        Displays statistical summary.
+df.isnull().sum()        Counts missing values.
+df.drop_duplicates()        Removes duplicate records.
+df.groupby()        Groups data based on one or more columns.
+sum()        Calculates the total.
+mean()        Calculates the average.
+sort_values()        Sorts values in ascending or descending order.
+idxmax()        Returns the index or label of the maximum value.
+max()        Returns the maximum value.
+unstack()        Converts a grouped index level into columns.
+pd.pivot_table()        Creates a summarized table using specified aggregation.
+plt.bar()        Creates a bar chart.
+plt.pie()        Creates a pie chart.
+autopct        Displays percentages on a pie chart.
+plot(kind='bar', stacked=True)        Creates a stacked bar chart.
+plot(kind='bar', stacked=False)        Creates a grouped bar chart.
+plt.plot()        Creates a line plot.
+plt.legend()        Displays the legend.
+df.to_csv()        Exports data to CSV.
+PART 4: EXPECTED ORAL / VIVA QUESTIONS
+A. Basic concepts
+Q1. What is Data Aggregation?
+Data Aggregation is the process of collecting and grouping data from different records or sources and presenting it in a summarized form.
+Q2. Why is Data Aggregation important?
+It helps summarize large datasets, identify trends, compare performance and support business decisions.
+Q3. What is the objective of this practical?
+To analyze retail sales performance across different regions and identify the top-performing regions.
+Q4. What is a retail sales dataset?
+It is a collection of sales transaction records containing information such as region, product category, quantity and sales amount.
+Q5. What is the difference between Data Aggregation and Data Cleaning?
+•        Data Cleaning corrects missing, duplicate and inconsistent data.
+•        Data Aggregation summarizes data using operations such as sum, average, count and maximum.
+B. Types of Data Aggregation
+Q6. What are the two types of Data Aggregation?
+1.        Manual Data Aggregation
+2.        Automated Data Aggregation
+Q7. What is Manual Data Aggregation?
+It is the process of collecting, formatting and summarizing data manually, often using spreadsheets.
+Q8. What is Automated Data Aggregation?
+It uses software or tools to collect and summarize data automatically from different sources.
+Q9. What is the difference between Manual and Automated Data Aggregation?
+Manual aggregation requires human effort and can be time-consuming, whereas automated aggregation uses software and is generally faster and more efficient.
+C. Grouping and Aggregation Functions
+Q10. What is GroupBy in Pandas?
+groupby() groups records based on one or more columns so that aggregation operations can be performed on each group.
+Q11. What is the use of sum()?
+It calculates the total of numerical values.
+Q12. What is the use of mean()?
+It calculates the average value.
+Q13. What is the use of count()?
+It counts the number of non-missing values in each group.
+Q14. What is the use of max() and min()?
+•        max() returns the highest value.
+•        min() returns the lowest value.
+Q15. What is Multi-level Grouping?
+Grouping data using more than one column, such as Region and Product Category.
+Q16. What is the use of unstack()?
+It converts one level of a grouped index into columns, which is useful for creating comparison tables and charts.
+D. Data Visualization
+Q17. What is Data Visualization?
+Data Visualization is the graphical representation of information using charts and graphs.
+Q18. Which library did you use for visualization?
+Matplotlib.
+Q19. What is a Bar Chart?
+A bar chart uses rectangular bars to compare values across different categories.
+Q20. What is a Pie Chart?
+A pie chart represents data as slices of a circle, showing each category's proportion of the total.
+Q21. What is a Stacked Bar Chart?
+A stacked bar chart displays multiple categories stacked on top of one another to show the total and individual contributions.
+Q22. What is a Grouped Bar Chart?
+A grouped bar chart displays multiple bars side by side for comparing different categories.
+Q23. What is the difference between a Stacked Bar Chart and a Grouped Bar Chart?
+•        Stacked Bar Chart: Categories are placed on top of one another.
+•        Grouped Bar Chart: Categories are placed side by side.
+Q24. Which chart is suitable for comparing sales across regions?
+A bar chart.
+Q25. Which chart is suitable for showing percentage distribution?
+A pie chart.
+E. Business and Sales Analysis
+Q26. What is Regional Sales Analysis?
+It is the process of analyzing and comparing sales performance across different geographical regions.
+Q27. How do you identify the top-performing region?
+By grouping sales by region, calculating total sales and selecting the region with the highest sales value using idxmax().
+Q28. Why do we group sales by product category?
+To understand which products or categories generate the highest sales in different regions.
+Q29. How does regional sales analysis help a company?
+It helps identify strong and weak regions, optimize inventory, improve marketing strategies and identify expansion opportunities.
+Q30. What is Sales Performance?
+Sales Performance measures how effectively a business or region generates sales revenue.
+PART 5: PRACTICAL-BASED QUESTIONS
+Question        Answer
+Which dataset did you use?        Retail_Sales_Data.csv
+What does the dataset contain?        Retail transaction information.
+Which library is used for aggregation?        Pandas.
+Which library is used for visualization?        Matplotlib.
+Which function groups data?        groupby().
+How did you calculate total sales by region?        groupby(region)[sales].sum()
+How did you find the top region?        Using idxmax().
+Which function creates a bar chart?        plt.bar().
+Which function creates a pie chart?        plt.pie().
+How did you group sales by two columns?        groupby([region, category]).
+What does unstack() do?        Converts a grouped index level into columns.
+What is a stacked bar chart?        A chart with categories stacked on top of each other.
+What is a grouped bar chart?        A chart with category bars side by side.
+How did you calculate monthly sales?        Grouped transactions by month and summed sales.
+What is the final output?        Regional sales summaries, category comparisons and visualizations.
+PART 6: IMPORTANT FORMULAS
+Concept        Formula
+Total Sales        Sum of all sales amounts
+Regional Sales        Sum of sales amounts for each region
+Average Sales        Total Sales / Number of Transactions
+Sales Percentage        (Regional Sales / Total Sales) × 100
+Top Performing Region        Region with Maximum Total Sales
+
+
+
+
+PRACTICAL EXPLANATION:
+
+
+# Assignment 6: Data Aggregation
+
+
+**Title:** Analyzing Sales Performance by Region in a Retail Company
+
+
+### 1. Aim
+To perform data aggregation on retail sales data using Python and analyze sales performance across different regions to identify the top-performing region.
+
+
+### 2. Description
+This practical uses the `Retail_Sales_Data.csv` dataset, which contains retail transaction details such as transaction date, product category, quantity sold, region, and sales amount.
+
+
+The dataset is cleaned and preprocessed by handling missing values, correcting data types, removing duplicate records, and standardizing categorical values.
+
+
+Sales data is then grouped and aggregated region-wise and category-wise using Pandas. Different visualizations, including bar charts, pie charts, stacked bar charts, grouped bar charts, and line charts, are created to understand sales distribution and trends.
+
+
+The analysis also identifies the top-performing region, calculates total quantity sold, and examines monthly sales performance.
+
+
+### 3. Libraries Used
+- **Pandas:** For data loading, cleaning, grouping, and aggregation.
+- **NumPy:** For numerical operations and handling missing values.
+- **Matplotlib:** For creating charts and visualizing sales performance.
+
+
+### 4. Result
+Successfully performed data aggregation on the retail sales dataset. Analyzed region-wise and category-wise sales, identified the top-performing region, visualized sales distribution, and examined monthly sales trends. The aggregated and cleaned datasets were exported into CSV files.
+
+
+
+
+CODE EXPLNATION:
+
+
+# Assignment 6: Data Aggregation
+## Analyzing Sales Performance by Region in a Retail Company
+
+
+### STEP 1: INSTALL REQUIRED LIBRARIES
+
+
+```python
+!pip install pandas numpy matplotlib
+```
+
+
+- `!pip install` is used to install Python libraries in Jupyter Notebook or Google Colab.
+- `pandas` is used for data manipulation and aggregation.
+- `numpy` is used for numerical operations.
+- `matplotlib` is used for creating graphs and charts.
+
+
+### STEP 2: IMPORT REQUIRED LIBRARIES
+
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+print("Libraries imported successfully!")
+```
+
+
+- `import pandas as pd`: Imports Pandas with the short name `pd`.
+- `import numpy as np`: Imports NumPy with the short name `np`.
+- `import matplotlib.pyplot as plt`: Imports the plotting module of Matplotlib as `plt`.
+- `print()` displays a confirmation message.
+
+
+### STEP 3: UPLOAD THE DATASET
+
+
+**Google Colab code:**
+
+
+```python
+from google.colab import files
+
+
+uploaded = files.upload()
+
+
+print("Dataset uploaded successfully!")
+```
+
+
+- `from google.colab import files`: Imports the file-handling functionality of Google Colab.
+- `files.upload()`: Opens a file-selection window to upload the dataset.
+- `uploaded`: Stores information about the uploaded files.
+
+
+**For Jupyter Notebook:** Skip this step because it is specific to Google Colab.
+
+
+### STEP 4: LOAD THE DATASET
+
+
+**Jupyter Notebook code:**
+
+
+```python
+df = pd.read_csv("Retail_Sales_Data.csv")
+
+
+print("\nRetail Sales Dataset:")
+display(df.head())
+```
+
+
+- `pd.read_csv()`: Reads the CSV file and converts it into a Pandas DataFrame.
+- `df`: Stores the dataset.
+- `display(df.head())`: Displays the first five records.
+- `\n`: Adds a new line before the printed heading.
+
+
+**Note:** Keep `Retail_Sales_Data.csv` in the same folder as your Jupyter Notebook.
+
+
+### STEP 5: EXPLORE THE DATASET
+
+
+```python
+display(df.head())
+display(df.tail())
+
+
+print(df.shape)
+print(df.columns.tolist())
+print(df.dtypes)
+
+
+display(df.describe(include='all'))
+
+
+print(df.isnull().sum())
+print(df.duplicated().sum())
+```
+
+
+This step helps us understand the structure and quality of the dataset.
+
+
+- `df.head()`: Displays the first five rows.
+- `df.tail()`: Displays the last five rows.
+- `df.shape`: Returns the number of rows and columns.
+- `df.columns.tolist()`: Displays all column names as a list.
+- `df.dtypes`: Shows the data type of each column.
+- `df.describe(include='all')`: Generates statistical summaries for numerical and categorical columns.
+- `df.isnull().sum()`: Counts missing values in each column.
+- `df.duplicated().sum()`: Counts duplicate records.
+
+
+### STEP 6: IDENTIFY RELEVANT COLUMNS
+
+
+First, clean the column names:
+
+
+```python
+df.columns = (
+    df.columns.str.strip()
+    .str.lower()
+    .str.replace(r'[^a-z0-9]+', '_', regex=True)
+    .str.strip('_')
+)
+```
+
+
+Explanation:
+
+
+- `str.strip()`: Removes unwanted spaces from column names.
+- `str.lower()`: Converts column names into lowercase.
+- `str.replace()`: Replaces special characters and spaces with underscores.
+- `regex=True`: Treats the replacement pattern as a regular expression.
+- The final `str.strip('_')` removes underscores from the beginning and end.
+
+
+For example, `Sales Amount` becomes `sales_amount`.
+
+
+**Create a function to identify columns:**
+
+
+```python
+def find_column(possible_names):
+    for col in possible_names:
+        if col in df.columns:
+            return col
+    return None
+```
+
+
+- `def`: Defines a function.
+- `possible_names`: Contains possible names of a particular column.
+- `for col in possible_names`: Checks each possible column name.
+- `if col in df.columns`: Checks whether that column exists in the dataset.
+- `return col`: Returns the first matching column.
+- `return None`: Returns `None` if no matching column is found.
+
+
+**Identify the required columns:**
+
+
+```python
+region_col = find_column([
+    'region', 'sales_region',
+    'geographical_region', 'area'
+])
+
+
+sales_col = find_column([
+    'sales_amount', 'sales',
+    'total_sales', 'revenue',
+    'amount', 'sales_revenue'
+])
+
+
+category_col = find_column([
+    'product_category', 'category',
+    'product_type', 'product'
+])
+
+
+quantity_col = find_column([
+    'quantity', 'quantity_sold',
+    'units_sold'
+])
+
+
+date_col = find_column([
+    'transaction_date', 'date',
+    'order_date', 'sales_date'
+])
+```
+
+
+- `region_col`: Identifies the region column.
+- `sales_col`: Identifies the sales amount column.
+- `category_col`: Identifies the product category column.
+- `quantity_col`: Identifies the quantity sold column.
+- `date_col`: Identifies the transaction date column.
+
+
+This approach makes the code flexible because datasets may use different names for the same information.
+
+
+### STEP 7: HANDLE MISSING VALUES AND DATA TYPES
+
+
+**Convert sales amount into numeric format:**
+
+
+```python
+if sales_col is not None:
+    df[sales_col] = pd.to_numeric(
+        df[sales_col].astype(str).str.replace(',', '', regex=False),
+        errors='coerce'
+    )
+```
+
+
+- `if sales_col is not None`: Checks whether the sales column exists.
+- `astype(str)`: Converts values into strings.
+- `str.replace(',', '', regex=False)`: Removes commas from sales values.
+- `pd.to_numeric()`: Converts values into numeric format.
+- `errors='coerce'`: Converts invalid values into `NaN`.
+
+
+**Convert quantity into numeric format:**
+
+
+```python
+if quantity_col is not None:
+    df[quantity_col] = pd.to_numeric(
+        df[quantity_col],
+        errors='coerce'
+    )
+```
+
+
+This ensures that quantity values are stored as numbers.
+
+
+**Convert date into datetime format:**
+
+
+```python
+if date_col is not None:
+    df[date_col] = pd.to_datetime(
+        df[date_col],
+        errors='coerce'
+    )
+```
+
+
+- `pd.to_datetime()`: Converts date values into datetime format.
+- `errors='coerce'`: Converts invalid dates into `NaT` (Not a Time).
+
+
+**Identify numerical and categorical columns:**
+
+
+```python
+numeric_columns = df.select_dtypes(
+    include=np.number
+).columns
+
+
+categorical_columns = df.select_dtypes(
+    include=['object', 'category']
+).columns
+```
+
+
+- `select_dtypes()`: Selects columns based on their data types.
+- `np.number`: Selects numerical columns.
+- `object` and `category`: Select categorical columns.
+
+
+**Fill missing numerical values:**
+
+
+```python
+for col in numeric_columns:
+    df[col] = df[col].fillna(df[col].median())
+```
+
+
+- `for col in numeric_columns`: Iterates through numerical columns.
+- `median()`: Calculates the middle value.
+- `fillna()`: Replaces missing values with the median.
+
+
+**Fill missing categorical values:**
+
+
+```python
+for col in categorical_columns:
+    if df[col].isnull().any() and not df[col].mode().empty:
+        df[col] = df[col].fillna(df[col].mode()[0])
+```
+
+
+- `isnull().any()`: Checks whether a column contains missing values.
+- `mode()`: Finds the most frequently occurring value.
+- `mode()[0]`: Selects the first mode.
+- `fillna()`: Replaces missing categorical values with the mode.
+
+
+**Remove records with invalid dates:**
+
+
+```python
+if date_col is not None:
+    df = df.dropna(subset=[date_col])
+```
+
+
+- `dropna(subset=[date_col])`: Removes rows where the date column has missing values.
+
+
+### STEP 8: REMOVE DUPLICATE RECORDS
+
+
+```python
+df = df.drop_duplicates()
+
+
+print(df.duplicated().sum())
+print("Updated Dataset Shape:", df.shape)
+```
+
+
+- `drop_duplicates()`: Removes duplicate rows from the dataset.
+- `duplicated().sum()`: Checks how many duplicate records remain.
+- `df.shape`: Displays the updated dataset dimensions.
+
+
+This prevents duplicate transactions from affecting the sales calculations.
+
+
+### STEP 9: STANDARDIZE CATEGORICAL DATA
+
+
+```python
+for col in [region_col, category_col]:
+    if col is not None:
+        df[col] = (
+            df[col].astype(str)
+            .str.strip()
+            .str.title()
+        )
+```
+
+
+- `for col`: Iterates through region and product category columns.
+- `if col is not None`: Ensures the column exists.
+- `astype(str)`: Converts values into strings.
+- `str.strip()`: Removes unwanted spaces.
+- `str.title()`: Converts the first letter of each word into uppercase.
+
+
+For example:
+
+
+- `north` becomes `North`.
+- ` SOUTH ` becomes `South`.
+- `electronics` becomes `Electronics`.
+
+
+This ensures consistent categorical values during grouping.
+
+
+### STEP 10: IDENTIFY VALID SALES RECORDS
+
+
+```python
+if region_col is None or sales_col is None:
+    raise ValueError(
+        "Region or sales amount column not found. "
+        "Update the column names in Step 6."
+    )
+```
+
+
+- `or`: Checks whether either required column is missing.
+- `raise ValueError()`: Stops execution and displays an error message if a required column is not found.
+
+
+**Remove invalid records:**
+
+
+```python
+df = df.dropna(
+    subset=[region_col, sales_col]
+)
+
+
+df = df[df[sales_col] >= 0]
+```
+
+
+- `dropna(subset=...)`: Removes rows with missing region or sales values.
+- `df[sales_col] >= 0`: Checks that sales amounts are non-negative.
+- `df[...]`: Filters the DataFrame based on the condition.
+
+
+This ensures that only valid sales transactions are included in the analysis.
+
+
+### STEP 11: GROUP SALES BY REGION
+
+
+```python
+region_sales = (
+    df.groupby(region_col)[sales_col]
+    .sum()
+    .sort_values(ascending=False)
+)
+```
+
+
+This is the most important step of the practical because it performs data aggregation.
+
+
+- `groupby(region_col)`: Groups all records based on their region.
+- `[sales_col]`: Selects the sales amount column.
+- `sum()`: Calculates the total sales for each region.
+- `sort_values(ascending=False)`: Sorts regions from highest sales to lowest sales.
+- `region_sales`: Stores the aggregated result.
+
+
+**Example:**
+
+
+| Region | Total Sales |
+|---|---:|
+| West | 50000 |
+| North | 40000 |
+| South | 30000 |
+| East | 20000 |
+
+
+This helps identify which region generates the highest revenue.
+
+
+### STEP 12: VISUALIZE SALES BY REGION USING BAR CHART
+
+
+```python
+plt.figure(figsize=(10, 5))
+
+
+plt.bar(
+    region_sales.index,
+    region_sales.values,
+    color='skyblue',
+    label='Total Sales'
+)
+
+
+plt.title('Total Sales by Region')
+plt.xlabel('Region')
+plt.ylabel('Total Sales Amount')
+
+
+plt.legend()
+plt.xticks(rotation=45)
+plt.grid(axis='y')
+plt.tight_layout()
+
+
+plt.show()
+```
+
+
+- `plt.figure(figsize=(10, 5))`: Creates a figure with width 10 and height 5 inches.
+- `plt.bar()`: Creates a bar chart.
+- `region_sales.index`: Provides region names on the X-axis.
+- `region_sales.values`: Provides total sales on the Y-axis.
+- `color='skyblue'`: Sets the bar color.
+- `label`: Defines the legend label.
+- `plt.title()`: Adds the chart title.
+- `plt.xlabel()`: Labels the X-axis.
+- `plt.ylabel()`: Labels the Y-axis.
+- `plt.legend()`: Displays the legend.
+- `plt.xticks(rotation=45)`: Rotates region labels by 45 degrees.
+- `plt.grid(axis='y')`: Adds horizontal grid lines.
+- `plt.tight_layout()`: Adjusts spacing to prevent overlapping.
+- `plt.show()`: Displays the chart.
+
+
+### STEP 13: VISUALIZE SALES DISTRIBUTION USING PIE CHART
+
+
+```python
+plt.figure(figsize=(8, 8))
+
+
+plt.pie(
+    region_sales.values,
+    labels=region_sales.index,
+    autopct='%1.1f%%',
+    startangle=90
+)
+
+
+plt.title('Sales Distribution by Region')
+
+
+plt.show()
+```
+
+
+- `plt.pie()`: Creates a pie chart.
+- `region_sales.values`: Provides the sales values.
+- `labels=region_sales.index`: Displays region names.
+- `autopct='%1.1f%%'`: Displays each region's percentage up to one decimal place.
+- `startangle=90`: Starts the pie chart from a 90-degree angle.
+- `plt.title()`: Adds the chart title.
+- `plt.show()`: Displays the chart.
+
+
+A pie chart helps understand the percentage contribution of each region to total sales.
+
+
+### STEP 14: IDENTIFY TOP-PERFORMING REGION
+
+
+```python
+top_region = region_sales.idxmax()
+top_sales = region_sales.max()
+```
+
+
+- `idxmax()`: Returns the index (region name) having the maximum sales value.
+- `max()`: Returns the highest sales amount.
+- `top_region`: Stores the name of the top-performing region.
+- `top_sales`: Stores its total sales.
+
+
+**Calculate region-wise ranking:**
+
+
+```python
+display(region_sales.rank(
+    ascending=False,
+    method='dense'
+).sort_values())
+```
+
+
+- `rank()`: Assigns ranks to regions based on their sales.
+- `ascending=False`: Gives rank 1 to the highest sales value.
+- `method='dense'`: Assigns consecutive ranks without skipping numbers when values are tied.
+- `sort_values()`: Sorts the resulting ranking values.
+
+
+### STEP 15: GROUP SALES BY REGION AND PRODUCT CATEGORY
+
+
+```python
+if category_col is not None:
+
+
+    region_category_sales = (
+        df.groupby([region_col, category_col])[sales_col]
+        .sum()
+        .unstack(fill_value=0)
+    )
+
+
+    display(region_category_sales)
+
+
+else:
+    print("Product category column not found. Grouping skipped.")
+```
+
+
+This step performs multi-level aggregation.
+
+
+- `if category_col is not None`: Checks whether the product category column exists.
+- `groupby([region_col, category_col])`: Groups data using two columns: region and product category.
+- `sum()`: Calculates total sales for each region-category combination.
+- `unstack()`: Converts the last grouping level (product category) into separate columns.
+- `fill_value=0`: Replaces missing combinations with zero.
+- `display()`: Displays the final aggregated table.
+
+
+**Example:**
+
+
+| Region | Electronics | Clothing | Furniture |
+|---|---:|---:|---:|
+| North | 10000 | 5000 | 3000 |
+| South | 8000 | 7000 | 4000 |
+| West | 12000 | 6000 | 5000 |
+
+
+This helps compare product category performance across different regions.
+
+
+### STEP 16: CREATE STACKED BAR CHART
+
+
+```python
+if category_col is not None:
+
+
+    region_category_sales.plot(
+        kind='bar',
+        stacked=True,
+        figsize=(11, 6)
+    )
+
+
+    plt.title('Sales by Region and Product Category')
+    plt.xlabel('Region')
+    plt.ylabel('Total Sales Amount')
+
+
+    plt.legend(
+        title='Product Category',
+        bbox_to_anchor=(1.05, 1),
+        loc='upper left'
+    )
+
+
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
+    plt.tight_layout()
+
+
+    plt.show()
+```
+
+
+- `plot(kind='bar')`: Creates a bar chart.
+- `stacked=True`: Places product category bars on top of each other.
+- `figsize=(11, 6)`: Sets the chart dimensions.
+- `plt.title()`: Adds the chart title.
+- `plt.xlabel()` and `plt.ylabel()`: Add axis labels.
+- `title='Product Category'`: Sets the legend title.
+- `bbox_to_anchor=(1.05, 1)`: Positions the legend outside the chart.
+- `loc='upper left'`: Aligns the legend from its upper-left corner.
+- `plt.xticks(rotation=45)`: Rotates region labels.
+- `plt.grid(axis='y')`: Adds horizontal grid lines.
+- `plt.tight_layout()`: Adjusts the layout.
+- `plt.show()`: Displays the chart.
+
+
+A stacked bar chart shows the total sales of each region and how much each category contributes to that total.
+
+
+### STEP 17: CREATE GROUPED BAR CHART
+
+
+```python
+if category_col is not None:
+
+
+    region_category_sales.plot(
+        kind='bar',
+        stacked=False,
+        figsize=(11, 6)
+    )
+
+
+    plt.title('Grouped Sales Comparison by Region and Category')
+    plt.xlabel('Region')
+    plt.ylabel('Total Sales Amount')
+
+
+    plt.legend(
+        title='Product Category',
+        bbox_to_anchor=(1.05, 1),
+        loc='upper left'
+    )
+
+
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
+    plt.tight_layout()
+
+
+    plt.show()
+```
+
+
+- `kind='bar'`: Creates a bar chart.
+- `stacked=False`: Displays category bars side by side instead of stacking them.
+- The remaining parameters work similarly to Step 16.
+
+
+A grouped bar chart helps directly compare different product categories within each region.
+
+
+**Difference between stacked and grouped bar charts:**
+
+
+- Stacked bar chart: Bars are placed on top of each other.
+- Grouped bar chart: Bars are placed side by side.
+
+
+### STEP 18: ADDITIONAL SALES AGGREGATION
+
+
+**Calculate total quantity sold by region:**
+
+
+```python
+if quantity_col is not None:
+
+
+    region_quantity = (
+        df.groupby(region_col)[quantity_col]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+
+    display(region_quantity)
+```
+
+
+- `if quantity_col is not None`: Checks whether the quantity column exists.
+- `groupby(region_col)`: Groups records by region.
+- `[quantity_col]`: Selects the quantity column.
+- `sum()`: Calculates the total quantity sold in each region.
+- `sort_values(ascending=False)`: Sorts regions from highest quantity to lowest.
+- `display()`: Displays the result.
+
+
+**Calculate total sales by product category:**
+
+
+```python
+if category_col is not None:
+
+
+    category_sales = (
+        df.groupby(category_col)[sales_col]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+
+    display(category_sales)
+```
+
+
+- `groupby(category_col)`: Groups transactions by product category.
+- `sum()`: Calculates total sales for each category.
+- `sort_values(ascending=False)`: Sorts categories by sales in descending order.
+
+
+This helps identify the best-selling product categories.
+
+
+### STEP 19: MONTHLY SALES ANALYSIS
+
+
+```python
+if date_col is not None:
+
+
+    df['month'] = df[date_col].dt.to_period('M').astype(str)
+
+
+    monthly_sales = (
+        df.groupby('month')[sales_col]
+        .sum()
+    )
+
+
+    plt.figure(figsize=(11, 5))
+
+
+    plt.plot(
+        monthly_sales.index,
+        monthly_sales.values,
+        marker='o',
+        color='purple',
+        label='Monthly Sales'
+    )
+
+
+    plt.title('Monthly Sales Trend')
+    plt.xlabel('Month')
+    plt.ylabel('Total Sales Amount')
+
+
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+
+    plt.show()
+```
+
+
+- `if date_col is not None`: Checks whether the date column exists.
+- `df[date_col].dt`: Accesses datetime properties.
+- `to_period('M')`: Converts dates into monthly periods.
+- `astype(str)`: Converts monthly periods into strings.
+- `groupby('month')`: Groups transactions month-wise.
+- `sum()`: Calculates total sales for each month.
+- `plt.figure()`: Creates a figure.
+- `plt.plot()`: Creates a line chart.
+- `monthly_sales.index`: Provides month names on the X-axis.
+- `monthly_sales.values`: Provides monthly sales on the Y-axis.
+- `marker='o'`: Displays circular markers at each data point.
+- `color='purple'`: Sets the line color.
+- `label='Monthly Sales'`: Defines the legend label.
+- `plt.grid(True)`: Displays grid lines.
+- `plt.show()`: Displays the chart.
+
+
+This analysis helps identify monthly sales trends and changes in business performance.
+
+
+### STEP 20: EXPORT AGGREGATED DATASETS
+
+
+**Export region-wise sales:**
+
+
+```python
+region_sales.to_csv(
+    'sales_by_region.csv',
+    header=['Total_Sales']
+)
+```
+
+
+- `to_csv()`: Exports the data into a CSV file.
+- `sales_by_region.csv`: Name of the exported file.
+- `header=['Total_Sales']`: Sets the column name in the output file.
+
+
+**Export region and category-wise sales:**
+
+
+```python
+if category_col is not None:
+
+
+    region_category_sales.to_csv(
+        'sales_by_region_and_category.csv'
+    )
+```
+
+
+This exports the region-category aggregation into a separate CSV file.
+
+
+**Export cleaned dataset:**
+
+
+```python
+df.to_csv(
+    'cleaned_retail_sales.csv',
+    index=False
+)
+```
+
+
+- `df.to_csv()`: Exports the cleaned DataFrame.
+- `index=False`: Prevents Pandas from adding row indexes as an extra column.
+
+
+### STEP 21: GENERATE FINAL REPORT
+
+
+```python
+print("Total Transactions:", len(df))
+
+
+print("Number of Regions:", df[region_col].nunique())
+
+
+print("Total Sales:", round(df[sales_col].sum(), 2))
+
+
+print("Average Sales per Transaction:",
+      round(df[sales_col].mean(), 2))
+
+
+print("Top Performing Region:", top_region)
+
+
+print("Highest Regional Sales:", round(top_sales, 2))
+
+
+display(region_sales)
+```
+
+
+Explanation:
+
+
+- `len(df)`: Returns the total number of valid transactions.
+- `nunique()`: Counts the number of unique regions.
+- `sum()`: Calculates total sales.
+- `mean()`: Calculates average sales per transaction.
+- `round(value, 2)`: Rounds a numerical value to two decimal places.
+- `top_region`: Displays the highest-performing region.
+- `top_sales`: Displays the highest regional sales.
+- `display(region_sales)`: Displays the complete region-wise sales summary.
+
+
+The final report provides a summary of the sales analysis.
+
+
+---
+
+
+## Important Concepts to Remember
+
+
+### 1. What is Data Aggregation?
+Data aggregation is the process of collecting and summarizing data to generate meaningful information.
+
+
+Example: Calculating total sales for each region.
+
+
+### 2. What is GroupBy?
+`groupby()` is a Pandas function used to divide data into groups based on one or more columns and perform operations such as sum, mean, count, and maximum.
+
+
+### 3. What is Unstack?
+`unstack()` converts a grouped index level into columns, making grouped data easier to analyze and visualize.
+
+
+### 4. What is the difference between Sum and Mean?
+- `sum()`: Calculates the total of values.
+- `mean()`: Calculates the average of values.
+
+
+### 5. What is the difference between Bar Chart and Pie Chart?
+- Bar chart: Compares numerical values across categories.
+- Pie chart: Shows the percentage contribution of each category to the total.
+
+
+### 6. What is the difference between Stacked and Grouped Bar Charts?
+- Stacked: Displays categories on top of one another.
+- Grouped: Displays categories side by side.
+
+
+### 7. What is idxmax()?
+`idxmax()` returns the index or label corresponding to the maximum value.
+
+
+---
+
+
+## Overall Workflow
+
+
+1. Install and import required libraries.
+2. Load the retail sales dataset.
+3. Explore and understand the dataset.
+4. Identify relevant columns.
+5. Handle missing values and correct data types.
+6. Remove duplicate and invalid records.
+7. Standardize categorical values.
+8. Aggregate sales by region and product category.
+9. Identify the top-performing region.
+10. Visualize sales using different charts.
+11. Perform monthly sales and quantity analysis.
+12. Export the aggregated datasets.
+13. Generate the final sales performance report.
