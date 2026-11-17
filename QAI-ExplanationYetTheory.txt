@@ -1,0 +1,3145 @@
+# **CL-II Practical Examination — Complete Quantum AI Theory Preparation**
+
+
+
+All 5 Quantum AI practicals
+
+Theory + Concepts + Viva Preparation
+
+
+
+I will cover all five Quantum AI practicals again, but this time our focus will be entirely on **understanding the theory and explaining every concept confidently to the external examiner**.
+
+I will not give you code explanations or installation steps here. We will concentrate on the concepts, working principles, mathematical meaning, applications and oral explanations.
+
+The explanations follow your CL-II Quantum AI laboratory manual and your five-practical list. Where the manual contains an oversimplification or technical inconsistency, I will point it out so that you do not give an incorrect answer to the examiner.
+
+## **How to study this material**
+
+For every practical, we will cover:
+
+1. What the practical is about.
+2. Why we perform it.
+3. All basic concepts required to understand it.
+4. Every important technical term.
+5. Working principle, step by step.
+6. Important mathematical concepts and equations.
+7. Applications and advantages.
+8. How to explain the practical to the external examiner.
+9. Detailed viva questions and answers.
+
+## **First understand these common Quantum Computing fundamentals**
+
+Before studying individual practicals, you must understand these concepts because they are used repeatedly in all five experiments.
+
+# **PART 1 — FUNDAMENTALS OF QUANTUM COMPUTING**
+
+## **1. What is Quantum Computing?**
+
+Quantum Computing is a type of computing that uses the principles of quantum mechanics to process information.
+
+Traditional computers use bits, whereas quantum computers use qubits.
+
+Classical computers use binary values:
+
+- 0
+- 1
+
+Quantum computers use quantum bits, which can exist in superpositions of the states 0 and 1.
+
+In simple language:
+
+A classical computer processes information using ordinary binary bits, while a quantum computer processes information using qubits and quantum operations.
+
+**Example:**
+
+A classical bit can have either:
+
+\\[ 0 \quad \text{or} \quad 1 \\]
+
+A qubit can be represented as:
+
+\\[ |\psi\rangle=\alpha|0\rangle+\beta|1\rangle \\]
+
+This is one of the fundamental equations of quantum computing.
+
+## **2. What is a Qubit?**
+
+[Quantum Computing Explained. Everything You Need To Know And Nothing… | by Can Bayar | Medium](https://images.openai.com/static-rsc-4/4rTL-ZfDoppKYx_Djrbi2VoKBLu0OHvETMlXxrkY7CTW_Ld7Ob7dIc_LMzcpZ3vZ6TkBQYrJ2-FF_tlSM5htXO2thzQQ5DbojhFqV7lUkvhyAiKJw8ovPrhYlPi9Rv55CDSt_XRfN9sOCtcGTEKundjahPBwrbeArHPQ5JpsUEg?purpose=inline)
+
+[canbayar91.medium.com](https://canbayar91.medium.com/quantum-computing-explained-197bfaad8437?utm_source=chatgpt.com)
+
+Qubit stands for **Quantum Bit**.
+
+It is the basic unit of quantum information, just as a bit is the basic unit of classical information.
+
+A classical bit can hold either 0 or 1.
+
+A qubit can be in a superposition of the basis states 0 and 1.
+
+Its general mathematical representation is:
+
+\\[ |\psi\rangle=\alpha|0\rangle+\beta|1\rangle \\]
+
+Where:
+
+- \\(|\psi\rangle\\) = Quantum state.
+- \\(|0\rangle\\) = Zero basis state.
+- \\(|1\rangle\\) = One basis state.
+- \\(\alpha\\) = Probability amplitude of state 0.
+- \\(\beta\\) = Probability amplitude of state 1.
+
+The probability of measuring 0 is:
+
+\\[ P(0)=|\alpha|^2 \\]
+
+The probability of measuring 1 is:
+
+\\[ P(1)=|\beta|^2 \\]
+
+The total probability must equal 1:
+
+\\[ |\alpha|^2+|\beta|^2=1 \\]
+
+**Example:**
+
+Suppose:
+
+\\[ |\psi\rangle= \frac{1}{\sqrt{2}}|0\rangle+ \frac{1}{\sqrt{2}}|1\rangle \\]
+
+Then:
+
+\\[ P(0)=50\\% \\]
+
+\\[ P(1)=50\\% \\]
+
+Therefore, when measured, the qubit has an equal probability of giving 0 or 1.
+
+**How to explain to the external:**
+
+"Ma'am, a qubit is the basic unit of quantum information. Unlike a classical bit, which can be either 0 or 1, a qubit can exist in a superposition of both basis states. When we measure it, we obtain either 0 or 1 according to its probability amplitudes."
+
+## **3. What is Superposition?**
+
+[Cracking Hard Problems with QAOA: A Quantum Leap in Optimization | by Ghaya Binghalib | Medium](https://images.openai.com/static-rsc-4/eK_ok994GT6oTGhR_VBc7mFLtdICV4xypcn1lKMf3F3rtapDk5xqr6sV98rtILyFIfnwffArPkWvirRFDBErAjgCgUBvmTQbXiaG_-UTYTqo3MR8tHPxyMluiIcWqJiX5hSVg8sPhfaYSWp3i1fQRhzi7UObBWo3MgxDoMBwlXE?purpose=inline)
+
+[medium.com](https://medium.com/%40ghayabinghalib/cracking-hard-problems-with-qaoa-a-quantum-leap-in-optimization-b04e93b943da?utm_source=chatgpt.com)
+
+Superposition is one of the most important principles of quantum computing.
+
+It means that a quantum system can exist in a combination of multiple possible basis states until it is measured.
+
+For example:
+
+\\[ |\psi\rangle= \frac{|0\rangle+|1\rangle}{\sqrt{2}} \\]
+
+This state represents an equal superposition of 0 and 1.
+
+When we measure it:
+
+- There is a 50% chance of obtaining 0.
+- There is a 50% chance of obtaining 1.
+
+**Why is superposition important?**
+
+It allows quantum circuits to represent combinations of possible states.
+
+For example, two qubits can represent four computational basis states:
+
+\\[ |00\rangle,\ |01\rangle,\ |10\rangle,\ |11\rangle \\]
+
+Three qubits can represent:
+
+\\[ 2^3=8 \\]
+
+basis states.
+
+Five qubits can represent:
+
+\\[ 2^5=32 \\]
+
+basis states.
+
+**How to explain to the external:**
+
+"Superposition is the ability of a qubit to exist in a combination of the states 0 and 1. We commonly create superposition using the Hadamard gate. When we measure the qubit, it gives one definite result."
+
+## **4. What is Quantum Entanglement?**
+
+['Spooky action at a distance'—a beginner's guide to quantum entanglement and why it matters](https://images.openai.com/static-rsc-4/6eKlN8FBQ744yBQQdIm0K_ue25T_JhRnFXt9xbKausrk_X8NKBDasjllDoQ4WhHow37C_t0BsNzxNBVb43nZMsQc06ekhkyAVkJV6x6KZTQj-qAIgOA4VNCN3LLijPJcfZmcvWERlqY8CD9dl0i4uuZBic6Rz6du0nmLwC3Tjmc?purpose=inline)
+
+[phys.org](https://phys.org/news/2025-10-spooky-action-distance-beginner-quantum.html?utm_source=chatgpt.com)
+
+Entanglement is a quantum phenomenon in which two or more qubits share a joint quantum state and exhibit correlations that cannot be explained by independent classical states.
+
+In simple language:
+
+Two entangled qubits behave as parts of a connected quantum system.
+
+For example, consider this Bell state:
+
+\\[ |\Phi^+\rangle= \frac{|00\rangle+|11\rangle}{\sqrt{2}} \\]
+
+When we measure both qubits:
+
+- If the first qubit gives 0, the second also gives 0.
+- If the first qubit gives 1, the second also gives 1.
+
+Their measurement results are perfectly correlated.
+
+**Why is entanglement important?**
+
+It is used in:
+
+- Quantum teleportation.
+- Quantum communication.
+- Quantum cryptography.
+- Quantum error correction.
+- Quantum information processing.
+
+**How to explain to the external:**
+
+"Entanglement is a quantum phenomenon where two or more qubits become correlated. Even when the qubits are separated, their measurement outcomes can remain strongly correlated. It is an important resource in quantum teleportation."
+
+## **5. What is a Quantum Gate?**
+
+[hpssjellis.github.io](https://hpssjellis.github.io/my-examples-for-quantum-computing/public/ibm-quantum-symbols.html?utm_source=chatgpt.com)
+
+A quantum gate is an operation that changes the state of one or more qubits.
+
+It is similar to a logic gate in classical computing, but quantum gates operate on quantum states.
+
+Some important quantum gates are:
+
+| Gate      | Name             | Main purpose              |
+| --------- | ---------------- | ------------------------- |
+| H         | Hadamard         | Creates superposition     |
+| X         | Pauli-X          | Bit flip                  |
+| Y         | Pauli-Y          | Bit and phase flip        |
+| Z         | Pauli-Z          | Phase flip                |
+| CX / CNOT | Controlled NOT   | Conditional bit flip      |
+| SWAP      | Swap gate        | Exchanges two qubits      |
+| CP        | Controlled Phase | Applies conditional phase |
+
+Let's understand the most important ones.
+
+### **A. Hadamard gate (H)**
+
+The Hadamard gate creates superposition.
+
+\\[ H=\frac{1}{\sqrt{2}} \begin{bmatrix} 1&1\\\ 1&-1 \end{bmatrix} \\]
+
+Its operations are:
+
+\\[ H|0\rangle= \frac{|0\rangle+|1\rangle}{\sqrt{2}} \\]
+
+\\[ H|1\rangle= \frac{|0\rangle-|1\rangle}{\sqrt{2}} \\]
+
+Remember: H gate creates superposition from a computational basis state.
+
+### **B. Pauli-X gate**
+
+It performs a bit flip.
+
+\\[ X= \begin{bmatrix} 0&1\\\ 1&0 \end{bmatrix} \\]
+
+It changes:
+
+\\[ |0\rangle\rightarrow|1\rangle \\]
+
+\\[ |1\rangle\rightarrow|0\rangle \\]
+
+Remember: X gate is similar to a classical NOT operation on computational basis states.
+
+### **C. Pauli-Z gate**
+
+It performs a phase flip.
+
+\\[ Z= \begin{bmatrix} 1&0\\\ 0&-1 \end{bmatrix} \\]
+
+It changes:
+
+\\[ |0\rangle\rightarrow|0\rangle \\]
+
+\\[ |1\rangle\rightarrow-|1\rangle \\]
+
+The state \\(|1\rangle\\) gets a negative phase.
+
+### **D. Pauli-Y gate**
+
+It performs a bit-and-phase transformation.
+
+\\[ Y= \begin{bmatrix} 0&-i\\\ i&0 \end{bmatrix} \\]
+
+It changes:
+
+\\[ |0\rangle\rightarrow i|1\rangle \\]
+
+\\[ |1\rangle\rightarrow-i|0\rangle \\]
+
+### **E. CNOT gate**
+
+CNOT stands for Controlled NOT.
+
+It operates on two qubits:
+
+- Control qubit.
+- Target qubit.
+
+The target qubit flips only when the control qubit is 1.
+
+| Control | Target before | Target after |
+| ------- | ------------- | ------------ |
+| 0       | 0             | 0            |
+| 0       | 1             | 1            |
+| 1       | 0             | 1            |
+| 1       | 1             | 0            |
+
+It is commonly used to create entanglement.
+
+### **F. SWAP gate**
+
+It exchanges the states of two qubits.
+
+For example:
+
+\\[ |01\rangle\rightarrow|10\rangle \\]
+
+It is useful in quantum circuits when the ordering of qubits needs to be changed.
+
+## **6. What is Measurement in Quantum Computing?**
+
+Measurement is the process of observing a quantum state to obtain a classical result.
+
+Before measurement, a qubit can exist in superposition.
+
+After measurement, it gives a definite classical outcome of 0 or 1.
+
+For example:
+
+\\[ |\psi\rangle= \frac{|0\rangle+|1\rangle}{\sqrt{2}} \\]
+
+After measurement, the result will be either:
+
+- 0 with 50% probability.
+- 1 with 50% probability.
+
+Measurement converts quantum information into classical information.
+
+**How to explain to the external:**
+
+"Measurement is the process of observing a qubit and obtaining a classical result. When we measure a qubit in superposition, the state collapses to one of the computational basis outcomes according to the measurement probabilities."
+
+## **7. What is a Quantum Circuit?**
+
+A quantum circuit is a sequence of quantum gates and operations applied to qubits to perform a particular computation.
+
+For example:
+
+[The quantum circuit for the three-qubit entanglement is depicted in the... | Download Scientific Diagram](https://images.openai.com/static-rsc-4/TtWeGl5siIGnghpVJSahleQMvh4Cwc63AI0qk_ZH5lhJ_kyD3J0E0Sqim513Ri8jqAZG1l4VPITa1ocX88a-CaC1OsDEPfyIKrZdgW7bdyveEGcodeMEEIbPhfIPPOynii6SDTDj-Z2dWgNJSHmyyy_0CSMkdMi4-kP970wiInw?purpose=inline)
+
+[researchgate.net](https://www.researchgate.net/figure/The-quantum-circuit-for-the-three-qubit-entanglement-is-depicted-in-the-illustrations_fig2_368522721?utm_source=chatgpt.com)
+
+A quantum circuit generally contains:
+
+1. Qubits.
+2. Quantum gates.
+3. Measurement operations.
+4. Classical registers, when measurement results need to be stored.
+
+Quantum circuits are used to implement quantum algorithms.
+
+## **8. What are Quantum and Classical Registers?**
+
+**Quantum register:** Stores qubits.
+
+**Classical register:** Stores classical measurement results.
+
+For example:
+
+```
+QuantumCircuit(3, 3)
+```
+
+This creates:
+
+- Three qubits.
+- Three classical bits.
+
+A classical bit is used to store the measured value of a qubit.
+
+## **9. What are Shots?**
+
+A shot means one execution of a quantum circuit.
+
+If we run:
+
+```
+shots = 1000
+```
+
+It means the circuit is executed 1000 times.
+
+Why do we need multiple shots?
+
+Because quantum measurement is probabilistic. Multiple executions help estimate the measurement probabilities.
+
+For example:
+
+```
+0 = 503 times
+1 = 497 times
+```
+
+This approximates an equal probability distribution.
+
+## **10. What is a Quantum Simulator?**
+
+A quantum simulator is software that imitates the behaviour of a quantum circuit on a classical computer.
+
+It allows us to:
+
+- Create quantum circuits.
+- Apply quantum gates.
+- Perform measurements.
+- Observe simulation results.
+
+Qiskit Aer is an example of a quantum circuit simulation framework.
+
+**Important distinction:** A simulator is not an actual quantum computer. It simulates quantum circuit behaviour using classical computing resources.
+
+# **PART 2 — PRACTICAL 1: IMPLEMENTATION OF 16-QUBIT RANDOM NUMBER GENERATOR**
+
+Practical 1
+
+[Quantum Programming 101: 16 Qubit Random Number Generator Tutorial](https://images.openai.com/static-rsc-4/fz7jOJxMK7UAaGFHez3wRPY_c6me3Pikp6aT4S6pp26sCp5DRFDBgoa98VT96bYcp2kO8krDZC_yfDrLei-eXRC9wRzdfn2F6uvpVpYFJYI4H8o9umF1uc9XU_7CsvHlFkn5YUsbDRKcu4JjBjB4Zg8yHs6OEKDLegfRtGCGOUE?purpose=inline)
+
+[thequantuminsider.com](https://thequantuminsider.com/2019/11/04/quantum-programming-101-16-qubit-random-number-generator-tutorial/?utm_source=chatgpt.com)
+
+## **1. What is a Random Number Generator?**
+
+A Random Number Generator (RNG) is a system that generates numbers without following a predictable pattern.
+
+For example:
+
+```
+1010100110101101
+```
+
+This is a 16-bit binary number.
+
+Random numbers are used in:
+
+- Cryptography.
+- Online security.
+- Password generation.
+- Scientific simulations.
+- Statistical sampling.
+- Gaming applications.
+
+There are two important types of random number generators.
+
+### **A. Pseudo Random Number Generator (PRNG)**
+
+A Pseudo Random Number Generator generates numbers using a mathematical algorithm.
+
+It appears random, but it is generated using a deterministic process.
+
+This means that if we know the initial seed and algorithm, we can reproduce the same sequence.
+
+Example:
+
+```
+import randomprint(random.randint(0, 1))
+```
+
+This generates a pseudo-random bit.
+
+### **B. True Random Number Generator (TRNG)**
+
+A True Random Number Generator generates randomness using a physical process.
+
+For example:
+
+- Electronic noise.
+- Thermal noise.
+- Quantum measurement.
+
+Quantum random number generation uses the probabilistic behaviour of quantum measurement to generate random bits.
+
+**Difference:**
+
+| PRNG                                         | Quantum RNG                                              |
+| -------------------------------------------- | -------------------------------------------------------- |
+| Uses mathematical algorithms                 | Uses quantum physical processes                          |
+| Deterministic when seed is fixed             | Uses probabilistic measurement                           |
+| Can reproduce a sequence using the same seed | Ideal quantum measurement outcomes are not predetermined |
+| Runs on classical computers                  | Uses quantum devices or suitable quantum simulation      |
+
+## **2. What is Quantum Random Number Generation?**
+
+Quantum Random Number Generation (QRNG) is a method of generating random numbers using the principles of quantum mechanics.
+
+The basic idea is:
+
+1. Create a qubit.
+2. Apply a Hadamard gate.
+3. The qubit enters an equal superposition of 0 and 1.
+4. Measure the qubit.
+5. Obtain either 0 or 1 with equal probability in an ideal system.
+
+Mathematically:
+
+\\[ |0\rangle \xrightarrow{H} \frac{|0\rangle+|1\rangle}{\sqrt{2}} \\]
+
+When measured:
+
+\\[ P(0)=\frac12 \\]
+
+\\[ P(1)=\frac12 \\]
+
+Therefore, both outcomes have a 50% probability.
+
+This is the basic principle of your first practical.
+
+## **3. Why do we use 16 qubits?**
+
+Your practical specifically asks for a 16-qubit random number generator.
+
+Each qubit produces one measured bit.
+
+Therefore:
+
+\\[ 16\text{ qubits}=16\text{ random bits} \\]
+
+For example:
+
+```
+1011010010110101
+```
+
+This is one possible 16-bit random result.
+
+How many different 16-bit binary numbers can be generated?
+
+\\[ 2^{16}=65536 \\]
+
+Therefore, there are 65,536 possible 16-bit strings.
+
+If we interpret them as unsigned binary integers, their values range from:
+
+\\[ 0\text{ to }65535 \\]
+
+## **4. How does the 16-qubit random number generator work?**
+
+[Computador quântico, números aleatórios e segurança… como essas coisas estão relacionadas? | by Samuraí Brito | Medium](https://images.openai.com/static-rsc-4/9tfULr5jKblgSOYP7wvT8Qkxws6wkJdDRN_iNxNIzDNmkRXUVmH3F01BzRbTGz46wDeh0NjBK-DCP6rOx-40V2pf0yndf3dvDGJKaMGEKlAFe_t4SkX249D_skq7JYF1jdm0HxvCLhqKO5f6BgSOmX5Q5fvSMuW2bWCJo17_Tjk?purpose=inline)
+
+[samuraigab.medium.com](https://samuraigab.medium.com/computador-qu%C3%A2ntico-n%C3%BAmeros-aleat%C3%B3rios-e-seguran%C3%A7a-como-essas-coisas-est%C3%A3o-relacionadas-78dd42d32e87?utm_source=chatgpt.com)
+
+Understand the complete working.
+
+**Step 1: Initialize 16 qubits.**
+
+Initially, all qubits are in the zero state:
+
+\\[ |0000000000000000\rangle \\]
+
+**Step 2: Create a quantum circuit.**
+
+We create a circuit containing 16 quantum bits and 16 classical bits.
+
+Why 16 classical bits?
+
+Because we need to store the measurement result of every qubit.
+
+**Step 3: Apply Hadamard gates.**
+
+We apply the Hadamard gate to all 16 qubits.
+
+Each qubit enters an equal superposition of 0 and 1.
+
+For the complete system, the resulting state is:
+
+\\[ |+\rangle^{\otimes16} \\]
+
+It contains an equal-amplitude superposition of all 65,536 computational basis states.
+
+**Step 4: Measure all qubits.**
+
+We measure all 16 qubits.
+
+Every qubit produces either 0 or 1.
+
+**Step 5: Obtain a 16-bit random number.**
+
+The 16 measured bits together form the random binary number.
+
+For example:
+
+```
+1100101011010110
+```
+
+This is one possible result.
+
+## **5. Important terms in this practical**
+
+| Term               | Explanation                                       |
+| ------------------ | ------------------------------------------------- |
+| RNG                | Random Number Generator                           |
+| QRNG               | Quantum Random Number Generator                   |
+| PRNG               | Pseudo Random Number Generator                    |
+| TRNG               | True Random Number Generator                      |
+| Qubit              | Basic unit of quantum information                 |
+| Hadamard           | Creates equal superposition from \\(\|0\rangle\\) |
+| Superposition      | Combination of basis states                       |
+| Measurement        | Obtains classical bits                            |
+| Quantum register   | Stores qubits                                     |
+| Classical register | Stores measurement results                        |
+| Shots              | Number of circuit executions                      |
+| Binary number      | Number represented using 0 and 1                  |
+
+## **6. Applications of Quantum Random Number Generation**
+
+**Cryptography:** Random keys can be used in secure communication.
+
+**Password generation:** Random bits can be converted into random values.
+
+**Scientific simulation:** Random sampling is useful in scientific calculations.
+
+**Secure communication:** Randomness is important in cryptographic protocols.
+
+**Gaming:** Random outcomes can be generated for games and simulations.
+
+## **7. Advantages**
+
+1. Uses quantum measurement probabilities as a source of randomness.
+2. Can generate random binary values.
+3. Useful in cryptographic applications.
+4. Can generate multiple random bits using multiple qubits.
+
+## **8. Limitations**
+
+1. Real quantum devices have noise.
+2. Hardware imperfections can introduce bias.
+3. Measurement devices can produce errors.
+4. Quantum hardware can be expensive.
+5. Randomness quality must be tested and validated.
+
+One important point: applying Hadamard gates on a simulator demonstrates ideal quantum randomness mathematically, but a software simulator does not independently provide a physical source of true randomness.
+
+## **9. How to explain Practical 1 to the external examiner**
+
+**Ready-to-speak explanation**
+
+"Ma'am, the aim of this practical is to implement a 16-qubit Quantum Random Number Generator.
+
+A Quantum Random Number Generator uses quantum measurement to generate random binary numbers.
+
+First, we initialize 16 qubits and create a quantum circuit with 16 classical bits.
+
+Then we apply Hadamard gates to all the qubits. This creates an equal superposition of 0 and 1.
+
+After that, we measure all 16 qubits. Each qubit produces either 0 or 1.
+
+Finally, we combine the 16 measurement results to obtain a 16-bit random number.
+
+Since each qubit has an equal probability of producing 0 or 1 in an ideal system, we can generate 65,536 possible 16-bit combinations."
+
+## **10. Detailed viva questions — Practical 1**
+
+**Q1. What is the aim of this practical?**
+
+To implement a 16-qubit Quantum Random Number Generator using Qiskit.
+
+**Q2. What is a random number?**
+
+A random number is a number generated without a predictable pattern.
+
+**Q3. What is a Quantum Random Number Generator?**
+
+It is a system that uses quantum measurement to generate random numbers.
+
+**Q4. What is the difference between PRNG and QRNG?**
+
+PRNG uses a deterministic mathematical algorithm, whereas QRNG uses quantum physical processes.
+
+**Q5. Why do we use 16 qubits?**
+
+To generate 16 random bits in one circuit execution.
+
+**Q6. How many possible combinations can be generated using 16 qubits?**
+
+\\[ 2^{16}=65536 \\]
+
+**Q7. Which gate is used to generate randomness in this practical?**
+
+Hadamard gate.
+
+**Q8. Why is the Hadamard gate used?**
+
+It creates equal superposition of 0 and 1 from the initial zero state.
+
+**Q9. What is the probability of getting 0?**
+
+50% in an ideal system.
+
+**Q10. What is the probability of getting 1?**
+
+50% in an ideal system.
+
+**Q11. Why do we need classical registers?**
+
+To store the measurement results of the quantum bits.
+
+**Q12. What happens when we measure a qubit?**
+
+The quantum state collapses to a definite measurement outcome in the chosen measurement basis.
+
+**Q13. What is the output of this practical?**
+
+A 16-bit binary random number.
+
+**Q14. What is the use of quantum random numbers?**
+
+They can be used in cryptography, secure communication and scientific simulations.
+
+**Q15. Can we generate 32-bit random numbers?**
+
+Yes. We can use 32 qubits and measure them to obtain 32 bits.
+
+**Q16. Does every execution generate the same number?**
+
+No. Ideally, different executions produce different random outcomes.
+
+**Q17. What are shots?**
+
+Shots are the number of times a quantum circuit is executed.
+
+**Q18. What is a quantum register?**
+
+A collection of qubits used in a quantum circuit.
+
+**Q19. What is a classical register?**
+
+A collection of classical bits used to store measurement results.
+
+**Q20. Is a quantum simulator the same as a real quantum computer?**
+
+No. A simulator imitates quantum circuit behaviour using a classical computer.
+
+# **PART 3 — PRACTICAL 2: TACKLE NOISE WITH ERROR CORRECTION**
+
+Practical 2
+
+[Three qubit repetition code — Qblox Documentation 2026.7.1 documentation](https://images.openai.com/static-rsc-4/QKATvxibXu35jPzBNhKhOhM2eWfqK2z58WIImuq7lLVAs9ox6SQvC0RXc16YDoTW38T-uk-DadLBe9GQHiLiDINccuub6mHMRVfyaRSl1ySEDmp7m4g1QqC_N6pV1kjSoRX2JMF6QCKF4TNQ-9Ln6gH9K-CFI0_WB5NNujiAHow?purpose=inline)
+
+[docs.qblox.com](https://docs.qblox.com/en/main/applications/superconducting/flux_tunable_transmon/800_quantum_error_correction.html?utm_source=chatgpt.com)
+
+This is one of the most conceptually important practicals because noise is a major challenge in quantum computing.
+
+## **1. What is Noise in Quantum Computing?**
+
+Noise means unwanted disturbances that affect the quantum system and change the expected behaviour of a quantum computation.
+
+In simple language:
+
+When we perform calculations using a quantum computer, different environmental and hardware-related disturbances can affect the qubits.
+
+As a result, the final output may become incorrect.
+
+For example:
+
+Suppose our expected output is:
+
+```
+000
+```
+
+But due to noise, we obtain:
+
+```
+010
+```
+
+This means an error has occurred in one of the bits.
+
+Quantum computers are very sensitive to noise because qubits can lose their quantum properties through interactions with their environment.
+
+## **2. Why does noise occur?**
+
+There are several reasons.
+
+### **A. Environmental interaction**
+
+Qubits can interact with their surroundings.
+
+For example, temperature fluctuations and electromagnetic disturbances can affect quantum states.
+
+### **B. Imperfect quantum gates**
+
+Quantum gates may not perform exactly as intended.
+
+For example, an X gate may introduce a small error instead of performing a perfect bit flip.
+
+### **C. Measurement errors**
+
+The measurement device may report the wrong classical result.
+
+For example:
+
+Actual qubit state = 0.
+
+Measured result = 1.
+
+### **D. State preparation errors**
+
+The initial qubit may not be prepared in the intended quantum state.
+
+These are all important sources of quantum computing errors.
+
+## **3. What is Quantum Noise?**
+
+Quantum noise refers to unwanted changes or disturbances in a quantum system.
+
+Important types include:
+
+| Type of noise        | Meaning                               |
+| -------------------- | ------------------------------------- |
+| Bit-flip noise       | Changes 0 to 1 or 1 to 0              |
+| Phase-flip noise     | Changes the relative phase            |
+| Bit-phase-flip noise | Combines bit and phase changes        |
+| Depolarizing noise   | Randomly introduces Pauli-type errors |
+| Amplitude damping    | Models energy loss from a qubit       |
+| Readout noise        | Causes incorrect measurement results  |
+
+Let's understand the important types.
+
+### **A. Bit-flip error**
+
+A bit-flip error changes:
+
+\\[ |0\rangle\rightarrow|1\rangle \\]
+
+Or:
+
+\\[ |1\rangle\rightarrow|0\rangle \\]
+
+It is similar to a classical bit changing its value.
+
+It can be represented using the Pauli-X operator.
+
+### **B. Phase-flip error**
+
+A phase-flip error changes the phase of the quantum state.
+
+For example:
+
+\\[ \alpha|0\rangle+\beta|1\rangle \\]
+
+becomes:
+
+\\[ \alpha|0\rangle-\beta|1\rangle \\]
+
+It is represented by the Pauli-Z operator.
+
+Notice that the measurement probabilities in the computational basis may remain unchanged, even though the quantum state has changed.
+
+### **C. Bit-phase-flip error**
+
+This error combines a bit flip and a phase flip.
+
+It is represented by the Pauli-Y operator, up to a global phase convention.
+
+### **D. Depolarizing noise**
+
+Depolarizing noise represents a process in which the quantum state is randomly affected by Pauli errors.
+
+It is a commonly used simplified noise model.
+
+### **E. Amplitude damping**
+
+Amplitude damping represents energy loss.
+
+For example, an excited state may decay:
+
+\\[ |1\rangle\rightarrow|0\rangle \\]
+
+It is often used to model energy relaxation.
+
+### **F. Readout noise**
+
+Readout noise occurs during measurement.
+
+For example:
+
+| Actual result | Measured result |
+| ------------- | --------------- |
+| 0             | 0               |
+| 0             | 1               |
+| 1             | 0               |
+| 1             | 1               |
+
+The incorrect cases are measurement errors.
+
+**Important:** Readout noise is different from a gate error. The qubit may have been processed correctly, but the measurement device reports the wrong result.
+
+## **4. What is Quantum Error Correction (QEC)?**
+
+Most important concept
+
+Quantum Error Correction is a technique used to detect and correct errors that occur during quantum computation.
+
+In simple language:
+
+Quantum Error Correction protects quantum information from noise by encoding one logical qubit into multiple physical qubits.
+
+This creates redundancy.
+
+Why do we need redundancy?
+
+Because if one physical qubit experiences an error, the other qubits can provide enough information to detect and sometimes correct that error.
+
+Your laboratory manual describes this process as:
+
+1. Encode one logical qubit into multiple physical qubits.
+2. Transmit or process the physical qubits.
+3. Detect errors.
+4. Correct errors.
+5. Decode the qubits to recover the logical information.
+
+## **5. What are Physical Qubits and Logical Qubits?**
+
+This distinction is very important.
+
+### **Physical qubit**
+
+A physical qubit is an actual hardware-level quantum bit implemented using a physical quantum system.
+
+Examples include superconducting circuits and trapped ions.
+
+### **Logical qubit**
+
+A logical qubit is a quantum state encoded across multiple physical qubits using an error-correcting code.
+
+The purpose is to protect the logical information from physical errors.
+
+**External answer:**
+
+"A physical qubit is an actual hardware qubit, whereas a logical qubit is an encoded quantum state represented using multiple physical qubits to protect information against errors."
+
+## **6. What is Redundancy?**
+
+Redundancy means storing additional information so that errors can be detected and corrected.
+
+For example, in classical computing, we can repeat a bit three times.
+
+Suppose the original bit is:
+
+```
+0
+```
+
+We encode it as:
+
+```
+000
+```
+
+If one bit changes:
+
+```
+010
+```
+
+We can use majority voting to identify the original value as 0.
+
+This is called a three-bit repetition code.
+
+The same basic idea motivates some simple quantum error-correction codes, although quantum error correction requires more careful treatment because quantum information cannot simply be copied.
+
+## **7. What is the Three-Qubit Bit-Flip Code?**
+
+[Quantum Repetition Code](https://images.openai.com/static-rsc-4/ekC5mSQHDa3hEibRKXO0DsI0ZRV1dOBCyzflpReapq2jyvnrvmknPZDFuXCH4ifH76M4JkMVtEyWe7pnYD9gd_yxGpOr48CdRNjWjcbFrT4mp4OBwqy8zLON482rphKw-6NqZ2upVADTXwS-hQWrzNuOH5eyS20KXbJrnnbbMSA?purpose=inline)
+
+[aanshsavla.hashnode.dev](https://aanshsavla.hashnode.dev/quantum-repetition-code?utm_source=chatgpt.com)
+
+This is a fundamental example of quantum error correction.
+
+Suppose we have an arbitrary logical qubit:
+
+\\[ |\psi\rangle=\alpha|0\rangle+\beta|1\rangle \\]
+
+We encode it into three physical qubits:
+
+\\[ |\psi_L\rangle= \alpha|000\rangle+\beta|111\rangle \\]
+
+This is the encoded logical state.
+
+Now suppose the second qubit experiences a bit-flip error.
+
+The state becomes:
+
+\\[ \alpha|010\rangle+\beta|101\rangle \\]
+
+We need to identify which qubit has the error.
+
+We use parity checks called syndrome measurements.
+
+### **What is a Syndrome?**
+
+A syndrome is information obtained from error-detection measurements that helps identify the type or location of an error.
+
+For the three-qubit bit-flip code:
+
+| Syndrome (parity checks) | Error location |
+| ------------------------ | -------------- |
+| 00                       | No error       |
+| 10                       | First qubit    |
+| 11                       | Second qubit   |
+| 01                       | Third qubit    |
+
+Here, the two parity checks compare qubits 1–2 and 2–3 respectively, with the syndrome written in that order.
+
+Once the error is identified, we apply the appropriate X correction to recover the logical information.
+
+**Important:** Syndrome measurements detect errors without directly measuring the logical quantum information.
+
+## **8. What is Fault-Tolerant Quantum Computing?**
+
+Fault-tolerant quantum computing means performing quantum computations reliably even when individual hardware operations have errors.
+
+It uses techniques such as:
+
+- Quantum error correction.
+- Logical qubits.
+- Fault-tolerant gates.
+- Error detection.
+- Error recovery.
+
+The goal is to build reliable large-scale quantum computers.
+
+## **9. What is Error Mitigation?**
+
+Error mitigation is a technique used to reduce the effect of errors in the final results without necessarily correcting the quantum state itself.
+
+Examples:
+
+- Measurement error mitigation.
+- Zero-noise extrapolation.
+- Probabilistic error cancellation.
+
+This distinction is especially important for your practical.
+
+### **Quantum Error Correction vs Error Mitigation**
+
+| Quantum Error Correction                  | Error Mitigation                                      |
+| ----------------------------------------- | ----------------------------------------------------- |
+| Encodes information into logical qubits   | Reduces errors in estimated results                   |
+| Uses redundancy and syndrome measurements | Uses calibration or statistical processing            |
+| Can detect and correct certain errors     | Does not generally correct the physical quantum state |
+| Important for fault tolerance             | Useful on near-term noisy devices                     |
+
+## **10. Understand the actual code in your laboratory manual**
+
+Your manual's noise practical includes these important components:
+
+- `transpile()`
+- `AerSimulator`
+- `assemble()`
+- `CompleteMeasFitter`
+- `complete_meas_cal()`
+- `plot_histogram()`
+
+The important concept is **measurement error mitigation**.
+
+The code creates calibration circuits, runs them to estimate measurement errors, and then uses a measurement filter to correct the observed counts statistically.
+
+It compares:
+
+1. Original measurement counts.
+2. Mitigated measurement counts.
+
+This is not the same as implementing a full quantum error-correcting code such as the three-qubit bit-flip code.
+
+That is an important technical distinction to remember if the examiner asks about your code.
+
+## **11. What is Measurement Error Mitigation?**
+
+Measurement error mitigation is a method of correcting the statistical effect of incorrect measurements.
+
+Suppose we want to measure a qubit in state 0.
+
+But the hardware sometimes reports 1 incorrectly.
+
+We run calibration experiments to estimate the probability of these errors.
+
+We then use the calibration information to adjust the measured distribution.
+
+For example:
+
+| Outcome | Original counts | Mitigated counts |
+| ------- | --------------- | ---------------- |
+| 00      | 400             | 450              |
+| 01      | 100             | 50               |
+| 10      | 100             | 50               |
+| 11      | 400             | 450              |
+
+These numbers are only an illustrative example.
+
+The objective is to obtain a measurement distribution closer to the ideal expected distribution.
+
+## **12. What is a Calibration Circuit?**
+
+A calibration circuit is a specially prepared circuit used to estimate how often a quantum device reports incorrect measurement results.
+
+For example:
+
+- Prepare known state 00.
+- Measure it many times.
+- Observe how often 00, 01, 10 and 11 are reported.
+- Repeat for other known states.
+
+The collected data is used to build a measurement calibration model.
+
+## **13. What is a Confusion Matrix?**
+
+A confusion matrix represents the relationship between actual states and measured states.
+
+For example:
+
+\\[ M= \begin{bmatrix} P(0|0)&P(0|1)\\\ P(1|0)&P(1|1) \end{bmatrix} \\]
+
+Here, the entries describe measurement probabilities under the chosen convention.
+
+The matrix helps identify how frequently measurement results are incorrect.
+
+The mitigation procedure uses this calibration information to estimate a corrected probability distribution.
+
+## **14. Applications of Quantum Error Correction**
+
+1. Reliable quantum computing.
+2. Quantum communication.
+3. Quantum data storage.
+4. Fault-tolerant quantum algorithms.
+5. Protecting quantum information from noise.
+
+## **15. Advantages**
+
+- Improves reliability.
+- Detects certain quantum errors.
+- Can correct errors within the code's capabilities.
+- Helps build fault-tolerant quantum computers.
+
+## **16. Limitations**
+
+- Requires additional physical qubits.
+- Increases circuit complexity.
+- Requires extra operations and measurements.
+- Hardware overhead can be significant.
+- Not every error can be corrected by every code.
+
+## **17. How to explain Practical 2 to the external examiner**
+
+**Ready-to-speak explanation**
+
+"Ma'am, the aim of this practical is to understand how we can tackle noise in quantum computing using error correction and error mitigation techniques.
+
+Quantum computers are sensitive to environmental disturbances and hardware imperfections. These disturbances can introduce bit-flip errors, phase-flip errors and measurement errors.
+
+Quantum Error Correction protects quantum information by encoding one logical qubit into multiple physical qubits.
+
+It uses redundancy and syndrome measurements to detect and correct certain errors.
+
+In our laboratory implementation, we also use measurement calibration and measurement error mitigation to compare the original and corrected measurement distributions.
+
+This helps us understand how noise affects quantum computation and how reliability can be improved."
+
+## **18. Detailed viva questions — Practical 2**
+
+**Q1. What is noise in quantum computing?**
+
+Noise is an unwanted disturbance that changes the expected behaviour of a quantum system.
+
+**Q2. Why are quantum computers sensitive to noise?**
+
+Because qubits interact with their environment and their quantum states are easily disturbed.
+
+**Q3. What is Quantum Error Correction?**
+
+It is a technique that detects and corrects certain quantum errors by encoding information into multiple physical qubits.
+
+**Q4. What is a physical qubit?**
+
+An actual hardware-level quantum bit.
+
+**Q5. What is a logical qubit?**
+
+A quantum state encoded across multiple physical qubits for protection against errors.
+
+**Q6. What is a bit-flip error?**
+
+An error that changes 0 to 1 or 1 to 0.
+
+**Q7. What is a phase-flip error?**
+
+An error that changes the relative phase of a quantum state.
+
+**Q8. What is a bit-phase-flip error?**
+
+An error that combines a bit flip and phase flip.
+
+**Q9. What is depolarizing noise?**
+
+A noise model that represents random Pauli-type errors.
+
+**Q10. What is amplitude damping?**
+
+It is a noise process that models energy loss from a quantum system.
+
+**Q11. What is measurement error?**
+
+It occurs when the measurement device reports an incorrect classical result.
+
+**Q12. What is redundancy?**
+
+It means adding extra physical qubits to protect logical information.
+
+**Q13. What is a syndrome?**
+
+A syndrome is measurement information used to identify errors without directly measuring the logical information.
+
+**Q14. What is the three-qubit repetition code?**
+
+It is a quantum error-correction code that encodes one logical qubit into three physical qubits to correct one bit-flip error.
+
+**Q15. What is fault tolerance?**
+
+It is the ability of a quantum computer to perform reliable computations despite errors in its components.
+
+**Q16. What is error mitigation?**
+
+It is a technique used to reduce the effect of errors in final measurement results.
+
+**Q17. What is the difference between error correction and error mitigation?**
+
+Error correction uses encoded logical qubits and error-detection operations, whereas error mitigation uses techniques such as calibration and statistical processing to reduce errors in results.
+
+**Q18. What is a calibration circuit?**
+
+It is a circuit used to estimate the measurement error probabilities of a quantum device.
+
+**Q19. What is a confusion matrix?**
+
+It is a matrix that represents the probabilities of actual quantum states being reported as different measured states.
+
+**Q20. What is the purpose of CompleteMeasFitter in the manual?**
+
+It uses measurement calibration data to create a filter for mitigating measurement errors.
+
+**Q21. Why do we use quantum error correction?**
+
+To protect quantum information and improve the reliability of quantum computations.
+
+**Q22. Can quantum error correction correct every error?**
+
+No. The code can correct only errors within its designed correction capability.
+
+**Q23. Why do we need extra qubits for error correction?**
+
+Because redundancy is required to detect and correct errors.
+
+**Q24. What is the main limitation of quantum error correction?**
+
+It requires additional physical qubits and increases circuit complexity.
+
+**Q25. What is the goal of fault-tolerant quantum computing?**
+
+To perform reliable large-scale quantum computations despite physical hardware errors.
+
+# **PART 4 — PRACTICAL 3: TARRATACA'S QUANTUM PRODUCTION SYSTEM WITH THE 3-PUZZLE PROBLEM**
+
+Practical 3
+
+[Planning — longhongc.github.io 0.1.0 documentation](https://images.openai.com/static-rsc-4/hNtcsThvFuIhQy3x0lVZtWEtFfoJjIwrMKDdzLg-TZ2z166zwNMuwShL2Y_GRnG6nrhGZNW8Q10fuHpWmKFA-gMBuOOX-3fX9BPaXfZMvHaxIquBNbIlj4QnSaW91OliDH_UWxka7R7ir8PSwjO4NTYsdC4DHM4TY-q-TWt14pQ?purpose=inline)
+
+[longhongc.github.io](https://longhongc.github.io/Projects/planning.html?utm_source=chatgpt.com)
+
+This practical combines two important subjects:
+
+1. Artificial Intelligence problem-solving.
+2. Quantum Computing.
+
+Before understanding the quantum production system, you must understand the puzzle problem.
+
+## **1. What is a Puzzle Problem?**
+
+A puzzle problem is a problem where we have an initial arrangement and need to reach a desired final arrangement by performing certain valid operations.
+
+For example, consider a sliding-tile puzzle.
+
+**Initial state**
+
+### **2**
+
+### **5**
+
+### **3**
+
+### **1**
+
+### **8**
+
+### **6**
+
+### **4**
+
+### **7**
+
+### **\_**
+
+**Goal state**
+
+### **1**
+
+### **2**
+
+### **3**
+
+### **4**
+
+### **5**
+
+### **6**
+
+### **7**
+
+### **8**
+
+### **\_**
+
+The objective is to arrange the numbered tiles in the correct order.
+
+We can move tiles into the empty position according to the puzzle rules.
+
+For a conventional 3×3 sliding puzzle:
+
+- Tiles can move up.
+- Tiles can move down.
+- Tiles can move left.
+- Tiles can move right.
+
+The objective is to reach the goal state using valid moves.
+
+**Important clarification about your laboratory manual:** Its theory describes a simplified three-tile problem where tiles move left or right. However, its later example uses a 3×3 board containing eight numbered tiles and one blank. That board is conventionally called the 8-puzzle. The two descriptions are not identical. Understand the general state-space and production-system concepts, and be aware of this difference if the examiner asks.
+
+## **2. What is Artificial Intelligence Problem-Solving?**
+
+Artificial Intelligence problem-solving means using computational techniques to find a solution to a particular problem.
+
+Examples:
+
+- Finding the shortest route.
+- Solving a puzzle.
+- Finding the best arrangement.
+- Scheduling tasks.
+- Finding an optimal solution.
+
+AI problem-solving generally involves:
+
+1. Defining the problem.
+2. Identifying the initial state.
+3. Identifying the goal state.
+4. Defining allowed actions.
+5. Searching for a solution.
+
+## **3. What is a State?**
+
+A state represents the current arrangement or condition of a problem.
+
+For example:
+
+```
+2 5 3
+1 8 6
+4 7 _
+```
+
+This is one state of the puzzle.
+
+After moving one tile, we may obtain:
+
+```
+2 5 3
+1 8 6
+4 _ 7
+```
+
+This is another state.
+
+**Remember:** A different valid arrangement represents a different state.
+
+## **4. What is an Initial State?**
+
+An initial state is the starting arrangement of a problem.
+
+For example:
+
+```
+2 5 3
+1 8 6
+4 7 _
+```
+
+It is where the problem-solving process begins.
+
+## **5. What is a Goal State?**
+
+A goal state is the desired final arrangement that we want to achieve.
+
+For example:
+
+```
+1 2 3
+4 5 6
+7 8 _
+```
+
+It represents the successful completion of the puzzle.
+
+## **6. What is State Space?**
+
+State space is the collection of all possible valid states that can be reached by performing allowed operations.
+
+For example:
+
+When we move the empty tile, different arrangements are generated.
+
+All possible valid arrangements together form the state space.
+
+[PPT - AI Searching Strategies Overview: Problem Formulation & Solving Techniques PowerPoint Presentation - ID:9550407](https://images.openai.com/static-rsc-4/WiVJk2UCV9D1hqruDDHNjgYEplEqzR5FQOa-uoVeSHrDM1BmxnfElqQJEcTUX8xDaHHNCRl6WksjMEo1KgSstkzn1KHSnHRTQWAU5WYK5ZoeQpdFLpUZ7MHQ9XIpw7LNdNz_niOd0aGv6ai1MN7H1a-7apyZDGLQ0LJLrnEQrSw?purpose=inline)
+
+[slideserve.com](https://www.slideserve.com/angelhall/artificial-intelligence-ai-powerpoint-ppt-presentation?utm_source=chatgpt.com)
+
+Why is state space important?
+
+Because an AI algorithm searches through possible states to find the desired goal state.
+
+## **7. What is a Production System?**
+
+Very important viva topic
+
+A production system is an AI problem-solving approach that uses rules to transform one state into another.
+
+It generally contains three main components:
+
+1. Production rules.
+2. Working memory.
+3. Control strategy.
+
+### **A. Production Rules**
+
+Production rules define the actions that are allowed.
+
+For example:
+
+```
+IF the blank position is at the top
+THEN it can move down.
+```
+
+Another example:
+
+```
+IF the blank position is at the left
+THEN it can move right.
+```
+
+These rules determine which operations can be performed.
+
+### **B. Working Memory**
+
+Working memory stores the current state of the problem.
+
+For example:
+
+```
+Current state:
+
+2 5 3
+1 8 6
+4 7 _
+```
+
+After applying a move, the working memory is updated with the new state.
+
+### **C. Control Strategy**
+
+Control strategy decides which production rule should be applied next.
+
+For example:
+
+- Check available moves.
+- Select a valid move.
+- Generate a new state.
+- Check whether the goal has been reached.
+- Continue searching if required.
+
+**Remember this definition:**
+
+Production System = Production Rules + Working Memory + Control Strategy.
+
+## **8. What is Tarrataca's Quantum Production System?**
+
+Tarrataca's Quantum Production System is a quantum approach to representing and searching problem states using quantum circuits and quantum operations.
+
+In simple language:
+
+A classical production system uses rules and classical computation to explore possible solutions.
+
+A quantum production system represents problem information using quantum states and quantum circuits and can use quantum algorithms to search for candidate solutions.
+
+According to your manual, the process involves:
+
+1. Encoding the problem state as a quantum state.
+2. Constructing a quantum circuit representing the problem space.
+3. Applying quantum operations to search for a solution.
+4. Measuring the qubits to obtain a candidate solution.
+
+The goal is to identify an optimal or acceptable solution to the problem.
+
+## **9. How do we encode a puzzle state using qubits?**
+
+Encoding means converting problem information into a quantum representation.
+
+Your manual gives a simplified three-tile example.
+
+It describes using one qubit for each tile.
+
+For example:
+
+- \\(|0\rangle\\) represents the leftmost position.
+- \\(|1\rangle\\) represents the rightmost position.
+
+Suppose we have three qubits:
+
+\\[ |000\rangle \\]
+
+This represents one possible encoded arrangement under that simplified encoding.
+
+Another arrangement may be:
+
+\\[ |101\rangle \\]
+
+This represents another encoded arrangement.
+
+**Important:** This is a simplified binary position encoding. It does not provide a complete encoding of all arrangements of a 3×3 sliding puzzle.
+
+## **10. What is a Quantum Production Rule?**
+
+A production rule defines an allowed operation that transforms the current problem state into another state.
+
+In a quantum circuit, these operations can be represented using quantum gates.
+
+For example:
+
+A CNOT gate can perform a controlled transformation between qubits.
+
+A SWAP gate can exchange the states of two qubits.
+
+The purpose is to represent the allowed transitions between encoded states.
+
+## **11. What is Grover's Algorithm?**
+
+[Grover’s Algorithm Explained. Grover’s algorithm is the fastest way… | by Ishita Shukla | Medium](https://images.openai.com/static-rsc-4/3Byj8yqXqe1z6q9J8y2vAd2VKLg3u1QPIDdOgbkxKCGhkZ6BVrYCIqcoGHwygvpCNvo7tN8zyF4bjtrkg9-p7xIBJ7gRmO9Sf1AU5ceanAyP5N8vncgxm-lorBpvYZUNHr39RKNn8k7B40yUtTvFmbEOUWghwKy9ah9aX_7As4I?purpose=inline)
+
+[medium.com](https://medium.com/%40ishita.shukla/grovers-algorithm-explained-4c3b6aee8a58?utm_source=chatgpt.com)
+
+Grover's algorithm is a quantum search algorithm used to search an unstructured search space.
+
+Suppose we have eight possible answers:
+
+```
+000
+001
+010
+011
+100
+101
+110
+111
+```
+
+Suppose only one answer is correct:
+
+```
+101
+```
+
+A classical exhaustive search may need to check multiple candidates.
+
+Grover's algorithm uses quantum operations to increase the probability of measuring the marked solution.
+
+It involves:
+
+1. Creating superposition.
+2. Applying an oracle.
+3. Applying a diffusion operator.
+4. Measuring the qubits.
+
+### **What is an Oracle?**
+
+An oracle is a quantum operation that marks the desired solution.
+
+It changes the phase of the marked state so that it can be amplified by the search process.
+
+### **What is a Diffusion Operator?**
+
+The diffusion operator increases the amplitude of the marked solution and reduces the relative amplitude of unmarked solutions.
+
+This process is called amplitude amplification.
+
+### **What is Amplitude Amplification?**
+
+Amplitude amplification is a quantum technique used to increase the probability of obtaining desired states when measuring a quantum system.
+
+### **Complexity of Grover's Algorithm**
+
+For a search space containing \\(N\\) possibilities:
+
+Classical exhaustive search:
+
+\\[ O(N) \\]
+
+Grover's quantum search:
+
+\\[ O(\sqrt N) \\]
+
+This is called a quadratic speedup in oracle-query complexity.
+
+**Important:** Grover's algorithm does not automatically solve a puzzle. We need to define a suitable encoding and an oracle that identifies valid goal states.
+
+## **12. What is QAOA?**
+
+Important viva topic
+
+QAOA stands for:
+
+**Quantum Approximate Optimization Algorithm.**
+
+It is a hybrid quantum-classical algorithm used to solve combinatorial optimization problems.
+
+Examples:
+
+- Scheduling.
+- Routing.
+- Graph optimization.
+- Resource allocation.
+
+It combines:
+
+- Quantum circuits.
+- Classical optimization.
+
+The quantum circuit generates candidate solutions, while a classical optimizer adjusts circuit parameters to improve the objective function.
+
+## **13. What is an Objective Function?**
+
+An objective function evaluates the quality or cost of a candidate solution.
+
+For example, in a puzzle:
+
+- A solution that matches the goal state has a low cost.
+- A solution that differs from the goal state has a higher cost.
+
+A simplified example is:
+
+\\[ Cost=\text{Number of misplaced tiles} \\]
+
+The optimization algorithm attempts to minimize the cost.
+
+## **14. What is a Cost Function?**
+
+A cost function measures how good or bad a particular solution is.
+
+In optimization:
+
+- Lower cost generally means a better solution.
+- Higher cost generally means a worse solution.
+
+For the puzzle, we may calculate the difference between the current arrangement and the goal arrangement.
+
+However, a cost function based only on the number of misplaced tiles is not necessarily the same as the total movement cost.
+
+## **15. What is a Mixer Circuit?**
+
+A mixer circuit is an important component of QAOA.
+
+It helps explore different candidate solutions.
+
+The QAOA circuit generally combines:
+
+- A cost Hamiltonian.
+- A mixer Hamiltonian.
+
+The cost Hamiltonian represents the optimization objective.
+
+The mixer Hamiltonian helps move between candidate configurations.
+
+Together, they form the parameterized quantum circuit.
+
+## **16. What is COBYLA?**
+
+COBYLA stands for:
+
+**Constrained Optimization BY Linear Approximations.**
+
+It is a classical numerical optimization algorithm.
+
+It is used to optimize parameters of the QAOA circuit.
+
+For example:
+
+1. QAOA generates candidate solutions.
+2. The objective function evaluates them.
+3. COBYLA updates the parameters.
+4. The circuit runs again.
+5. The process continues until a stopping condition is reached.
+
+## **17. What is Measurement in this practical?**
+
+After constructing and executing the quantum circuit, we measure the qubits.
+
+Measurement converts the quantum results into classical bitstrings.
+
+These bitstrings represent candidate solutions according to the chosen encoding.
+
+We then decode and check whether the candidate satisfies the puzzle's rules and goal condition.
+
+**Important:** Measurement does not automatically guarantee that the optimal solution has been found. The candidate must be validated.
+
+## **18. Advantages of the Quantum Production System**
+
+1. Provides a quantum approach to representing problem states.
+2. Can use quantum search techniques.
+3. Can be combined with optimization algorithms.
+4. Can explore structured problem representations using quantum circuits.
+
+## **19. Limitations**
+
+1. Designing an appropriate quantum encoding is difficult.
+2. Quantum circuits are affected by noise.
+3. The problem must be converted into a suitable mathematical formulation.
+4. Measurement results are probabilistic.
+5. Quantum hardware resources are limited.
+6. A quantum approach does not guarantee an advantage for every puzzle problem.
+
+## **20. Important clarification about your laboratory manual**
+
+Your manual contains three different ideas:
+
+- A conceptual three-qubit puzzle circuit with CNOT and Hadamard gates, followed by Grover search.
+- A QAOA example with an objective function and COBYLA.
+- An 18-qubit SWAP-based example for a 3×3 tile arrangement.
+
+These are not one complete, validated implementation of the same algorithm.
+
+The printed QAOA code uses an older Qiskit Aqua API and has syntax and formulation problems. The 18-qubit example also does not demonstrate a complete optimal-search procedure simply by performing SWAP gates and measuring.
+
+For viva purposes, understand the production-system theory, encoding, state space, Grover, QAOA, objective function and measurement separately.
+
+## **21. How to explain Practical 3 to the external examiner**
+
+**Ready-to-speak explanation**
+
+"Ma'am, the aim of this practical is to understand Tarrataca's Quantum Production System using the puzzle problem.
+
+First, we define the initial state and the goal state of the puzzle.
+
+A production system uses production rules, working memory and a control strategy to transform one state into another.
+
+In the quantum approach, we encode the problem information using qubits and construct a quantum circuit to represent possible states and operations.
+
+We can use quantum search algorithms such as Grover's algorithm or optimization algorithms such as QAOA to search for candidate solutions.
+
+Finally, we measure the qubits, obtain classical results and check whether the solution satisfies the goal state."
+
+## **22. Detailed viva questions — Practical 3**
+
+**Q1. What is the aim of this practical?**
+
+To understand Tarrataca's Quantum Production System using the puzzle problem.
+
+**Q2. What is a puzzle problem?**
+
+A problem in which we need to transform an initial arrangement into a goal arrangement using valid moves.
+
+**Q3. What is a state?**
+
+A state represents the current arrangement of a problem.
+
+**Q4. What is an initial state?**
+
+The starting arrangement of the puzzle.
+
+**Q5. What is a goal state?**
+
+The desired final arrangement.
+
+**Q6. What is state space?**
+
+The collection of all possible valid states of a problem.
+
+**Q7. What is a production system?**
+
+An AI problem-solving approach that uses rules to transform states.
+
+**Q8. What are the three components of a production system?**
+
+Production rules, working memory and control strategy.
+
+**Q9. What are production rules?**
+
+They define the valid actions that can be applied to a problem state.
+
+**Q10. What is working memory?**
+
+It stores the current state of the problem.
+
+**Q11. What is a control strategy?**
+
+It decides which production rule should be applied next.
+
+**Q12. What is Tarrataca's Quantum Production System?**
+
+It is a quantum approach to representing and searching problem states using quantum circuits and quantum operations.
+
+**Q13. What is state encoding?**
+
+It is the process of representing problem information using quantum states.
+
+**Q14. What is Grover's algorithm?**
+
+It is a quantum search algorithm that uses amplitude amplification to increase the probability of finding a marked solution.
+
+**Q15. What is an oracle?**
+
+An operation that marks the desired solution.
+
+**Q16. What is a diffusion operator?**
+
+An operation used in Grover's algorithm to amplify the probability of marked states.
+
+**Q17. What is QAOA?**
+
+Quantum Approximate Optimization Algorithm, a hybrid quantum-classical optimization algorithm.
+
+**Q18. What is COBYLA?**
+
+A classical optimization algorithm used to optimize numerical parameters.
+
+**Q19. What is an objective function?**
+
+A mathematical function that evaluates the quality or cost of a solution.
+
+**Q20. What is a mixer circuit?**
+
+A circuit used in QAOA to explore different candidate solutions.
+
+**Q21. What is amplitude amplification?**
+
+A technique that increases the probability of obtaining desired quantum states.
+
+**Q22. How many qubits are used in the simplified three-tile encoding in the manual?**
+
+Three qubits, one for each tile.
+
+**Q23. What is the difference between a 3-puzzle and an 8-puzzle?**
+
+A 3-puzzle uses three tiles under its specified rules, while an 8-puzzle has eight numbered tiles and one blank position in a 3×3 board.
+
+**Q24. Does measurement always give the optimal solution?**
+
+No. Measurement produces candidate results that must be checked.
+
+**Q25. What is the advantage of using Grover's algorithm?**
+
+It offers quadratic query-complexity improvement for suitable unstructured search problems.
+
+**Q26. What is the limitation of QAOA?**
+
+It requires a suitable optimization formulation, quantum resources and classical parameter optimization, and it does not guarantee the global optimum.
+
+**Q27. What is the difference between classical and quantum search?**
+
+Classical search checks candidates using classical operations, while quantum search can use quantum superposition and amplitude amplification.
+
+**Q28. What is the purpose of CNOT in the puzzle circuit?**
+
+It performs a controlled operation between qubits.
+
+**Q29. What is the purpose of Hadamard gates in the puzzle circuit?**
+
+They create superposition of computational basis states.
+
+**Q30. What is the purpose of measurement?**
+
+To obtain classical candidate solutions from the quantum circuit.
+
+# **PART 5 — PRACTICAL 4: QUANTUM TELEPORTATION ALGORITHM IN PYTHON**
+
+Practical 4
+
+[Jump Starting Quantum Computing on Azure | Microsoft Community Hub](https://images.openai.com/static-rsc-4/lbKLlTIf8TC1i6me-6KyufL6wmhq3BdzroiUd3ZiHV8s-xkFlYBbrjQKM0zTa6k5Id0oCDH_rmVmAM6DLTyon3KniEfxh_kc7WlyAcrLbDgedkWJu538KkHVdGzSffZ920DUGuZVeKbmr359E0W5N8gLpqUuuAQlNJLs8aLMN6g?purpose=inline)
+
+[techcommunity.microsoft.com](https://techcommunity.microsoft.com/blog/azurecompute/jump-starting-quantum-computing-on-azure/4459053?utm_source=chatgpt.com)
+
+This practical is one of the most important experiments in Quantum Computing.
+
+It covers:
+
+- Quantum teleportation.
+- Quantum entanglement.
+- Bell states.
+- No-Cloning Theorem.
+- Hadamard gate.
+- CNOT gate.
+- Pauli gates.
+- Measurement.
+- Classical communication.
+
+Let's understand everything from the beginning.
+
+## **1. What is Quantum Teleportation?**
+
+Quantum Teleportation is a process of transferring an unknown quantum state from one qubit to another using quantum entanglement and classical communication.
+
+In simple language:
+
+Suppose Alice has a qubit containing some quantum information and Bob wants to receive that information.
+
+Alice cannot simply copy an arbitrary unknown quantum state.
+
+Instead, Alice and Bob use an entangled pair and a specific sequence of quantum operations to transfer the state.
+
+**Important:** Quantum teleportation transfers the quantum state, not the physical particle.
+
+## **2. Why is Quantum Teleportation Needed?**
+
+In classical computing, we can copy data easily.
+
+For example:
+
+```
+Original: 1010
+Copy:     1010
+```
+
+But in quantum computing, arbitrary unknown quantum states cannot be perfectly copied.
+
+This is explained by the No-Cloning Theorem.
+
+Quantum teleportation allows us to transfer a quantum state without creating a second independent copy.
+
+## **3. What is the No-Cloning Theorem?**
+
+Very important viva topic
+
+The No-Cloning Theorem states that:
+
+**It is impossible to create a perfect copy of an arbitrary unknown quantum state.**
+
+For example, consider:
+
+\\[ |\psi\rangle=\alpha|0\rangle+\beta|1\rangle \\]
+
+We cannot create another independent qubit in exactly the same unknown state using a universal cloning operation.
+
+Why?
+
+Because quantum operations must obey the mathematical rules of quantum mechanics, and there is no universal operation that can clone every arbitrary unknown quantum state.
+
+**Important clarification:** Measurement and the No-Cloning Theorem are different concepts. Measurement can collapse a quantum state, while the No-Cloning Theorem specifically prohibits perfect copying of an arbitrary unknown quantum state.
+
+## **4. Who are Alice and Bob?**
+
+Quantum teleportation is commonly explained using two imaginary participants.
+
+[第5章：トランプ兵の迷路（グローバーのアルゴリズム）｜量子の国のアリス](https://images.openai.com/static-rsc-4/YHIbZSM0EWO2vRBIg--uvHEiHodIUSknMAY697wK4AJ8G0UNGuGVCP2nhENs-vYA1y6j5wxoClflemMqbnrHmsKCUJ_XD3aRmeSbzsLnuG2_aZrTe7oRhp7-EwIjZ0GZ0B-sanaelGAOBcgM3X8tD8unpDQIhaPpkzNJcPcAeAA?purpose=inline)
+
+**Alice**
+
+Sender
+
+She has the original quantum state and performs measurements.
+
+[Quantum Circuit on networkx as a graph model | by Yuichiro Minato | Blueqat (blueqat Inc. / former MDR Inc.) | Medium](https://images.openai.com/static-rsc-4/K1xq2gZXdYTew3stJfCdsgWaGM4DeHFk_oEIXzRJVDTM5t5GLAxuUF2LTAClKAXYiLqjI3UCEaLsy6_NgHafnSotI7H5biSGWUPPg21bomzH-8NKY2e-7yKGxA8Xwptkt1t-6KXSnkJr-ZWzgDTjzoe16vmqaGjnTQV9XSsQlEE?purpose=inline)
+
+**Bob**
+
+Receiver
+
+He uses the received classical information to correct his qubit.
+
+Alice wants to send an unknown quantum state to Bob.
+
+They share an entangled pair before starting the teleportation process.
+
+## **5. How many qubits are required?**
+
+Basic quantum teleportation requires three qubits.
+
+| Qubit | Purpose                            |
+| ----- | ---------------------------------- |
+| q0    | Original quantum state             |
+| q1    | Alice's half of the entangled pair |
+| q2    | Bob's half of the entangled pair   |
+
+Alice has q0 and q1.
+
+Bob has q2.
+
+The objective is to transfer the state of q0 to q2.
+
+## **6. What is a Bell State?**
+
+Extremely important
+
+A Bell state is a special maximally entangled two-qubit quantum state.
+
+There are four Bell states.
+
+### **First Bell state**
+
+\\[ |\Phi^+\rangle= \frac{|00\rangle+|11\rangle}{\sqrt{2}} \\]
+
+### **Second Bell state**
+
+\\[ |\Phi^-\rangle= \frac{|00\rangle-|11\rangle}{\sqrt{2}} \\]
+
+### **Third Bell state**
+
+\\[ |\Psi^+\rangle= \frac{|01\rangle+|10\rangle}{\sqrt{2}} \\]
+
+### **Fourth Bell state**
+
+\\[ |\Psi^-\rangle= \frac{|01\rangle-|10\rangle}{\sqrt{2}} \\]
+
+These are called the four Bell states or Bell basis states.
+
+For quantum teleportation, we commonly create:
+
+\\[ |\Phi^+\rangle= \frac{|00\rangle+|11\rangle}{\sqrt{2}} \\]
+
+## **7. How do we create a Bell Pair?**
+
+We use:
+
+1. Hadamard gate.
+2. CNOT gate.
+
+Suppose both qubits start in:
+
+\\[ |00\rangle \\]
+
+First, apply a Hadamard gate to the first qubit.
+
+\\[ |0\rangle\rightarrow \frac{|0\rangle+|1\rangle}{\sqrt{2}} \\]
+
+The two-qubit state becomes:
+
+\\[ \frac{|00\rangle+|10\rangle}{\sqrt{2}} \\]
+
+Now apply a CNOT gate.
+
+The first qubit is the control and the second is the target.
+
+The result becomes:
+
+\\[ \frac{|00\rangle+|11\rangle}{\sqrt{2}} \\]
+
+Now the qubits are entangled.
+
+**External explanation:**
+
+"We create a Bell pair by applying a Hadamard gate to the first qubit and then a CNOT gate between the two qubits. This creates an entangled quantum state."
+
+## **8. What is Classical Communication?**
+
+Classical communication means transferring ordinary binary information from one participant to another.
+
+In quantum teleportation, Alice measures two qubits and obtains two classical bits.
+
+She sends these two bits to Bob.
+
+Bob uses them to decide which correction operations to apply.
+
+The two classical bits are essential for completing teleportation.
+
+**Important:** Because classical communication is required, quantum teleportation cannot transmit information faster than light.
+
+## **9. What are Pauli Gates?**
+
+Very important
+
+Pauli gates are fundamental single-qubit quantum gates.
+
+### **Pauli-X gate**
+
+It performs a bit flip.
+
+\\[ X|0\rangle=|1\rangle \\]
+
+\\[ X|1\rangle=|0\rangle \\]
+
+### **Pauli-Z gate**
+
+It performs a phase flip.
+
+\\[ Z|0\rangle=|0\rangle \\]
+
+\\[ Z|1\rangle=-|1\rangle \\]
+
+### **Pauli-Y gate**
+
+It performs a combined bit and phase transformation.
+
+### **Identity gate**
+
+It leaves the state unchanged.
+
+\\[ I|\psi\rangle=|\psi\rangle \\]
+
+## **10. Complete Quantum Teleportation Working**
+
+[Adaptable Curricular Exercises for QIS: QIS for QM: Qubits, Quantum Gates, and Teleportation](https://images.openai.com/static-rsc-4/EOcaegZbkcJF9L5S7X7D-Gj8Q-XtVAPxcmLTfb9fxfDcYEzBQQI5ra86GNVT8ls5snYeM36fqj1wtE1Nlf2NiFjKpDvi1iPxX2wW4F1FhTa60QSw8qMcUP2dpIBBije6eie12A4vGsk33jfS8YqrlTYr1P7xHTpN-YnV79POxtI?purpose=inline)
+
+[physport.org](https://www.physport.org/curricula/ACEQIS/qubits?utm_source=chatgpt.com)
+
+This is the most important part of your practical.
+
+### **Step 1: Prepare the original quantum state**
+
+Alice has an unknown quantum state:
+
+\\[ |\psi\rangle=\alpha|0\rangle+\beta|1\rangle \\]
+
+Where:
+
+\\[ |\alpha|^2+|\beta|^2=1 \\]
+
+She wants to transfer this state to Bob.
+
+### **Step 2: Create an entangled Bell pair**
+
+Alice and Bob share an entangled pair.
+
+\\[ |\Phi^+\rangle= \frac{|00\rangle+|11\rangle}{\sqrt{2}} \\]
+
+Alice owns q1, and Bob owns q2.
+
+### **Step 3: Alice applies a CNOT gate**
+
+Alice applies CNOT using q0 as the control and q1 as the target.
+
+This operation combines the original qubit with her half of the entangled pair.
+
+### **Step 4: Apply Hadamard gate**
+
+Alice applies a Hadamard gate to q0.
+
+This prepares the two qubits for Bell-basis measurement.
+
+### **Step 5: Alice measures two qubits**
+
+Alice measures q0 and q1.
+
+She obtains two classical bits.
+
+Possible outcomes:
+
+```
+00
+01
+10
+11
+```
+
+### **Step 6: Alice sends classical information**
+
+Alice sends the two measurement bits to Bob through a classical communication channel.
+
+### **Step 7: Bob applies correction operations**
+
+Bob applies correction gates according to Alice's measurement result.
+
+| Alice's result | Bob's correction |
+| -------------- | ---------------- |
+| 00             | I                |
+| 01             | X                |
+| 10             | Z                |
+| 11             | ZX               |
+
+This table follows the measurement-bit convention used in your manual.
+
+### **Step 8: Bob receives the original quantum state**
+
+After applying the correct operations:
+
+\\[ |\psi\rangle\_{q0} \longrightarrow |\psi\rangle\_{q2} \\]
+
+The original quantum state has been reconstructed on Bob's qubit.
+
+## **11. Mathematical Explanation of Teleportation**
+
+This is useful if your external asks you to explain the mathematics.
+
+The initial state of the three qubits is:
+
+\\[ |\psi\rangle_0\otimes|\Phi^+\rangle\_{12} \\]
+
+Substitute:
+
+\\[ |\psi\rangle_0= \alpha|0\rangle+\beta|1\rangle \\]
+
+And:
+
+\\[ |\Phi^+\rangle\_{12}= \frac{|00\rangle+|11\rangle}{\sqrt2} \\]
+
+Therefore:
+
+\\[ |\Psi\rangle= \frac{1}{\sqrt2} (\alpha|000\rangle+ \alpha|011\rangle+ \beta|100\rangle+ \beta|111\rangle) \\]
+
+After Alice applies CNOT and Hadamard operations, the state can be expressed as:
+
+\\[ \begin{aligned} |\Psi\rangle=\frac12[& |00\rangle(\alpha|0\rangle+\beta|1\rangle)\\\ +&|01\rangle(\alpha|1\rangle+\beta|0\rangle)\\\ +&|10\rangle(\alpha|0\rangle-\beta|1\rangle)\\\ +&|11\rangle(\alpha|1\rangle-\beta|0\rangle)] \end{aligned} \\]
+
+The first two bits represent Alice's measurement outcomes.
+
+Each outcome leaves Bob's qubit in a state that can be corrected using the corresponding operation.
+
+After correction, Bob obtains:
+
+\\[ \alpha|0\rangle+\beta|1\rangle \\]
+
+This completes quantum teleportation.
+
+## **12. Applications of Quantum Teleportation**
+
+1. Quantum communication.
+2. Quantum networks.
+3. Distributed quantum computing.
+4. Quantum information transfer.
+5. Quantum internet research.
+
+## **13. Advantages**
+
+- Transfers quantum states without copying them.
+- Uses quantum entanglement.
+- Enables communication of quantum information.
+- Is an important building block for quantum networks.
+
+## **14. Limitations**
+
+- Requires shared entanglement.
+- Requires two classical bits.
+- Entanglement must be created and distributed.
+- Noise can affect teleportation accuracy.
+- It does not enable faster-than-light communication.
+
+## **15. How to explain Practical 4 to the external examiner**
+
+**Ready-to-speak explanation**
+
+"Ma'am, the aim of this practical is to implement the Quantum Teleportation algorithm using Python and Qiskit.
+
+Quantum teleportation is a technique used to transfer an unknown quantum state from one qubit to another using entanglement and classical communication.
+
+We use three qubits. The first contains the original quantum state, while the other two are used to create an entangled Bell pair.
+
+First, we create the Bell pair using a Hadamard gate and a CNOT gate.
+
+Then Alice applies a CNOT gate and a Hadamard gate and measures her two qubits.
+
+She sends the two classical measurement bits to Bob.
+
+Bob applies the required X and Z correction gates.
+
+Finally, the original quantum state is reconstructed on Bob's qubit."
+
+## **16. Detailed viva questions — Practical 4**
+
+**Q1. What is quantum teleportation?**
+
+It is the transfer of a quantum state using entanglement and classical communication.
+
+**Q2. What is the aim of this practical?**
+
+To implement the Quantum Teleportation algorithm using Qiskit.
+
+**Q3. How many qubits are required?**
+
+Three qubits.
+
+**Q4. Who are Alice and Bob?**
+
+Alice is the sender, and Bob is the receiver.
+
+**Q5. What is a Bell state?**
+
+A maximally entangled two-qubit state.
+
+**Q6. How many Bell states exist?**
+
+Four.
+
+**Q7. Which gates are used to create a Bell pair?**
+
+Hadamard and CNOT.
+
+**Q8. What is entanglement?**
+
+A quantum correlation between qubits that cannot be described as independent states.
+
+**Q9. What is the No-Cloning Theorem?**
+
+It states that an arbitrary unknown quantum state cannot be perfectly copied.
+
+**Q10. Does teleportation transfer a physical particle?**
+
+No. It transfers the quantum state.
+
+**Q11. Does teleportation violate the No-Cloning Theorem?**
+
+No. The original state is consumed by Alice's measurement, and the state is reconstructed on Bob's qubit.
+
+**Q12. How many classical bits are required?**
+
+Two classical bits.
+
+**Q13. Why are classical bits required?**
+
+To communicate Alice's measurement results to Bob.
+
+**Q14. What is the purpose of the Hadamard gate?**
+
+It creates superposition.
+
+**Q15. What is the purpose of the CNOT gate?**
+
+It performs a controlled bit flip and helps create entanglement.
+
+**Q16. What is a Pauli-X gate?**
+
+A bit-flip gate.
+
+**Q17. What is a Pauli-Z gate?**
+
+A phase-flip gate.
+
+**Q18. What is the identity gate?**
+
+A gate that leaves the state unchanged.
+
+**Q19. What are the four possible measurement outcomes?**
+
+00, 01, 10 and 11.
+
+**Q20. What correction is required for 00?**
+
+Identity operation.
+
+**Q21. What correction is required for 01?**
+
+X gate.
+
+**Q22. What correction is required for 10?**
+
+Z gate.
+
+**Q23. What correction is required for 11?**
+
+ZX gate.
+
+**Q24. Can quantum teleportation be used for faster-than-light communication?**
+
+No, because classical communication is necessary.
+
+**Q25. What happens if Bob does not apply the corrections?**
+
+His qubit will generally not contain the original state.
+
+**Q26. What is the purpose of measurement?**
+
+To obtain Alice's classical measurement results.
+
+**Q27. What is the purpose of entanglement?**
+
+It provides the shared quantum resource required for teleportation.
+
+**Q28. Can we teleport any arbitrary single-qubit state?**
+
+Yes, in the ideal protocol, any arbitrary single-qubit state can be teleported.
+
+**Q29. What is a quantum circuit?**
+
+A sequence of quantum gates and operations applied to qubits.
+
+**Q30. What is Qiskit?**
+
+An open-source software framework for quantum computing.
+
+# **PART 6 — PRACTICAL 5: IMPLEMENTING A 5-QUBIT QUANTUM FOURIER TRANSFORM**
+
+Practical 5
+
+[Quantum Fourier Transform in Qiskit — Quantum Computing UK](https://images.openai.com/static-rsc-4/hug-UODVXEI4dpQnKt3Ll2azmcl-DFlshquary_v3E_5HQIUILU4Jl8HHOsV-4B_LHiDzNXvPHcOVcKzR-DZiCkcZ1w-S1OkeAMfaitBLia8jR3HY7iUoPM4UbxEOmbAehzqinlaxhrQ8x-nTTuzPsI09sVGknhIxWh-tpqZ3YU?purpose=inline)
+
+[quantumcomputinguk.org](https://quantumcomputinguk.org/tutorials/quantum-fourier-transform-in-qiskit?utm_source=chatgpt.com)
+
+This practical is based on a mathematical transformation used in many quantum algorithms.
+
+Important concepts:
+
+- Fourier Transform.
+- Discrete Fourier Transform.
+- Quantum Fourier Transform.
+- Computational basis.
+- Fourier basis.
+- Hadamard gate.
+- Phase-rotation gate.
+- Controlled phase gate.
+- SWAP gate.
+- Inverse QFT.
+
+## **1. What is Fourier Transform?**
+
+Fourier Transform is a mathematical technique used to convert a signal from one representation into another.
+
+It is commonly used to convert information from the time domain to the frequency domain.
+
+For example:
+
+A sound signal may contain different frequencies.
+
+Fourier Transform helps us identify the frequency components present in the signal.
+
+[How FFT Works: Understanding the Fast Fourier Transform : MALMIJAL-M Blog](https://images.openai.com/static-rsc-4/RUv2DpIuNafgiaT21eX73KKRCVkB8FbqtxSrD7877PL_3ldRP6kiBlYtVXYbpx2joHU4dhtClF25rWVXcAZzL7-N5btim6CzIqGRjmxKBfoIQ-ASYxkAgB41QATGKykKlNM141OwIxH0IBlkIQyrFO2xJjeaAl7563PEC0q22P8?purpose=inline)
+
+[mmjal.com](https://mmjal.com/BLOG/?bmode=view\&idx=170257183\&utm_source=chatgpt.com)
+
+Applications:
+
+- Audio processing.
+- Image processing.
+- Signal processing.
+- Communication systems.
+- Scientific computing.
+
+## **2. What is Discrete Fourier Transform (DFT)?**
+
+DFT stands for Discrete Fourier Transform.
+
+It transforms a finite sequence of numerical values into its frequency-domain representation.
+
+For example, suppose we have:
+
+\\[ x=[1,2,3,4] \\]
+
+DFT converts this sequence into a representation of its frequency components.
+
+It is a classical mathematical operation.
+
+## **3. What is Quantum Fourier Transform (QFT)?**
+
+Most important concept
+
+Quantum Fourier Transform is a quantum operation that transforms a quantum state from the computational basis into the Fourier basis.
+
+In simple language:
+
+QFT changes the representation of quantum information by transforming the amplitudes of the quantum state.
+
+It is the quantum equivalent of the Discrete Fourier Transform.
+
+The mathematical definition for \\(N\\) computational basis states is:
+
+\\[ QFT|x\rangle= \frac{1}{\sqrt N} \sum\_{y=0}^{N-1} e^{2\pi ixy/N}|y\rangle \\]
+
+Where:
+
+- \\(N\\) = Number of computational basis states.
+- \\(x\\) = Input basis-state index.
+- \\(y\\) = Output basis-state index.
+- \\(i\\) = Imaginary unit.
+- \\(e^{2\pi ixy/N}\\) = Complex phase factor.
+
+This is the main mathematical definition of QFT.
+
+## **4. What is the Computational Basis?**
+
+The computational basis is the standard basis used to represent qubits.
+
+For one qubit:
+
+\\[ |0\rangle,\quad|1\rangle \\]
+
+For two qubits:
+
+\\[ |00\rangle,\ |01\rangle,\ |10\rangle,\ |11\rangle \\]
+
+For three qubits:
+
+\\[ |000\rangle,\ |001\rangle,\ldots,|111\rangle \\]
+
+For five qubits:
+
+\\[ 2^5=32 \\]
+
+There are 32 computational basis states.
+
+## **5. What is the Fourier Basis?**
+
+The Fourier basis is another basis used to represent quantum states.
+
+QFT transforms computational basis states into Fourier basis states.
+
+For a one-qubit system:
+
+\\[ QFT|0\rangle= \frac{|0\rangle+|1\rangle}{\sqrt2} \\]
+
+\\[ QFT|1\rangle= \frac{|0\rangle-|1\rangle}{\sqrt2} \\]
+
+This is exactly the action of the Hadamard gate.
+
+**Important distinction:** Your manual introduces the Fourier basis using the Hadamard basis. This is correct for one qubit, but the multi-qubit Fourier basis is more general and includes relative phases generated by controlled phase rotations.
+
+## **6. Difference between DFT and QFT**
+
+| DFT                                   | QFT                                         |
+| ------------------------------------- | ------------------------------------------- |
+| Classical mathematical transformation | Quantum transformation                      |
+| Operates on classical sequences       | Operates on quantum state amplitudes        |
+| Uses numerical calculations           | Uses quantum gates                          |
+| Produces Fourier coefficients         | Produces Fourier-transformed quantum states |
+| Used in signal processing             | Used in quantum algorithms                  |
+
+## **7. What is the Hadamard Gate?**
+
+The Hadamard gate creates superposition.
+
+Its matrix is:
+
+\\[ H=\frac{1}{\sqrt2} \begin{bmatrix} 1&1\\\ 1&-1 \end{bmatrix} \\]
+
+Its transformations are:
+
+\\[ H|0\rangle= \frac{|0\rangle+|1\rangle}{\sqrt2} \\]
+
+\\[ H|1\rangle= \frac{|0\rangle-|1\rangle}{\sqrt2} \\]
+
+**Purpose in QFT:** It creates the superposition components required by the Fourier transformation.
+
+## **8. What is a Phase-Rotation Gate?**
+
+A phase-rotation gate changes the phase of a quantum state.
+
+It can be represented as:
+
+\\[ R(\theta)= \begin{bmatrix} 1&0\\\ 0&e^{i\theta} \end{bmatrix} \\]
+
+Where \\(\theta\\) is the rotation angle.
+
+For example:
+
+\\[ \theta=\frac{\pi}{2} \\]
+
+represents a phase rotation of 90 degrees.
+
+In quantum computing, phase changes are important because relative phases affect interference and measurement probabilities after further quantum operations.
+
+## **9. What is a Controlled Phase Gate?**
+
+[Managers’ Path Towards Quantum Computing | by Javier Mancilla | Medium](https://images.openai.com/static-rsc-4/5BktUUMestwXK_D0V5y7w8Tw1eV3Yqq-MtvQ0gHChe9tEEUnx9OjCW6AKVtH4SHDo_lJbmhDxGW3J99g6z6lxNOP06_8HPwrOmUDnmEAC5PETOa345LObDoP69GSFjWr9llwaPg9_fDFJggDHxKQw4oLePzrUr7weskKzR04YBo?purpose=inline)
+
+[medium.com](https://medium.com/%40mancillamontero/managers-alternatives-to-learn-quantum-computing-b1192ff76f3c?utm_source=chatgpt.com)
+
+A Controlled Phase Gate applies a phase operation depending on the state of the control qubit.
+
+If the control qubit is 1, a phase is applied to the joint \\(|11\rangle\\) component.
+
+It is used to introduce the relative phases required for QFT.
+
+In Qiskit:
+
+```
+qc.cp(angle, control, target)
+```
+
+Your manual uses the older term Controlled U1 gate.
+
+In modern Qiskit, the corresponding phase operation is commonly represented using `cp()`.
+
+## **10. What is a SWAP Gate?**
+
+[What is SWAP Gate in Quatnum Computing?](https://images.openai.com/static-rsc-4/kNYVczsyEQeemLorxT2dtjB1EM1jHaqxohLTUNl0Rir7xhZodDgU82HDbIel_nPcdzil4NOcx4fq1-qpbet82LU_pLl8GVwrE-5NmsGISECNCAw8vM8GNXApDSYizE9uAqGD4plVQJrHcjHUNmb7lpBqLb7F_HwChWEqOudKpUw?purpose=inline)
+
+[onlinetutorialhub.com](https://onlinetutorialhub.com/quantum-computing-tutorials/what-is-swap-gate-in-quatnum-computing/?utm_source=chatgpt.com)
+
+A SWAP gate exchanges the states of two qubits.
+
+For example:
+
+\\[ |01\rangle\rightarrow|10\rangle \\]
+
+Why is it used in QFT?
+
+The standard QFT circuit naturally produces its qubits in reversed order.
+
+SWAP gates restore the conventional output ordering.
+
+Your manual also explains that SWAP gates can be omitted if the QFT output is used at the end of a larger circuit and reversed ordering is acceptable.
+
+## **11. How does a 5-Qubit QFT work?**
+
+[Jonny Comes - Quantum Fourier transform](https://images.openai.com/static-rsc-4/wtreyqA7R5ylDJez63l49J_C7LAIqBaVFovI8GOol6yObFta2dWGqFYKsLKEQrTgc9PNz17UrIl_k8rzp0kxE1STKWNnsNVru7D-CI7pycisx5G5bInGd272wn_WyqIsnBSGoCN9olXdDL17XvIu0DLyHupRagtMZj0Yx8R-8Z8?purpose=inline)
+
+[jonnycomes.github.io](https://jonnycomes.github.io/posts/quantum-fourier-transform/?utm_source=chatgpt.com)
+
+Our practical requires five qubits.
+
+The number of computational basis states is:
+
+\\[ 2^5=32 \\]
+
+The circuit uses:
+
+1. Five qubits.
+2. Hadamard gates.
+3. Controlled phase rotations.
+4. SWAP gates.
+
+### **Step 1: Initialize five qubits**
+
+The five qubits are initially prepared in their computational basis states.
+
+### **Step 2: Apply the Hadamard gate**
+
+A Hadamard gate is applied to the first qubit.
+
+This creates superposition.
+
+### **Step 3: Apply controlled phase rotations**
+
+We apply controlled phase gates with different rotation angles.
+
+The pattern is:
+
+\\[ \frac{\pi}{2},\ \frac{\pi}{4},\ \frac{\pi}{8},\ \frac{\pi}{16} \\]
+
+Each successive angle is half the previous angle.
+
+### **Step 4: Repeat for the remaining qubits**
+
+The same pattern is applied to the other qubits with the appropriate controlled phase rotations.
+
+### **Step 5: Apply SWAP gates**
+
+The SWAP gates restore the standard qubit ordering.
+
+### **Step 6: Measure the qubits**
+
+We measure all five qubits and obtain classical results.
+
+## **12. Why do we get different measurement outcomes after QFT?**
+
+This is a very important question.
+
+Suppose we encode:
+
+\\[ |10101\rangle \\]
+
+Then apply a five-qubit QFT.
+
+The output becomes a superposition of 32 computational basis states.
+
+For a computational basis input, all 32 output basis states have equal measurement probabilities.
+
+Therefore, different results can appear after measurement.
+
+For example:
+
+```
+00000
+00001
+00010
+00011
+...
+11111
+```
+
+All 32 outcomes are possible with equal probability in the ideal case.
+
+**Important:** QFT is not itself a random number generator. The different outputs arise because measurement samples the superposition created by the transformation.
+
+## **13. What is Inverse Quantum Fourier Transform?**
+
+Very important viva topic
+
+Inverse Quantum Fourier Transform (IQFT) is the reverse operation of QFT.
+
+If:
+
+\\[ QFT|\psi\rangle=|\phi\rangle \\]
+
+Then:
+
+\\[ QFT^{-1}|\phi\rangle=|\psi\rangle \\]
+
+In simple language:
+
+QFT transforms the quantum state, while inverse QFT reverses the transformation.
+
+Mathematically:
+
+\\[ QFT^{-1}QFT=I \\]
+
+Where \\(I\\) is the identity operation.
+
+### **Example**
+
+Suppose we encode:
+
+\\[ |10101\rangle \\]
+
+Then apply QFT:
+
+\\[ QFT|10101\rangle \\]
+
+We obtain the Fourier-transformed state.
+
+Now apply inverse QFT:
+
+\\[ QFT^{-1}QFT|10101\rangle \\]
+
+We recover:
+
+\\[ |10101\rangle \\]
+
+This is the fundamental purpose of inverse QFT.
+
+**Important:** Do not measure the qubits between QFT and inverse QFT if you want to recover the original quantum state. Measurement generally collapses the superposition.
+
+## **14. What is Approximation Degree?**
+
+Approximation degree controls how many small-angle controlled phase rotations can be omitted from the QFT circuit.
+
+Why do we need it?
+
+Because removing some small-angle rotations can reduce:
+
+- Circuit depth.
+- Number of gates.
+- Execution complexity.
+
+In your manual:
+
+```
+approximation_degree=0
+```
+
+means no phase rotations are omitted, so the full QFT circuit is implemented.
+
+## **15. What is Circuit Depth?**
+
+Circuit depth means the number of sequential layers of quantum operations in a circuit.
+
+A smaller circuit depth can be beneficial because real quantum hardware has limited coherence time and is affected by noise.
+
+## **16. Applications of Quantum Fourier Transform**
+
+1. Shor's factoring algorithm.
+2. Quantum Phase Estimation.
+3. Quantum algorithms involving periodicity.
+4. Quantum signal processing.
+5. Quantum information processing.
+
+## **17. Advantages**
+
+- Efficient quantum implementation of Fourier transformation.
+- Important component of several quantum algorithms.
+- Helps identify phase and periodicity information.
+- Can be implemented using Hadamard and controlled phase gates.
+
+## **18. Limitations**
+
+- Quantum hardware is affected by noise.
+- Controlled phase gates require accurate implementation.
+- Measurement does not directly reveal all complex amplitudes.
+- Gate count and circuit depth increase with qubit count.
+- The result must be interpreted according to the encoding and bit ordering.
+
+## **19. How to explain Practical 5 to the external examiner**
+
+**Ready-to-speak explanation**
+
+"Ma'am, the aim of this practical is to implement a five-qubit Quantum Fourier Transform using Qiskit.
+
+Quantum Fourier Transform is a quantum operation that transforms a quantum state from the computational basis into the Fourier basis.
+
+First, we create a five-qubit quantum circuit and initialize the input state.
+
+Then we apply Hadamard gates to create superposition and controlled phase-rotation gates to introduce the required relative phases.
+
+After that, we apply SWAP gates to restore the correct qubit ordering.
+
+Finally, we measure all five qubits and observe the measurement results.
+
+We can also apply inverse QFT to reverse the transformation and recover the original input state."
+
+## **20. Detailed viva questions — Practical 5**
+
+**Q1. What is the aim of this practical?**
+
+To implement a five-qubit Quantum Fourier Transform using Qiskit.
+
+**Q2. What is Fourier Transform?**
+
+It is a mathematical technique used to transform information from one representation into another, commonly from the time domain to the frequency domain.
+
+**Q3. What is QFT?**
+
+Quantum Fourier Transform is a quantum operation that transforms the amplitudes of a quantum state from the computational basis into the Fourier basis.
+
+**Q4. What is the full form of QFT?**
+
+Quantum Fourier Transform.
+
+**Q5. What is DFT?**
+
+Discrete Fourier Transform, a classical mathematical transformation.
+
+**Q6. What is the difference between DFT and QFT?**
+
+DFT transforms classical data, while QFT transforms quantum state amplitudes.
+
+**Q7. How many qubits are used?**
+
+Five qubits.
+
+**Q8. How many possible computational basis states exist for five qubits?**
+
+\\[ 2^5=32 \\]
+
+**Q9. What is the purpose of a Hadamard gate?**
+
+To create superposition.
+
+**Q10. What is a phase-rotation gate?**
+
+A gate that changes the phase of a quantum state.
+
+**Q11. What is a Controlled Phase Gate?**
+
+A gate that applies a phase operation conditionally based on the control qubit.
+
+**Q12. What is a SWAP gate?**
+
+A gate that exchanges the states of two qubits.
+
+**Q13. Why do we use SWAP gates in QFT?**
+
+To restore the conventional qubit ordering.
+
+**Q14. What is inverse QFT?**
+
+It is the reverse operation of QFT.
+
+**Q15. Why do we use inverse QFT?**
+
+To recover the original quantum state after the Fourier transformation.
+
+**Q16. What is the relationship between QFT and inverse QFT?**
+
+\\[ QFT^{-1}QFT=I \\]
+
+**Q17. What is the rotation pattern in a five-qubit QFT?**
+
+\\[ \frac{\pi}{2},\ \frac{\pi}{4},\ \frac{\pi}{8},\ \frac{\pi}{16} \\]
+
+**Q18. What does approximation degree 0 mean?**
+
+It means no controlled phase rotations are omitted.
+
+**Q19. What is a computational basis?**
+
+The standard basis consisting of binary quantum states.
+
+**Q20. What is a Fourier basis?**
+
+A basis consisting of Fourier-transformed quantum states.
+
+**Q21. Why do we get different measurement outcomes after QFT?**
+
+Because QFT produces a superposition of computational basis states, and measurement samples from their probability distribution.
+
+**Q22. Is QFT a random number generator?**
+
+No. Its purpose is to perform a Fourier transformation on quantum states.
+
+**Q23. What is circuit depth?**
+
+The number of sequential layers of quantum operations in a circuit.
+
+**Q24. What is the use of QFT in Shor's algorithm?**
+
+It helps extract periodicity information needed for factoring.
+
+**Q25. What is Quantum Phase Estimation?**
+
+An algorithm used to estimate the phase associated with an eigenvalue of a unitary operator.
+
+**Q26. What happens if we apply inverse QFT after QFT?**
+
+The original quantum state is recovered in an ideal circuit.
+
+**Q27. Which library is used for QFT implementation?**
+
+Qiskit.
+
+**Q28. What does&#x20;**`qc.h(0)`**&#x20;do?**
+
+It applies a Hadamard gate to qubit 0.
+
+**Q29. What does&#x20;**`qc.cp(angle, control, target)`**&#x20;do?**
+
+It applies a controlled phase rotation.
+
+**Q30. What does&#x20;**`qc.swap(0,4)`**&#x20;do?**
+
+It exchanges the states of qubits 0 and 4.
+
+# **PART 7 — IMPORTANT COMPARISON QUESTIONS FROM ALL FIVE PRACTICALS**
+
+External examiners sometimes ask questions that connect two practicals. Prepare these carefully.
+
+## **1. Difference between all five practicals**
+
+| Practical                     | Main purpose                | Most important concept                           |
+| ----------------------------- | --------------------------- | ------------------------------------------------ |
+| 1. 16-Qubit RNG               | Generate random bits        | Superposition and measurement                    |
+| 2. Noise and Error Correction | Improve reliability         | Noise, redundancy and error mitigation           |
+| 3. Tarrataca's System         | Search for puzzle solutions | State space, production rules and quantum search |
+| 4. Quantum Teleportation      | Transfer quantum states     | Entanglement and Bell states                     |
+| 5. 5-Qubit QFT                | Transform quantum states    | Fourier transformation and phase rotation        |
+
+## **2. Important differences you must know**
+
+### **A. Superposition vs Entanglement**
+
+| Superposition                                  | Entanglement                           |
+| ---------------------------------------------- | -------------------------------------- |
+| Combination of quantum basis states            | Correlation between quantum systems    |
+| Can occur in one qubit                         | Requires at least two subsystems       |
+| Created using Hadamard gate in common examples | Created using gates such as H and CNOT |
+| Used in RNG and QFT                            | Used in teleportation                  |
+
+### **B. Bit Flip vs Phase Flip**
+
+| Bit Flip                          | Phase Flip                                                        |
+| --------------------------------- | ----------------------------------------------------------------- |
+| Changes 0 to 1 and 1 to 0         | Changes the relative phase                                        |
+| Represented by X gate             | Represented by Z gate                                             |
+| Changes computational-basis value | Can leave computational-basis measurement probabilities unchanged |
+
+### **C. Classical Bit vs Qubit**
+
+| Classical bit               | Qubit                                               |
+| --------------------------- | --------------------------------------------------- |
+| Stores 0 or 1               | Can be in superposition                             |
+| Used in classical computers | Used in quantum computers                           |
+| Classical logic gates       | Quantum gates                                       |
+| Can be copied               | Arbitrary unknown states cannot be perfectly cloned |
+
+### **D. Quantum Error Correction vs Quantum Teleportation**
+
+| Error Correction                    | Teleportation                                  |
+| ----------------------------------- | ---------------------------------------------- |
+| Protects quantum information        | Transfers quantum information                  |
+| Uses redundancy and error detection | Uses shared entanglement                       |
+| Uses syndrome measurements          | Uses Bell-basis measurements                   |
+| Aims to detect and correct errors   | Aims to reconstruct the state at another qubit |
+
+### **E. Grover's Algorithm vs QAOA**
+
+| Grover's Algorithm                 | QAOA                                     |
+| ---------------------------------- | ---------------------------------------- |
+| Quantum search algorithm           | Hybrid optimization algorithm            |
+| Uses oracle and diffusion operator | Uses cost and mixer Hamiltonians         |
+| Uses amplitude amplification       | Uses parameter optimization              |
+| Searches for marked states         | Searches for good optimization solutions |
+
+### **F. QFT vs Inverse QFT**
+
+| QFT                                  | Inverse QFT                                 |
+| ------------------------------------ | ------------------------------------------- |
+| Forward transformation               | Reverse transformation                      |
+| Computational basis to Fourier basis | Fourier basis to computational basis        |
+| Uses positive phase rotations        | Uses corresponding negative phase rotations |
+
+# **PART 8 — MOST IMPORTANT QUESTIONS FROM THE COMPLETE QUANTUM AI SYLLABUS**
+
+These are additional questions that can be asked across different practicals.
+
+| No. | Question                         | Answer                                                                                      |
+| --- | -------------------------------- | ------------------------------------------------------------------------------------------- |
+| 1   | What is quantum mechanics?       | The branch of physics that studies the behaviour of matter and energy at very small scales. |
+| 2   | What is quantum computing?       | Computing using quantum principles and qubits.                                              |
+| 3   | What is a qubit?                 | The basic unit of quantum information.                                                      |
+| 4   | What is superposition?           | A combination of quantum basis states.                                                      |
+| 5   | What is entanglement?            | A special correlation between quantum systems.                                              |
+| 6   | What is measurement?             | Obtaining a classical outcome from a quantum state.                                         |
+| 7   | What is a quantum gate?          | An operation applied to qubits.                                                             |
+| 8   | What is a quantum circuit?       | A sequence of quantum gates and operations.                                                 |
+| 9   | What is a Hadamard gate?         | A gate that creates superposition.                                                          |
+| 10  | What is a CNOT gate?             | A controlled NOT gate.                                                                      |
+| 11  | What is an X gate?               | A bit-flip gate.                                                                            |
+| 12  | What is a Z gate?                | A phase-flip gate.                                                                          |
+| 13  | What is a SWAP gate?             | A gate that exchanges two qubits.                                                           |
+| 14  | What is a Bell state?            | A maximally entangled two-qubit state.                                                      |
+| 15  | What is a quantum simulator?     | Software that simulates quantum circuits.                                                   |
+| 16  | What is Qiskit?                  | An open-source framework for quantum computing.                                             |
+| 17  | What is a quantum register?      | A collection of qubits.                                                                     |
+| 18  | What is a classical register?    | A collection of classical bits.                                                             |
+| 19  | What is a shot?                  | One execution of a quantum circuit.                                                         |
+| 20  | What is a probability amplitude? | A complex number whose squared magnitude gives a measurement probability.                   |
+| 21  | What is a unitary operation?     | A quantum operation that preserves the norm of a quantum state.                             |
+| 22  | What is the No-Cloning Theorem?  | An arbitrary unknown quantum state cannot be perfectly copied.                              |
+| 23  | What is Grover's algorithm?      | A quantum algorithm for unstructured search.                                                |
+| 24  | What is QAOA?                    | Quantum Approximate Optimization Algorithm.                                                 |
+| 25  | What is QFT?                     | Quantum Fourier Transform.                                                                  |
+| 26  | What is IQFT?                    | Inverse Quantum Fourier Transform.                                                          |
+| 27  | What is a logical qubit?         | An encoded quantum state protected using multiple physical qubits.                          |
+| 28  | What is a physical qubit?        | A hardware-level quantum bit.                                                               |
+| 29  | What is a syndrome?              | Information used to identify quantum errors.                                                |
+| 30  | What is fault tolerance?         | Reliable computation despite hardware errors.                                               |
+
+# **PART 9 — How to handle the external examiner**
+
+You do not need to give lengthy answers to every question. Your objective is to demonstrate that you understand the practical.
+
+Follow this method:
+
+**1. Start with the definition.**
+
+For example:
+
+"Quantum teleportation is the transfer of a quantum state using entanglement and classical communication."
+
+**2. Explain the purpose.**
+
+"It is used to transfer quantum information without copying an arbitrary unknown state."
+
+**3. Explain the working.**
+
+"First, we create a Bell pair, then Alice performs operations and measurements, and Bob applies corrections."
+
+**4. Give an example if required.**
+
+"For example, we use three qubits: one original qubit and two entangled qubits."
+
+This structure makes your answer clear and technically meaningful.
+
+## **Five practicals — What you must be able to explain without help**
+
+**Your theory preparation checklist**
+
+0/30 completed
+
+**Practical 1 — Quantum RNG**
+
+What is a qubit?
+
+What is superposition?
+
+Why use a Hadamard gate?
+
+Why use 16 qubits?
+
+What happens during measurement?
+
+PRNG vs QRNG
+
+**Practical 2 — Noise and Error Correction**
+
+What is quantum noise?
+
+Bit-flip and phase-flip errors
+
+Physical vs logical qubits
+
+Three-qubit repetition code
+
+Syndrome measurement
+
+Error correction vs error mitigation
+
+**Practical 3 — Tarrataca's System**
+
+Initial state and goal state
+
+State space
+
+Production system components
+
+State encoding
+
+Grover's algorithm
+
+QAOA, COBYLA and objective function
+
+**Practical 4 — Teleportation**
+
+What is teleportation?
+
+No-Cloning Theorem
+
+Alice and Bob
+
+Three qubits
+
+Bell states and entanglement
+
+Measurement and correction operations
+
+**Practical 5 — QFT**
+
+What is Fourier Transform?
+
+DFT vs QFT
+
+Computational and Fourier basis
+
+Hadamard and phase gates
+
+Controlled phase and SWAP gates
+
+Inverse QFT
+
+Reset checklist
+
+## **My final recommendation for your practical examination**
+
+If you are short on time, prepare these topics in this order:
+
+1. **Qubit, superposition, entanglement and measurement** — these fundamentals are used throughout Quantum AI.
+2. **Hadamard, X, Z and CNOT gates** — learn their purpose and mathematical operations.
+3. **Quantum teleportation** — understand the three qubits, Bell pair, Alice, Bob and correction table.
+4. **Quantum Error Correction** — understand bit flip, phase flip, physical qubits, logical qubits and syndrome.
+5. **Quantum Fourier Transform** — understand Hadamard, controlled phase rotation, SWAP and inverse QFT.
+6. **Tarrataca's System** — understand production rules, working memory, state space, Grover and QAOA.
+7. **16-Qubit RNG** — understand the complete generation process and probability calculations.
+
+**One important final point:** Your laboratory manual contains some older Qiskit APIs and some simplified or inconsistent algorithm examples. If your external asks about the theoretical concept, give the correct explanation above. If asked specifically about the laboratory code, explain what that particular code is intended to demonstrate.
+
+You have now covered the theory of all five Quantum AI practicals, including the major terms, mathematical foundations, working principles and viva questions.
