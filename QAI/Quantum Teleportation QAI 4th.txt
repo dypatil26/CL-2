@@ -1,0 +1,757 @@
+
+# ============================================================
+# EXPERIMENT: QUANTUM TELEPORTATION USING QISKIT
+# ============================================================
+
+# STEP 1: IMPORT REQUIRED LIBRARIES
+
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+from qiskit.visualization import plot_histogram
+import matplotlib.pyplot as plt
+
+
+# STEP 2: CREATE QUANTUM CIRCUIT
+
+# 3 qubits and 3 classical bits
+# q0 = Alice's unknown quantum state
+# q1 = Alice's entangled qubit
+# q2 = Bob's entangled qubit
+
+qc = QuantumCircuit(3, 3)
+
+
+# STEP 3: PREPARE UNKNOWN QUANTUM STATE
+
+# Prepare an example quantum state on Alice's qubit
+# State = Ry(pi/3)|0>
+
+from math import pi
+
+qc.ry(pi / 3, 0)
+
+qc.barrier()
+
+
+# STEP 4: CREATE ENTANGLEMENT BETWEEN ALICE AND BOB
+
+# Apply Hadamard gate
+qc.h(1)
+
+# Apply CNOT gate
+qc.cx(1, 2)
+
+qc.barrier()
+
+
+# STEP 5: BELL-STATE MEASUREMENT BY ALICE
+
+# Alice applies CNOT between her two qubits
+qc.cx(0, 1)
+
+# Apply Hadamard gate
+qc.h(0)
+
+qc.barrier()
+
+
+# STEP 6: MEASURE ALICE'S QUBITS
+
+qc.measure(0, 0)
+qc.measure(1, 1)
+
+qc.barrier()
+
+
+# STEP 7: CLASSICAL COMMUNICATION AND CORRECTION
+
+# Bob applies X gate if Alice's second measurement is 1
+
+with qc.if_test((qc.clbits[1], 1)):
+    qc.x(2)
+
+# Bob applies Z gate if Alice's first measurement is 1
+
+with qc.if_test((qc.clbits[0], 1)):
+    qc.z(2)
+
+qc.barrier()
+
+
+# STEP 8: DISPLAY FINAL QUANTUM CIRCUIT
+
+print("QUANTUM TELEPORTATION CIRCUIT")
+print(qc.draw(output='text'))
+
+
+# STEP 9: SIMULATE QUANTUM CIRCUIT
+
+simulator = AerSimulator()
+
+compiled_circuit = transpile(qc, simulator)
+
+job = simulator.run(
+    compiled_circuit,
+    shots=1024
+)
+
+result = job.result()
+
+counts = result.get_counts()
+
+
+# STEP 10: DISPLAY MEASUREMENT RESULTS
+
+print("\n========== QUANTUM TELEPORTATION RESULTS ==========")
+
+print("Measurement Counts:", counts)
+
+
+# STEP 11: DISPLAY HISTOGRAM
+
+plot_histogram(counts)
+
+plt.title("Quantum Teleportation Measurement Results")
+
+plt.show()
+
+
+# STEP 12: VERIFY TELEPORTED STATE
+
+# Bob's qubit is q2.
+# It is not measured in the teleportation circuit,
+# so measuring it directly would destroy the state.
+
+# Create a verification circuit on a fresh copy.
+# Repeat the teleportation and then measure Bob's qubit.
+
+verify = QuantumCircuit(3, 3)
+
+verify.ry(pi / 3, 0)
+
+verify.h(1)
+verify.cx(1, 2)
+
+verify.cx(0, 1)
+verify.h(0)
+
+verify.measure(0, 0)
+verify.measure(1, 1)
+
+with verify.if_test((verify.clbits[1], 1)):
+    verify.x(2)
+
+with verify.if_test((verify.clbits[0], 1)):
+    verify.z(2)
+
+# Measure Bob's qubit
+verify.measure(2, 2)
+
+verify_compiled = transpile(verify, simulator)
+
+verify_result = simulator.run(
+    verify_compiled,
+    shots=1024
+).result()
+
+verify_counts = verify_result.get_counts()
+
+print("\n========== BOB'S TELEPORTED STATE ==========")
+
+print("Verification Counts:", verify_counts)
+
+# Classical bit 2 stores Bob's measurement.
+# Qiskit displays classical bits as c2 c1 c0.
+
+bob_zero = sum(
+    count for state, count in verify_counts.items()
+    if state.replace(" ", "")[0] == '0'
+)
+
+bob_one = sum(
+    count for state, count in verify_counts.items()
+    if state.replace(" ", "")[0] == '1'
+)
+
+print("Bob measured 0:", bob_zero)
+print("Bob measured 1:", bob_one)
+
+print("\nQuantum Teleportation Completed Successfully!")
+
+
+
+
+ORAL QUESTIONS:
+# Quantum Teleportation Using Qiskit
+## Top 40 Viva Questions and Answers
+
+**Q1. What is quantum teleportation?**
+
+Quantum teleportation is a process of transferring an unknown quantum state from one location to another using quantum entanglement and classical communication.
+
+**Q2. Does quantum teleportation transfer physical particles?**
+
+No. It transfers the quantum state, not the physical particle itself.
+
+**Q3. Who proposed quantum teleportation?**
+
+Quantum teleportation was proposed in 1993 by Charles Bennett and his colleagues.
+
+**Q4. What is the main objective of this experiment?**
+
+The objective is to transfer Alice's quantum state to Bob's qubit using entanglement and classical communication.
+
+**Q5. How many qubits are used in your program?**
+
+Three qubits are used:
+- q0 – Alice's unknown quantum state.
+- q1 – Alice's entangled qubit.
+- q2 – Bob's entangled qubit.
+
+**Q6. Why are three classical bits used?**
+
+Two classical bits store Alice's measurement results, and one classical bit stores Bob's final measurement result during verification.
+
+**Q7. Who are Alice and Bob in quantum teleportation?**
+
+Alice is the sender who has the original quantum state, and Bob is the receiver who obtains the teleported state.
+
+**Q8. What is an unknown quantum state?**
+
+An unknown quantum state is a quantum state whose exact amplitudes or state information are not known to the receiver.
+
+**Q9. How is the initial quantum state prepared in your code?**
+
+It is prepared using the Ry gate with an angle of π/3.
+
+**Q10. What is the Ry gate?**
+
+The Ry gate is a single-qubit rotation gate that rotates a qubit around the Y-axis of the Bloch sphere.
+
+**Q11. What is the purpose of `pi/3` in your code?**
+
+It specifies the rotation angle of the Ry gate, which prepares the example quantum state.
+
+**Q12. What is quantum entanglement?**
+
+Quantum entanglement is a phenomenon in which two or more qubits become correlated, such that their states cannot be described independently.
+
+**Q13. How is entanglement created in your program?**
+
+First, a Hadamard gate is applied to q1, followed by a CNOT gate between q1 and q2.
+
+**Q14. What is a Hadamard gate?**
+
+A Hadamard gate creates an equal superposition of the computational basis states when applied to \(|0\rangle\).
+
+**Q15. What is a CNOT gate?**
+
+CNOT stands for Controlled-NOT. It flips the target qubit when the control qubit is 1.
+
+**Q16. What is a Bell state?**
+
+A Bell state is a maximally entangled two-qubit quantum state.
+
+**Q17. Which Bell state is created in your program?**
+
+The program creates the Bell state:
+
+\[
+|\Phi^+\rangle = \frac{|00\rangle+|11\rangle}{\sqrt{2}}
+\]
+
+It is created using a Hadamard gate followed by a CNOT gate.
+
+**Q18. What is a Bell-state measurement?**
+
+A Bell-state measurement identifies the entangled state of two qubits using quantum gates and measurements.
+
+**Q19. Which gates are used for Bell-state measurement in your code?**
+
+A CNOT gate is applied between q0 and q1, followed by a Hadamard gate on q0.
+
+**Q20. Why does Alice measure her two qubits?**
+
+Alice measures her two qubits to obtain two classical bits that tell Bob which correction operations to apply.
+
+**Q21. What is classical communication in quantum teleportation?**
+
+It is the transmission of Alice's two classical measurement bits to Bob so that he can reconstruct the original quantum state.
+
+**Q22. Why are two classical bits required?**
+
+Two classical bits represent four possible measurement outcomes: 00, 01, 10, and 11. Each outcome determines the corrections Bob must apply.
+
+**Q23. What is the purpose of the X gate?**
+
+The X gate is a quantum NOT gate. It changes \(|0\rangle\) to \(|1\rangle\) and vice versa.
+
+**Q24. What is the purpose of the Z gate?**
+
+The Z gate changes the phase of the \(|1\rangle\) state while leaving \(|0\rangle\) unchanged.
+
+**Q25. Why does Bob apply the X gate?**
+
+Bob applies the X gate when Alice's second measurement bit is 1.
+
+**Q26. Why does Bob apply the Z gate?**
+
+Bob applies the Z gate when Alice's first measurement bit is 1.
+
+**Q27. What happens after Bob applies the correction gates?**
+
+Bob's qubit contains the original quantum state that Alice wanted to teleport.
+
+**Q28. What is Qiskit?**
+
+Qiskit is an open-source quantum computing framework used to create, simulate, and execute quantum circuits.
+
+**Q29. What is AerSimulator?**
+
+AerSimulator is a Qiskit tool used to simulate quantum circuits on a classical computer.
+
+**Q30. What is transpilation?**
+
+Transpilation converts a quantum circuit into a format suitable for execution on a selected simulator or quantum backend.
+
+**Q31. What is the purpose of `shots=1024`?**
+
+It means the quantum circuit is executed 1024 times to collect measurement results.
+
+**Q32. What does `get_counts()` return?**
+
+It returns a dictionary containing the measured binary outcomes and their frequencies.
+
+**Q33. What is the purpose of `plot_histogram()`?**
+
+It displays a histogram showing the frequency of different measurement outcomes.
+
+**Q34. Why is Bob's qubit not measured in the first circuit?**
+
+Measuring Bob's qubit would collapse its quantum state. The first circuit therefore leaves it unmeasured to preserve the teleported state.
+
+**Q35. Why is a separate verification circuit created?**
+
+A separate circuit repeats the teleportation process and measures Bob's qubit to check the final state without measuring the original unmeasured output.
+
+**Q36. What is the expected result of Bob's measurement?**
+
+The prepared state is:
+
+\[
+|\psi\rangle = \cos(\pi/6)|0\rangle+\sin(\pi/6)|1\rangle
+\]
+
+Therefore, the expected probabilities are:
+- Probability of measuring 0 = 0.75 (75%)
+- Probability of measuring 1 = 0.25 (25%)
+
+**Q37. Why are the measurement counts not always exactly 75% and 25%?**
+
+Because quantum measurement is probabilistic. With a finite number of shots, the observed counts may differ slightly from the theoretical probabilities.
+
+**Q38. What is the no-cloning theorem?**
+
+The no-cloning theorem states that an arbitrary unknown quantum state cannot be copied perfectly.
+
+**Q39. Does quantum teleportation violate the no-cloning theorem?**
+
+No. Alice's original state is destroyed by measurement during teleportation, so the state is transferred rather than copied.
+
+**Q40. What are the applications of quantum teleportation?**
+
+Applications include quantum communication, quantum networks, quantum cryptography, and distributed quantum computing.
+
+---
+
+## Important Formulas for Viva
+
+**1. General quantum state:**
+
+\[
+|\psi\rangle = \alpha|0\rangle+\beta|1\rangle
+\]
+
+Where:
+
+\[
+|\alpha|^2+|\beta|^2=1
+\]
+
+**2. State prepared in your program:**
+
+\[
+|\psi\rangle = \cos(\pi/6)|0\rangle+\sin(\pi/6)|1\rangle
+\]
+
+\[
+|\psi\rangle = \frac{\sqrt{3}}{2}|0\rangle+\frac{1}{2}|1\rangle
+\]
+
+**3. Measurement probabilities:**
+
+- P(0) = 75%
+- P(1) = 25%
+
+**4. Number of qubits:** 3
+
+**5. Number of classical bits:** 3
+
+**6. Number of shots:** 1024
+
+
+
+PRACTICAL 4: IMPLEMENT QUANTUM TELEPORTATION ALGORITHM IN PYTHON USING QISKIT
+
+1. AIM
+
+To implement the Quantum Teleportation algorithm using Python and Qiskit to transfer an unknown quantum state from Alice to Bob using entanglement and classical communication.
+
+2. DESCRIPTION
+
+Quantum Teleportation is a technique used to transfer an unknown quantum state from one qubit to another qubit using quantum entanglement and classical communication.
+
+In this experiment, three qubits are used:
+
+- Qubit 0: Alice's unknown quantum state.
+- Qubit 1: Alice's entangled qubit.
+- Qubit 2: Bob's entangled qubit.
+
+The process involves the following steps:
+
+1. Alice prepares an unknown quantum state.
+2. Alice and Bob create an entangled pair using Hadamard and CNOT gates.
+3. Alice performs a Bell-state measurement on her two qubits.
+4. Alice sends the two classical measurement results to Bob.
+5. Bob applies X and Z correction gates based on the measurement results.
+6. Bob obtains the original quantum state on his qubit.
+
+In this experiment, the example quantum state is prepared using an Ry gate with an angle of pi/3.
+
+3. LIBRARIES USED
+
+1. Qiskit: Used to create and manipulate quantum circuits.
+2. Qiskit Aer: Used to simulate quantum circuits.
+3. Matplotlib: Used to display measurement histograms.
+4. Qiskit Visualization: Used to visualize measurement results.
+5. Math: Used to access the mathematical constant pi.
+
+4. IMPORTANT QUANTUM GATES
+
+1. Ry Gate:
+   Rotates a qubit around the Y-axis of the Bloch sphere and helps prepare the required quantum state.
+
+2. Hadamard Gate:
+   Creates superposition and helps generate entanglement.
+
+3. CNOT Gate:
+   Flips the target qubit when the control qubit is in state |1>.
+
+4. X Gate:
+   Performs a bit-flip operation.
+
+5. Z Gate:
+   Performs a phase-flip operation.
+
+5. CODE EXPLANATION (STEP-BY-STEP)
+
+STEP 1: IMPORT REQUIRED LIBRARIES
+
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+from qiskit.visualization import plot_histogram
+import matplotlib.pyplot as plt
+
+Explanation:
+
+- QuantumCircuit is used to create quantum circuits.
+- transpile converts the circuit into simulator-compatible instructions.
+- AerSimulator simulates the quantum circuit.
+- plot_histogram displays measurement results.
+- matplotlib.pyplot is used to display the histogram.
+
+STEP 2: CREATE QUANTUM CIRCUIT
+
+qc = QuantumCircuit(3, 3)
+
+Explanation:
+
+We create a quantum circuit containing three qubits and three classical bits.
+
+- Qubit 0: Stores Alice's unknown quantum state.
+- Qubit 1: Alice's entangled qubit.
+- Qubit 2: Bob's entangled qubit.
+
+The three classical bits store the measurement results.
+
+STEP 3: PREPARE UNKNOWN QUANTUM STATE
+
+from math import pi
+
+qc.ry(pi / 3, 0)
+
+Explanation:
+
+- The math library is imported to use the value of pi.
+- The Ry gate is applied to qubit 0.
+- The rotation angle is pi/3.
+
+The prepared quantum state is:
+
+|psi> = cos(pi/6)|0> + sin(pi/6)|1>
+
+Therefore:
+
+|psi> = (√3/2)|0> + (1/2)|1>
+
+This is the unknown state that Alice wants to teleport to Bob.
+
+STEP 4: CREATE ENTANGLEMENT BETWEEN ALICE AND BOB
+
+qc.h(1)
+qc.cx(1, 2)
+
+Explanation:
+
+First, the Hadamard gate is applied to qubit 1.
+
+It creates an equal superposition of |0> and |1>.
+
+Next, a CNOT gate is applied with qubit 1 as the control and qubit 2 as the target.
+
+This creates an entangled Bell pair between Alice and Bob.
+
+The resulting entangled state is:
+
+(|00> + |11>)/√2
+
+Now, Alice has qubits 0 and 1, while Bob has qubit 2.
+
+STEP 5: BELL-STATE MEASUREMENT BY ALICE
+
+qc.cx(0, 1)
+qc.h(0)
+
+Explanation:
+
+Alice performs operations on her two qubits to prepare for Bell-state measurement.
+
+- First, a CNOT gate is applied between qubit 0 and qubit 1.
+- Then, a Hadamard gate is applied to qubit 0.
+
+These operations transform the Bell basis into the computational basis so that Alice can measure the two qubits.
+
+STEP 6: MEASURE ALICE'S QUBITS
+
+qc.measure(0, 0)
+qc.measure(1, 1)
+
+Explanation:
+
+Alice measures her two qubits.
+
+- Measurement of qubit 0 is stored in classical bit 0.
+- Measurement of qubit 1 is stored in classical bit 1.
+
+The two classical measurement results are used to determine which correction operations Bob must apply.
+
+STEP 7: CLASSICAL COMMUNICATION AND CORRECTION
+
+with qc.if_test((qc.clbits[1], 1)):
+    qc.x(2)
+
+with qc.if_test((qc.clbits[0], 1)):
+    qc.z(2)
+
+Explanation:
+
+Alice communicates her two classical measurement results to Bob.
+
+Bob applies correction gates based on these results.
+
+- If classical bit 1 is 1, Bob applies an X gate.
+- If classical bit 0 is 1, Bob applies a Z gate.
+- If both bits are 0, no correction is required.
+
+These correction operations recover the original quantum state on Bob's qubit.
+
+STEP 8: DISPLAY FINAL QUANTUM CIRCUIT
+
+print("QUANTUM TELEPORTATION CIRCUIT")
+print(qc.draw(output='text'))
+
+Explanation:
+
+This statement displays the complete quantum teleportation circuit in text format.
+
+It shows the state preparation, entanglement, Bell-state measurement, classical communication, and correction operations.
+
+STEP 9: SIMULATE QUANTUM CIRCUIT
+
+simulator = AerSimulator()
+
+compiled_circuit = transpile(qc, simulator)
+
+job = simulator.run(
+    compiled_circuit,
+    shots=1024
+)
+
+result = job.result()
+
+counts = result.get_counts()
+
+Explanation:
+
+- AerSimulator() creates the quantum simulator.
+- transpile() converts the circuit into simulator-compatible instructions.
+- shots=1024 executes the circuit 1024 times.
+- result() collects the simulation results.
+- get_counts() returns the frequency of each measurement outcome.
+
+STEP 10: DISPLAY MEASUREMENT RESULTS
+
+print("Measurement Counts:", counts)
+
+Explanation:
+
+This statement displays the measurement counts obtained after executing the quantum teleportation circuit.
+
+Since Alice's two qubits are measured, the results represent the classical information generated during teleportation.
+
+Bob's qubit is not measured in this circuit because it contains the teleported quantum state.
+
+STEP 11: DISPLAY HISTOGRAM
+
+plot_histogram(counts)
+
+plt.title("Quantum Teleportation Measurement Results")
+
+plt.show()
+
+Explanation:
+
+- plot_histogram() displays the measurement counts graphically.
+- plt.title() sets the histogram title.
+- plt.show() displays the histogram.
+
+The histogram helps visualize the different measurement outcomes.
+
+STEP 12: VERIFY TELEPORTED STATE
+
+verify = QuantumCircuit(3, 3)
+
+verify.ry(pi / 3, 0)
+
+verify.h(1)
+verify.cx(1, 2)
+
+verify.cx(0, 1)
+verify.h(0)
+
+verify.measure(0, 0)
+verify.measure(1, 1)
+
+with verify.if_test((verify.clbits[1], 1)):
+    verify.x(2)
+
+with verify.if_test((verify.clbits[0], 1)):
+    verify.z(2)
+
+verify.measure(2, 2)
+
+Explanation:
+
+A separate verification circuit is created to check Bob's teleported state.
+
+- The same initial quantum state is prepared on qubit 0.
+- An entangled pair is created between qubits 1 and 2.
+- Alice performs the Bell-state measurement.
+- The measurement results are stored in classical bits 0 and 1.
+- Bob applies the required X and Z correction gates.
+- Finally, Bob measures qubit 2 and stores the result in classical bit 2.
+
+A separate circuit is used because directly measuring Bob's qubit in the original circuit would disturb the teleported quantum state.
+
+STEP 13: SIMULATE VERIFICATION CIRCUIT
+
+verify_compiled = transpile(verify, simulator)
+
+verify_result = simulator.run(
+    verify_compiled,
+    shots=1024
+).result()
+
+verify_counts = verify_result.get_counts()
+
+Explanation:
+
+- transpile() converts the verification circuit into simulator-compatible instructions.
+- shots=1024 executes the verification circuit 1024 times.
+- result() collects the results.
+- get_counts() returns the frequency of each measurement outcome.
+
+STEP 14: DISPLAY BOB'S TELEPORTED STATE
+
+print("Verification Counts:", verify_counts)
+
+bob_zero = sum(
+    count for state, count in verify_counts.items()
+    if state.replace(" ", "")[0] == '0'
+)
+
+bob_one = sum(
+    count for state, count in verify_counts.items()
+    if state.replace(" ", "")[0] == '1'
+)
+
+print("Bob measured 0:", bob_zero)
+print("Bob measured 1:", bob_one)
+
+Explanation:
+
+- Verification counts display the measurement results.
+- Classical bit 2 stores Bob's final measurement.
+- Qiskit displays classical bits in the order c2 c1 c0.
+- Therefore, the first character of the measurement string represents Bob's measurement.
+- bob_zero counts the number of times Bob measures 0.
+- bob_one counts the number of times Bob measures 1.
+
+For the prepared state:
+
+|psi> = (√3/2)|0> + (1/2)|1>
+
+The expected measurement probabilities are:
+
+P(0) = 3/4 = 0.75
+
+P(1) = 1/4 = 0.25
+
+For 1024 shots, Bob should obtain approximately:
+
+Measurement 0: 768 times
+
+Measurement 1: 256 times
+
+The actual counts may vary slightly because quantum measurements are probabilistic.
+
+6. RESULT
+
+The Quantum Teleportation algorithm was successfully implemented using Python and Qiskit.
+
+An example quantum state was prepared on Alice's qubit. Using entanglement, Bell-state measurement, classical communication, and correction gates, the state was transferred to Bob's qubit.
+
+The verification circuit confirmed that Bob's qubit had the expected measurement probabilities.
+
+7. CONCLUSION
+
+Thus, we successfully implemented the Quantum Teleportation algorithm using Qiskit and demonstrated the transfer of quantum information from Alice to Bob using entanglement and classical communication.
+
+IMPORTANT POINTS FOR PRACTICAL EXAM
+
+1. Quantum teleportation transfers a quantum state, not the physical qubit itself.
+2. It requires three qubits: one for the original state and two for the entangled pair.
+3. Alice sends two classical bits to Bob.
+4. Bob uses X and Z gates to recover the original state.
+5. The original quantum state is destroyed by Alice's measurement, so it is not copied.
+6. Entanglement alone cannot complete teleportation; classical communication is also required.

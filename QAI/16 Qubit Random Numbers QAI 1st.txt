@@ -1,0 +1,644 @@
+
+# ============================================================
+# EXPERIMENT: 16 QUBIT RANDOM NUMBER GENERATOR
+# ============================================================
+
+# STEP 1: INSTALL REQUIRED LIBRARIES
+# Run this command in a separate Jupyter cell if required:
+# !pip install qiskit qiskit-aer matplotlib
+
+# STEP 2: IMPORT REQUIRED LIBRARIES
+
+import matplotlib.pyplot as plt
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+
+# STEP 3: CREATE A 16-QUBIT QUANTUM CIRCUIT
+# 16 qubits and 16 classical bits
+
+n = 16
+
+qc = QuantumCircuit(n, n)
+
+# STEP 4: APPLY HADAMARD GATE TO ALL 16 QUBITS
+# Hadamard gate creates an equal superposition of |0> and |1>
+
+for i in range(n):
+    qc.h(i)
+
+# STEP 5: MEASURE ALL QUBITS
+# Store the measurement results in classical bits
+
+qc.measure(range(n), range(n))
+
+# STEP 6: DISPLAY QUANTUM CIRCUIT
+
+print("16-Qubit Quantum Circuit:")
+print(qc.draw(output='text'))
+
+# STEP 7: SIMULATE THE QUANTUM CIRCUIT
+
+simulator = AerSimulator()
+
+compiled_circuit = transpile(qc, simulator)
+
+job = simulator.run(compiled_circuit, shots=1)
+
+result = job.result()
+
+# STEP 8: GET RANDOM NUMBER
+
+counts = result.get_counts()
+
+binary_number = list(counts.keys())[0]
+
+# Remove spaces if present
+binary_number = binary_number.replace(" ", "")
+
+# Ensure exactly 16 bits
+binary_number = binary_number.zfill(16)
+
+# STEP 9: DISPLAY OUTPUT
+
+decimal_number = int(binary_number, 2)
+
+print("\n========== QUANTUM RANDOM NUMBER GENERATOR ==========")
+
+print("Number of Qubits:", n)
+
+print("Random 16-bit Binary Number:", binary_number)
+
+print("Random Decimal Number:", decimal_number)
+
+print("=====================================================")
+
+# STEP 10: DISPLAY RANDOM BITS
+
+bits = [int(bit) for bit in binary_number]
+
+plt.figure(figsize=(12, 3))
+
+plt.bar(range(1, 17), bits)
+
+plt.xlabel("Qubit Number")
+plt.ylabel("Measured Bit")
+plt.title("16-Qubit Quantum Random Number Generator")
+
+plt.xticks(range(1, 17))
+plt.yticks([0, 1])
+
+plt.grid(axis='y')
+
+plt.show()
+
+
+
+
+ORAL QUESTIONS:
+
+# PRACTICAL: 16-QUBIT QUANTUM RANDOM NUMBER GENERATOR
+## TOP 30 VIVA QUESTIONS AND ANSWERS
+
+### A. QUANTUM COMPUTING FUNDAMENTALS
+
+**Q1. What is Quantum Computing?**
+
+Quantum Computing is a type of computing that uses principles of quantum mechanics to perform computations using quantum bits called qubits.
+
+**Q2. What is a qubit?**
+
+A qubit is the basic unit of quantum information. Unlike a classical bit, which can be either 0 or 1, a qubit can exist in a superposition of both states.
+
+**Q3. What is the difference between a classical bit and a qubit?**
+
+- Classical bit stores either 0 or 1.
+- Qubit can exist in a superposition of 0 and 1.
+- Classical computers use classical logic gates.
+- Quantum computers use quantum gates.
+
+**Q4. What are the possible states of a qubit?**
+
+The two computational basis states are:
+
+- |0⟩ – Zero state.
+- |1⟩ – One state.
+
+A general qubit state is:
+
+|ψ⟩ = α|0⟩ + β|1⟩
+
+**Q5. What is superposition?**
+
+Superposition is a quantum property in which a qubit can exist in a combination of multiple possible states until it is measured.
+
+**Q6. What is quantum measurement?**
+
+Quantum measurement is the process of observing a qubit, which produces a classical result, either 0 or 1 in the computational basis.
+
+**Q7. What is quantum entanglement?**
+
+Quantum entanglement is a phenomenon in which two or more qubits become correlated such that their states cannot be described independently.
+
+**Q8. What is a quantum gate?**
+
+A quantum gate is an operation that changes the state of one or more qubits.
+
+Examples:
+1. Hadamard gate
+2. Pauli-X gate
+3. Pauli-Y gate
+4. Pauli-Z gate
+5. CNOT gate
+
+### B. HADAMARD GATE AND RANDOM NUMBER GENERATION
+
+**Q9. What is a Hadamard gate?**
+
+A Hadamard gate is a single-qubit quantum gate that creates an equal superposition of |0⟩ and |1⟩ when applied to a qubit initially in state |0⟩.
+
+**Q10. What is the mathematical representation of the Hadamard gate?**
+
+H = (1/√2) × [[1, 1], [1, -1]]
+
+**Q11. Why do we use the Hadamard gate in this practical?**
+
+We use the Hadamard gate to place each qubit into an equal superposition, giving an ideal 50% probability of measuring 0 and a 50% probability of measuring 1.
+
+**Q12. What is a Quantum Random Number Generator (QRNG)?**
+
+A QRNG is a system that generates random numbers using quantum phenomena such as superposition and measurement.
+
+**Q13. How does your practical generate random numbers?**
+
+1. Create a 16-qubit quantum circuit.
+2. Apply a Hadamard gate to all 16 qubits.
+3. Measure all qubits.
+4. Obtain a 16-bit binary string.
+5. Convert the binary string into a decimal number.
+
+**Q14. Why have you used 16 qubits?**
+
+Each measured qubit produces one binary bit. Therefore, 16 qubits produce a 16-bit binary number.
+
+**Q15. How many possible outcomes are possible with 16 qubits?**
+
+The number of possible measurement outcomes is:
+
+2^16 = 65,536
+
+The possible decimal values range from 0 to 65,535.
+
+**Q16. What is the probability of getting 0 or 1 after applying a Hadamard gate?**
+
+For an ideal qubit initially in state |0⟩:
+
+- Probability of 0 = 50%.
+- Probability of 1 = 50%.
+
+**Q17. What is the difference between a pseudorandom number and a quantum random number?**
+
+- Pseudorandom numbers are generated using deterministic mathematical algorithms.
+- Quantum random numbers originate from quantum measurement outcomes and can provide physical randomness when generated using a suitable quantum device.
+
+### C. QISKIT AND PYTHON IMPLEMENTATION
+
+**Q18. What is Qiskit?**
+
+Qiskit is an open-source Python-based software development kit used to create, simulate and run quantum circuits.
+
+**Q19. What is AerSimulator?**
+
+AerSimulator is a quantum circuit simulator provided by Qiskit Aer. It simulates quantum circuits on a classical computer.
+
+**Q20. What is QuantumCircuit?**
+
+QuantumCircuit is a Qiskit class used to create and define quantum circuits containing qubits and classical bits.
+
+**Q21. What does QuantumCircuit(n, n) mean in your code?**
+
+It creates a quantum circuit containing:
+
+- 16 quantum bits.
+- 16 classical bits.
+
+The classical bits store the measurement results.
+
+**Q22. What does qc.h(i) do?**
+
+It applies a Hadamard gate to the qubit at index i.
+
+In our practical, a loop applies the Hadamard gate to all 16 qubits.
+
+**Q23. What does qc.measure(range(n), range(n)) do?**
+
+It measures all 16 qubits and stores their measurement results in the corresponding classical bits.
+
+**Q24. What is transpilation in Qiskit?**
+
+Transpilation converts a quantum circuit into a form suitable for execution on a particular quantum simulator or hardware backend.
+
+**Q25. What is a shot in quantum computing?**
+
+A shot represents one execution of a quantum circuit.
+
+In our practical, we use shots=1, so we obtain one 16-bit measurement result.
+
+**Q26. What is the purpose of get_counts()?**
+
+It retrieves the measurement outcomes and their occurrence counts from the simulation result.
+
+**Q27. Why do we use zfill(16)?**
+
+It ensures that the binary string contains exactly 16 bits by adding leading zeros when necessary.
+
+Example:
+
+1011 becomes 0000000000001011.
+
+### D. OUTPUT AND APPLICATIONS
+
+**Q28. How do you convert a binary number into a decimal number in Python?**
+
+We use the int() function with base 2.
+
+Code:
+
+decimal_number = int(binary_number, 2)
+
+Example:
+
+Binary: 1010
+
+Decimal: 10
+
+**Q29. Why do we use Matplotlib in this practical?**
+
+Matplotlib is used to visualize the generated 16-bit binary number using a bar chart.
+
+The X-axis represents qubit numbers, and the Y-axis represents measured bit values (0 or 1).
+
+**Q30. What are the applications of Quantum Random Number Generators?**
+
+1. Cryptography.
+2. Secure key generation.
+3. Secure communication.
+4. Scientific simulations.
+5. Randomized algorithms.
+6. Quantum computing research.
+
+---
+
+## IMPORTANT PYTHON AND QISKIT FUNCTIONS
+
+| Function | Purpose |
+|---|---|
+| QuantumCircuit() | Creates a quantum circuit |
+| qc.h() | Applies Hadamard gate |
+| qc.measure() | Measures qubits |
+| AerSimulator() | Simulates quantum circuits |
+| transpile() | Converts circuit for execution |
+| simulator.run() | Executes the circuit |
+| job.result() | Retrieves execution results |
+| get_counts() | Gets measurement outcomes |
+| int(binary, 2) | Converts binary into decimal |
+| zfill(16) | Ensures 16-bit binary format |
+| plt.bar() | Creates a bar chart |
+| plt.show() | Displays the graph |
+
+## IMPORTANT VALUES FROM YOUR PRACTICAL
+
+| Parameter | Value |
+|---|---:|
+| Number of qubits | 16 |
+| Number of classical bits | 16 |
+| Hadamard gates | 16 |
+| Number of shots | 1 |
+| Binary number length | 16 bits |
+| Possible outcomes | 65,536 |
+| Minimum decimal value | 0 |
+| Maximum decimal value | 65,535 |
+
+## PRACTICAL CONCLUSION
+
+Thus, a 16-Qubit Quantum Random Number Generator was successfully implemented using Qiskit. Hadamard gates were applied to all 16 qubits to create superposition. The qubits were measured to obtain a 16-bit binary number, which was converted into its decimal equivalent and visualized using Matplotlib.
+
+**IMPORTANT VIVA NOTE:**
+
+Our practical uses AerSimulator, which simulates quantum behaviour on a classical computer. It demonstrates quantum random-number generation but does not use an actual quantum hardware device.
+
+
+
+
+QAI PRACTICAL 1: IMPLEMENTATION OF 16-QUBIT RANDOM NUMBER GENERATOR
+
+1. AIM
+
+To implement a 16-Qubit Quantum Random Number Generator using Qiskit and generate a random 16-bit binary number using quantum superposition and measurement.
+
+2. DESCRIPTION
+
+A Quantum Random Number Generator (QRNG) is a system that generates random numbers using the principles of quantum mechanics.
+
+In this practical, we create a quantum circuit containing 16 qubits and 16 classical bits.
+
+The Hadamard (H) gate is applied to every qubit to create an equal superposition of states |0> and |1>. When the qubits are measured, each qubit produces either 0 or 1.
+
+The measurement results are combined to generate a 16-bit binary number, which is then converted into a decimal number.
+
+The program performs the following operations:
+
+1. Imports the required libraries.
+2. Creates a quantum circuit with 16 qubits and 16 classical bits.
+3. Applies Hadamard gates to all 16 qubits.
+4. Measures all qubits and stores the results in classical bits.
+5. Displays the quantum circuit.
+6. Simulates the circuit using AerSimulator.
+7. Generates a random 16-bit binary number using one measurement shot.
+8. Converts the binary number into a decimal number.
+9. Displays the generated random number.
+10. Visualizes the individual random bits using a bar chart.
+
+3. LIBRARIES USED
+
+1. Matplotlib: Used to visualize the generated random bits.
+2. Qiskit: Used to create and manage quantum circuits.
+3. QuantumCircuit: Used to create a circuit with qubits and classical bits.
+4. Transpile: Converts the circuit into a simulator-compatible format.
+5. Qiskit Aer: Provides quantum circuit simulation.
+6. AerSimulator: Simulates the execution of a quantum circuit.
+
+4. RESULT
+
+The 16-Qubit Quantum Random Number Generator was successfully implemented using Qiskit. The Hadamard gate created superposition in all 16 qubits, and measurement generated a random 16-bit binary number. The binary number was converted into decimal form and visualized using a bar chart.
+
+
+5. DETAILED CODE EXPLANATION
+
+STEP 1: INSTALL REQUIRED LIBRARIES
+
+Code:
+
+!pip install qiskit qiskit-aer matplotlib
+
+Explanation:
+
+This command installs the required libraries.
+
+1. Qiskit: Used to create quantum circuits.
+2. Qiskit Aer: Used to simulate quantum circuits.
+3. Matplotlib: Used for data visualization.
+
+This command should be executed in a separate Jupyter Notebook cell if the libraries are not already installed.
+
+
+STEP 2: IMPORT REQUIRED LIBRARIES
+
+Code:
+
+import matplotlib.pyplot as plt
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+
+Explanation:
+
+This step imports the required modules.
+
+1. matplotlib.pyplot: Used to create graphs.
+2. QuantumCircuit: Used to create a quantum circuit.
+3. transpile: Converts the quantum circuit into a format suitable for the simulator.
+4. AerSimulator: Simulates the execution of a quantum circuit.
+
+
+STEP 3: CREATE A 16-QUBIT QUANTUM CIRCUIT
+
+Code:
+
+n = 16
+
+qc = QuantumCircuit(n, n)
+
+Explanation:
+
+This step creates a quantum circuit.
+
+1. n = 16 specifies the number of qubits.
+2. QuantumCircuit(n, n) creates a circuit with 16 qubits and 16 classical bits.
+
+Qubit: A qubit is the basic unit of quantum information. Unlike a classical bit, which stores either 0 or 1, a qubit can exist in a superposition of both states.
+
+Classical Bit: A classical bit stores the measurement result as either 0 or 1.
+
+
+STEP 4: APPLY HADAMARD GATE TO ALL 16 QUBITS
+
+Code:
+
+for i in range(n):
+    qc.h(i)
+
+Explanation:
+
+This step applies the Hadamard gate to every qubit.
+
+1. for i in range(n) iterates through all 16 qubits.
+2. qc.h(i) applies the Hadamard gate to the qubit at position i.
+
+What is a Hadamard Gate?
+
+The Hadamard gate is a quantum gate that creates an equal superposition of |0> and |1> when applied to a qubit initially in state |0>.
+
+Mathematically:
+
+H|0> = (|0> + |1>) / sqrt(2)
+
+This means that when measured, the qubit has an equal chance of producing 0 or 1.
+
+By applying the Hadamard gate to all 16 qubits, the circuit creates a superposition of 2^16 possible bit combinations.
+
+
+STEP 5: MEASURE ALL QUBITS
+
+Code:
+
+qc.measure(range(n), range(n))
+
+Explanation:
+
+This step measures all 16 qubits.
+
+1. The first range(n) selects all 16 qubits.
+2. The second range(n) selects all 16 classical bits.
+3. Each qubit's measurement result is stored in its corresponding classical bit.
+
+After measurement, every qubit produces either 0 or 1.
+
+The combined results form a 16-bit binary number.
+
+
+STEP 6: DISPLAY THE QUANTUM CIRCUIT
+
+Code:
+
+print("16-Qubit Quantum Circuit:")
+print(qc.draw(output='text'))
+
+Explanation:
+
+This step displays the quantum circuit in text format.
+
+1. qc.draw() generates a representation of the circuit.
+2. output='text' displays the circuit using text characters.
+3. print() displays the circuit in the output.
+
+The circuit shows the Hadamard gates and measurement operations applied to all 16 qubits.
+
+
+STEP 7: SIMULATE THE QUANTUM CIRCUIT
+
+Code:
+
+simulator = AerSimulator()
+
+compiled_circuit = transpile(qc, simulator)
+
+job = simulator.run(compiled_circuit, shots=1)
+
+result = job.result()
+
+Explanation:
+
+This step executes the quantum circuit using a simulator.
+
+1. AerSimulator() creates a quantum simulator.
+2. transpile(qc, simulator) converts the circuit into a format supported by the simulator.
+3. simulator.run() executes the compiled circuit.
+4. shots=1 means the circuit is executed once.
+5. job.result() retrieves the simulation result.
+
+Since the circuit is executed once, one 16-bit random outcome is generated.
+
+
+STEP 8: GET THE RANDOM NUMBER
+
+Code:
+
+counts = result.get_counts()
+
+binary_number = list(counts.keys())[0]
+
+binary_number = binary_number.replace(" ", "")
+
+binary_number = binary_number.zfill(16)
+
+Explanation:
+
+This step extracts the measured binary number.
+
+1. result.get_counts() returns the measurement outcomes and their occurrence counts.
+2. counts.keys() provides the measured binary outcome.
+3. list(counts.keys())[0] extracts the first outcome.
+4. replace(" ", "") removes spaces if present.
+5. zfill(16) ensures that the binary number contains exactly 16 bits by adding leading zeros if necessary.
+
+The final output is a 16-bit binary number.
+
+
+STEP 9: CONVERT BINARY NUMBER INTO DECIMAL
+
+Code:
+
+decimal_number = int(binary_number, 2)
+
+Explanation:
+
+This statement converts the binary number into decimal form.
+
+1. int() converts a value into an integer.
+2. The second argument 2 specifies that the input number is in binary format.
+
+Example:
+
+Binary: 0000000000001010
+
+Decimal: 10
+
+The program then displays the number of qubits, generated binary number, and corresponding decimal number.
+
+
+STEP 10: DISPLAY RANDOM BITS USING A BAR CHART
+
+Code:
+
+bits = [int(bit) for bit in binary_number]
+
+plt.figure(figsize=(12, 3))
+
+plt.bar(range(1, 17), bits)
+
+plt.xlabel("Qubit Number")
+plt.ylabel("Measured Bit")
+plt.title("16-Qubit Quantum Random Number Generator")
+
+plt.xticks(range(1, 17))
+plt.yticks([0, 1])
+
+plt.grid(axis='y')
+
+plt.show()
+
+Explanation:
+
+This step visualizes the generated 16 random bits.
+
+1. bits = [int(bit) for bit in binary_number] converts every binary digit into an integer.
+2. plt.figure(figsize=(12, 3)) creates the plotting area.
+3. plt.bar() creates a bar chart of the 16 bits.
+4. range(1, 17) represents the 16 qubit positions.
+5. plt.xlabel() sets the X-axis label.
+6. plt.ylabel() sets the Y-axis label.
+7. plt.title() sets the graph title.
+8. plt.xticks() displays positions from 1 to 16.
+9. plt.yticks([0, 1]) displays the possible bit values.
+10. plt.grid(axis='y') adds horizontal grid lines.
+11. plt.show() displays the graph.
+
+Each bar represents the measurement result of one qubit.
+
+- Bar height 0 means the measured bit is 0.
+- Bar height 1 means the measured bit is 1.
+
+
+6. IMPORTANT CONCEPTS TO REMEMBER
+
+1. Qubit: Basic unit of quantum information.
+2. Classical Bit: Stores either 0 or 1.
+3. Hadamard Gate: Creates equal superposition from the state |0>.
+4. Superposition: Quantum state involving multiple possible outcomes.
+5. Measurement: Converts a quantum state into a classical result.
+6. Quantum Circuit: Arrangement of quantum gates and measurements.
+7. AerSimulator: Simulates quantum circuit execution.
+8. Transpilation: Converts a circuit into a simulator-compatible format.
+9. Shot: One execution of a quantum circuit.
+10. QRNG: Quantum Random Number Generator.
+
+
+7. OVERALL WORKFLOW
+
+1. Install and import required libraries.
+2. Create a circuit with 16 qubits and 16 classical bits.
+3. Apply Hadamard gates to all qubits.
+4. Measure all qubits.
+5. Display the quantum circuit.
+6. Execute the circuit using AerSimulator.
+7. Extract the 16-bit binary result.
+8. Convert binary into decimal.
+9. Display and visualize the random bits.
+
+
+8. CONCLUSION
+
+The practical demonstrates the implementation of a 16-Qubit Quantum Random Number Generator using Qiskit. By applying Hadamard gates, creating superposition, and measuring all 16 qubits, the program generates a 16-bit random binary number and its corresponding decimal value.
+
+NOTE:
+
+This code uses a quantum simulator, not a physical quantum computer. It demonstrates quantum random measurement outcomes through simulation. A single shot generates one 16-bit result.

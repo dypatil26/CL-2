@@ -1,0 +1,642 @@
+Practical 1 – Text Document Preprocessing
+
+!pip install nltk pandas matplotlib
+
+import nltk
+import re
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from collections import Counter
+
+nltk.download('punkt')
+nltk.download('punkt_tab')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+document = """
+Information Retrieval is an important area of computer science.
+It deals with searching, retrieving and organizing information
+from large collections of documents.
+
+Text preprocessing is an essential step in Natural Language Processing.
+It includes tokenization, stop word removal, stemming and lemmatization.
+
+Machine learning techniques are widely used for information retrieval.
+These techniques help users find relevant information efficiently.
+"""
+
+# Text Cleaning
+cleaned_text = document.lower()
+cleaned_text = re.sub(r'[^a-z\s]', '', cleaned_text)
+cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+
+print("CLEANED TEXT:")
+print(cleaned_text)
+
+# Tokenization
+tokens = word_tokenize(cleaned_text)
+print("\nTOKENIZED WORDS:")
+print(tokens)
+
+# Stop Word Removal
+stop_words = set(stopwords.words('english'))
+filtered_words = [word for word in tokens if word not in stop_words]
+
+print("\nAFTER STOP WORD REMOVAL:")
+print(filtered_words)
+
+# Stemming
+stemmer = PorterStemmer()
+stemmed_words = [stemmer.stem(word) for word in filtered_words]
+
+print("\nAFTER STEMMING:")
+print(stemmed_words)
+
+# Lemmatization
+lemmatizer = WordNetLemmatizer()
+lemmatized_words = [lemmatizer.lemmatize(word) for word in filtered_words]
+
+print("\nAFTER LEMMATIZATION:")
+print(lemmatized_words)
+
+# Word Frequency
+word_frequency = Counter(stemmed_words)
+
+frequency_df = pd.DataFrame(
+    word_frequency.items(),
+    columns=['Word', 'Frequency']
+).sort_values(by='Frequency', ascending=False)
+
+print("\nWORD FREQUENCY:")
+print(frequency_df)
+
+# Visualization
+plt.figure(figsize=(10, 5))
+plt.bar(frequency_df['Word'], frequency_df['Frequency'])
+plt.xlabel("Words")
+plt.ylabel("Frequency")
+plt.title("Word Frequency After Preprocessing")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+
+
+ORAL QUESTIONS:
+# PRACTICAL 1: TEXT DOCUMENT PREPROCESSING USING NLP
+## Top 30 Viva Questions and Answers
+
+### A. Basic NLP Concepts
+
+**Q1. What is Natural Language Processing (NLP)?**
+
+NLP stands for Natural Language Processing. It is a branch of Artificial Intelligence that enables computers to understand, process and analyze human languages.
+
+Examples: Chatbots, language translation and voice assistants.
+
+**Q2. What is text preprocessing?**
+
+Text preprocessing is the process of cleaning and preparing raw text before providing it to a machine learning or NLP model.
+
+It includes:
+- Text cleaning
+- Tokenization
+- Stopword removal
+- Stemming
+- Lemmatization
+
+**Q3. Why is text preprocessing important?**
+
+It removes unnecessary information, reduces noise and makes text easier for computers to process and analyze.
+
+**Q4. What is text cleaning?**
+
+Text cleaning is the process of removing unwanted characters, numbers, punctuation and extra spaces from raw text.
+
+**Q5. What is the purpose of converting text into lowercase?**
+
+It converts all words into a common format so that words with different capitalization are treated as the same word.
+
+Example: "MACHINE" and "machine" become "machine".
+
+### B. Tokenization and Stopword Removal
+
+**Q6. What is tokenization?**
+
+Tokenization is the process of splitting text into smaller units called tokens, such as words or sentences.
+
+Example:
+
+Input: "Machine learning is useful"
+
+Output: ['Machine', 'learning', 'is', 'useful']
+
+**Q7. Which library is used for tokenization in your code?**
+
+We use the NLTK library and its word_tokenize() function.
+
+**Q8. What is NLTK?**
+
+NLTK stands for Natural Language Toolkit. It is a Python library used for NLP tasks such as tokenization, stopword removal, stemming and linguistic processing.
+
+**Q9. What are stopwords?**
+
+Stopwords are commonly occurring words that may carry limited useful information for a particular text analysis task.
+
+Examples: is, the, a, an, and, are.
+
+**Q10. Why do we remove stopwords?**
+
+We remove stopwords to reduce unnecessary words and simplify text processing.
+
+**Q11. Which function is used to remove stopwords in your code?**
+
+We use a list comprehension with the NLTK stopwords corpus.
+
+Code:
+
+stop_words = set(stopwords.words('english'))
+
+filtered_words = [word for word in tokens if word not in stop_words]
+
+**Q12. What is the difference between tokenization and stopword removal?**
+
+- Tokenization splits text into individual words or tokens.
+- Stopword removal eliminates selected common words from those tokens.
+
+### C. Stemming and Lemmatization
+
+**Q13. What is stemming?**
+
+Stemming is the process of removing prefixes or suffixes from words to obtain their root or stem form.
+
+Example:
+
+Playing → Play
+
+Studies → Studi
+
+**Q14. What is lemmatization?**
+
+Lemmatization is the process of converting words into their meaningful dictionary base form, called a lemma.
+
+Example:
+
+Studies → Study
+
+Better → Good (when the correct linguistic context and part of speech are provided).
+
+**Q15. What is the difference between stemming and lemmatization?**
+
+- Stemming removes word endings using simple rules.
+- Lemmatization uses linguistic knowledge to obtain meaningful base words.
+- Stemming may produce words that are not dictionary words.
+- Lemmatization generally produces valid dictionary words.
+
+**Q16. Which stemming algorithm have you used?**
+
+We have used Porter Stemmer from the NLTK library.
+
+Code:
+
+stemmer = PorterStemmer()
+
+**Q17. What is Porter Stemmer?**
+
+Porter Stemmer is a rule-based stemming algorithm that removes common suffixes from English words to obtain their stem forms.
+
+**Q18. Which function is used for stemming?**
+
+We use the stem() function.
+
+Code:
+
+stemmer.stem(word)
+
+**Q19. Which class is used for lemmatization in your code?**
+
+We use WordNetLemmatizer from the NLTK library.
+
+**Q20. What is WordNet?**
+
+WordNet is a lexical database of English that groups words based on their meanings and semantic relationships.
+
+It is used by WordNetLemmatizer to obtain meaningful base forms.
+
+### D. Word Frequency and Visualization
+
+**Q21. What is word frequency?**
+
+Word frequency is the number of times a particular word occurs in a document or text collection.
+
+**Q22. Which Python module is used to calculate word frequency?**
+
+We use Counter from Python's collections module.
+
+Code:
+
+word_frequency = Counter(stemmed_words)
+
+**Q23. What is Counter?**
+
+Counter is a Python class from the collections module that counts the occurrences of elements in a collection.
+
+**Q24. Why do we use Pandas in your practical?**
+
+We use Pandas to convert word frequency results into a DataFrame so that they can be displayed in a structured tabular format.
+
+**Q25. Why do we use Matplotlib?**
+
+Matplotlib is a Python visualization library used to create graphs and charts.
+
+In our practical, we use it to display word frequencies using a bar chart.
+
+**Q26. What is a bar chart?**
+
+A bar chart is a graphical representation of data using rectangular bars, where the height of each bar represents its value.
+
+**Q27. What is the purpose of sort_values() in your code?**
+
+It sorts the DataFrame according to a specified column.
+
+In our code:
+
+sort_values(by='Frequency', ascending=False)
+
+It sorts words from highest frequency to lowest frequency.
+
+### E. Python and NLTK Functions
+
+**Q28. What is the purpose of re.sub() in your code?**
+
+re.sub() is used to search for a matching pattern and replace it with another value.
+
+In our practical, it removes unwanted characters and extra spaces from text.
+
+**Q29. Why do we use nltk.download()?**
+
+It downloads the required NLTK datasets and resources.
+
+In our practical:
+- punkt: Tokenization resource.
+- punkt_tab: Additional tokenizer data required by recent NLTK versions.
+- stopwords: English stopword list.
+- wordnet: Lexical database used for lemmatization.
+
+**Q30. Where is text preprocessing used in real life?**
+
+Text preprocessing is used in:
+
+1. Search engines.
+2. Spam email detection.
+3. Sentiment analysis.
+4. Chatbots.
+5. Machine translation.
+6. Document classification.
+7. Information retrieval systems.
+
+---
+
+## IMPORTANT PYTHON FUNCTIONS – QUICK REVISION
+
+| Function / Library | Purpose |
+|---|---|
+| nltk.download() | Downloads NLTK resources |
+| re.sub() | Replaces unwanted text patterns |
+| text.lower() | Converts text into lowercase |
+| word_tokenize() | Splits text into tokens |
+| stopwords.words() | Retrieves stopwords |
+| PorterStemmer() | Creates a stemming object |
+| stem() | Performs stemming |
+| WordNetLemmatizer() | Creates a lemmatization object |
+| lemmatize() | Converts words into base forms |
+| Counter() | Counts word frequencies |
+| pd.DataFrame() | Creates a tabular structure |
+| sort_values() | Sorts DataFrame values |
+| plt.bar() | Creates a bar chart |
+| plt.show() | Displays the graph |
+| plt.tight_layout() | Adjusts graph spacing |
+
+## IMPORTANT DIFFERENCES FOR VIVA
+
+**1. Stemming vs Lemmatization**
+
+Stemming: Playing → Play; Studies → Studi.
+
+Lemmatization: Playing → Play; Studies → Study.
+
+**2. Tokenization vs Stopword Removal**
+
+Tokenization splits text into words.
+
+Stopword removal removes selected common words.
+
+**3. NLP vs Text Preprocessing**
+
+NLP is the broader field of processing human language.
+
+Text preprocessing is one of the steps performed within NLP.
+
+## PRACTICAL CONCLUSION
+
+Thus, text document preprocessing was successfully implemented using the NLTK library. Text cleaning, tokenization, stopword removal, stemming and lemmatization were performed. Word frequency was calculated using Counter and visualized using Matplotlib.
+
+
+PRACTICAL EXPLNATION: Text Document Preprocessing
+
+1. Aim
+To perform preprocessing of a text document using Natural Language Processing (NLP) techniques such as text cleaning, tokenization, stop word removal, stemming, and lemmatization.
+2. Description
+This practical demonstrates the preprocessing of a text document to prepare it for Information Retrieval tasks. Text preprocessing helps remove unnecessary words and standardize text so that meaningful information can be extracted efficiently.
+
+The practical involves the following operations:
+1. Text Cleaning: Convert the text into lowercase, remove special characters, numbers, and extra spaces.
+2. Tokenization: Split the cleaned text into individual words or tokens.
+3. Stop Word Removal: Remove commonly occurring words such as "is", "the", "and", and "from" that generally carry less meaningful information.
+4. Stemming: Reduce words to their root form by removing prefixes or suffixes using the Porter Stemmer.
+5. Lemmatization: Convert words into their meaningful dictionary base form using the WordNet Lemmatizer.
+6. Word Frequency Analysis: Count how many times each stemmed word occurs using the Counter function.
+7. Visualization: Display the frequency of words using a bar chart to understand the most frequently occurring terms.
+3. Libraries Used
+Library	Purpose
+NLTK	Provides tools for natural language processing and text preprocessing.
+re	Used for text cleaning and removing special characters.
+Pandas	Used to organize word frequency data into a DataFrame.
+Matplotlib	Used to visualize word frequencies through a bar chart.
+Collections (Counter)	Used to count the frequency of words.
+
+4. Result
+Successfully performed text document preprocessing using NLTK. The document was cleaned, tokenized, and processed through stop word removal, stemming, and lemmatization. Word frequency was calculated and visualized using a bar chart.
+
+
+# IR Practical 1: Text Document Preprocessing – Code Explanation
+
+## Step 1: Install Required Libraries
+
+```python
+!pip install nltk pandas matplotlib
+```
+
+- **NLTK:** Used for Natural Language Processing tasks such as tokenization, stop word removal, stemming, and lemmatization.
+- **Pandas:** Used to store and organize word frequency data.
+- **Matplotlib:** Used to create visualizations.
+
+The `!pip install` command installs the required libraries in the notebook environment.
+
+## Step 2: Import Required Libraries
+
+```python
+import nltk
+import re
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from collections import Counter
+```
+
+- `nltk`: Provides tools for Natural Language Processing.
+- `re`: Used for pattern matching and removing unwanted characters.
+- `pandas`: Used to create and manage tabular data.
+- `matplotlib.pyplot`: Used for creating graphs.
+- `word_tokenize`: Splits text into individual words.
+- `stopwords`: Provides a collection of commonly used words that can be removed.
+- `PorterStemmer`: Reduces words to their root form.
+- `WordNetLemmatizer`: Converts words into their dictionary base form.
+- `Counter`: Counts the frequency of words.
+
+## Step 3: Download NLTK Resources
+
+```python
+nltk.download('punkt')
+nltk.download('punkt_tab')
+nltk.download('stopwords')
+nltk.download('wordnet')
+```
+
+These commands download the resources required by NLTK.
+
+- `punkt`: Used for tokenization.
+- `punkt_tab`: Provides additional tokenization data required by some NLTK versions.
+- `stopwords`: Provides predefined English stop words.
+- `wordnet`: Provides dictionary information required for lemmatization.
+
+## Step 4: Define the Text Document
+
+```python
+document = """
+Information Retrieval is an important area of computer science.
+It deals with searching, retrieving and organizing information
+from large collections of documents.
+
+Text preprocessing is an essential step in Natural Language Processing.
+It includes tokenization, stop word removal, stemming and lemmatization.
+
+Machine learning techniques are widely used for information retrieval.
+These techniques help users find relevant information efficiently.
+"""
+```
+
+- A sample text document is stored in the variable `document`.
+- Triple quotes (`"""`) allow us to write multiple lines of text.
+- This document is used to demonstrate different preprocessing operations.
+
+## Step 5: Text Cleaning
+
+```python
+cleaned_text = document.lower()
+cleaned_text = re.sub(r'[^a-z\s]', '', cleaned_text)
+cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+
+print("CLEANED TEXT:")
+print(cleaned_text)
+```
+
+Text cleaning removes unwanted characters and standardizes the document.
+
+**Explanation:**
+
+1. `document.lower()` converts all characters into lowercase.
+2. `re.sub(r'[^a-z\s]', '', cleaned_text)` removes everything except lowercase English letters and whitespace.
+3. `re.sub(r'\s+', ' ', cleaned_text)` replaces multiple spaces or whitespace characters with a single space.
+4. `.strip()` removes extra spaces from the beginning and end.
+5. `print()` displays the cleaned text.
+
+**Example:**
+
+Before cleaning:
+`Information Retrieval is Important!`
+
+After cleaning:
+`information retrieval is important`
+
+## Step 6: Tokenization
+
+```python
+tokens = word_tokenize(cleaned_text)
+
+print("\nTOKENIZED WORDS:")
+print(tokens)
+```
+
+- Tokenization is the process of splitting a text document into individual words or tokens.
+- `word_tokenize()` performs this operation.
+- The resulting words are stored in the `tokens` list.
+
+**Example:**
+
+Input:
+`information retrieval is important`
+
+Output:
+`['information', 'retrieval', 'is', 'important']`
+
+## Step 7: Stop Word Removal
+
+```python
+stop_words = set(stopwords.words('english'))
+filtered_words = [word for word in tokens if word not in stop_words]
+
+print("\nAFTER STOP WORD REMOVAL:")
+print(filtered_words)
+```
+
+- Stop words are commonly occurring words that generally carry less meaningful information for retrieval, such as "is", "the", "and", and "from".
+- `stopwords.words('english')` retrieves the predefined English stop word list.
+- `set()` converts the list into a set for efficient membership checking.
+- The list comprehension checks every token.
+- Words present in `stop_words` are removed.
+- The remaining meaningful words are stored in `filtered_words`.
+
+**Example:**
+
+Before:
+`['information', 'retrieval', 'is', 'important']`
+
+After:
+`['information', 'retrieval', 'important']`
+
+## Step 8: Stemming
+
+```python
+stemmer = PorterStemmer()
+stemmed_words = [stemmer.stem(word) for word in filtered_words]
+
+print("\nAFTER STEMMING:")
+print(stemmed_words)
+```
+
+- Stemming reduces words to their root or stem form by removing prefixes or suffixes.
+- `PorterStemmer()` creates a stemming object.
+- `stemmer.stem(word)` converts each word into its stem.
+- List comprehension applies stemming to every word in `filtered_words`.
+
+**Example:**
+
+- playing → play
+- retrieving → retriev
+- studies → studi
+
+Note: Stemming may produce words that are not valid dictionary words.
+
+## Step 9: Lemmatization
+
+```python
+lemmatizer = WordNetLemmatizer()
+lemmatized_words = [lemmatizer.lemmatize(word) for word in filtered_words]
+
+print("\nAFTER LEMMATIZATION:")
+print(lemmatized_words)
+```
+
+- Lemmatization converts words into their meaningful dictionary base form.
+- `WordNetLemmatizer()` creates a lemmatizer object.
+- `lemmatizer.lemmatize(word)` converts each word into its lemma.
+- List comprehension applies lemmatization to every filtered word.
+
+**Example:**
+
+- cars → car
+- studies → study
+- running → running (with the default noun setting, it may remain unchanged).
+
+Note: The default lemmatizer assumes words are nouns unless a part of speech is specified.
+
+## Step 10: Calculate Word Frequency
+
+```python
+word_frequency = Counter(stemmed_words)
+
+frequency_df = pd.DataFrame(
+    word_frequency.items(),
+    columns=['Word', 'Frequency']
+).sort_values(by='Frequency', ascending=False)
+
+print("\nWORD FREQUENCY:")
+print(frequency_df)
+```
+
+This step calculates how many times each stemmed word occurs.
+
+**Explanation:**
+
+1. `Counter(stemmed_words)` counts the occurrences of each word.
+2. `word_frequency.items()` returns word-frequency pairs.
+3. `pd.DataFrame()` converts these pairs into a tabular format.
+4. `columns=['Word', 'Frequency']` assigns column names.
+5. `sort_values(by='Frequency', ascending=False)` sorts the words from highest frequency to lowest.
+6. `print()` displays the frequency table.
+
+## Step 11: Visualize Word Frequency
+
+```python
+plt.figure(figsize=(10, 5))
+
+plt.bar(frequency_df['Word'], frequency_df['Frequency'])
+
+plt.xlabel("Words")
+plt.ylabel("Frequency")
+plt.title("Word Frequency After Preprocessing")
+
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+```
+
+This step displays the frequency of words using a bar chart.
+
+**Explanation:**
+
+- `plt.figure(figsize=(10, 5))`: Creates a figure with width 10 and height 5.
+- `plt.bar()`: Creates a bar chart using words on the X-axis and their frequencies on the Y-axis.
+- `plt.xlabel()`: Sets the X-axis label.
+- `plt.ylabel()`: Sets the Y-axis label.
+- `plt.title()`: Sets the chart title.
+- `plt.xticks(rotation=45)`: Rotates word labels by 45 degrees for better readability.
+- `plt.tight_layout()`: Adjusts spacing to prevent labels from overlapping.
+- `plt.show()`: Displays the graph.
+
+## Important Concepts
+
+| Concept | Meaning |
+|---|---|
+| Text Cleaning | Removing unwanted characters and extra spaces. |
+| Tokenization | Splitting text into individual words. |
+| Stop Word Removal | Removing commonly occurring words. |
+| Stemming | Reducing words to their stem by removing prefixes or suffixes. |
+| Lemmatization | Converting words into their meaningful dictionary base form. |
+| Word Frequency | Counting the number of occurrences of each word. |
+
+## Overall Workflow
+
+Text Document → Text Cleaning → Tokenization → Stop Word Removal → Stemming and Lemmatization → Word Frequency Calculation → Visualization
+
+## Conclusion
+
+The program successfully performs text document preprocessing using NLTK. It cleans the text, removes stop words, applies stemming and lemmatization, calculates word frequencies, and visualizes the results using a bar chart.

@@ -1,0 +1,397 @@
+
+# ============================================================
+# EXPERIMENT:
+# IMPLEMENTATION OF 5-QUBIT QUANTUM FOURIER TRANSFORM (QFT)
+# ============================================================
+
+# STEP 1: INSTALL REQUIRED LIBRARY
+
+!pip install -q qiskit
+
+# STEP 2: IMPORT REQUIRED LIBRARIES
+
+from qiskit import QuantumCircuit
+import math
+
+# STEP 3: DEFINE NUMBER OF QUBITS
+
+n = 5
+
+# STEP 4: CREATE 5-QUBIT QUANTUM CIRCUIT
+
+qc = QuantumCircuit(n)
+
+# STEP 5: IMPLEMENT QUANTUM FOURIER TRANSFORM
+
+for j in range(n):
+
+    # Apply Hadamard gate
+    qc.h(j)
+
+    # Apply controlled phase gates
+    for k in range(j + 1, n):
+
+        angle = 2 * math.pi / (2 ** (k - j + 1))
+
+        qc.cp(angle, k, j)
+
+# STEP 6: APPLY SWAP GATES
+# Reverse the order of qubits
+
+for i in range(n // 2):
+
+    qc.swap(i, n - i - 1)
+
+# STEP 7: DISPLAY QUANTUM CIRCUIT
+
+print("\n========== 5-QUBIT QUANTUM FOURIER TRANSFORM ==========\n")
+
+print(qc.draw(output='text', fold=-1))
+
+print("\n=======================================================")
+
+# STEP 8: DISPLAY CIRCUIT INFORMATION
+
+print("\nNumber of Qubits:", n)
+
+print("Hadamard Gates:", n)
+
+print("Controlled Phase Gates:", n * (n - 1) // 2)
+
+print("SWAP Gates:", n // 2)
+
+print("Total Gates:", qc.size())
+
+print("\nQFT circuit implemented successfully!")
+
+
+
+
+
+ORAL QUESTIONS:
+# 5-Qubit Quantum Fourier Transform (QFT) Using Qiskit
+## Top 30 Viva Questions and Answers
+
+**Q1. What is Quantum Fourier Transform (QFT)?**
+
+QFT is a quantum algorithm that transforms quantum states into their Fourier representation using quantum gates.
+
+**Q2. What is the main objective of this practical?**
+
+To implement a 5-qubit Quantum Fourier Transform circuit using Qiskit.
+
+**Q3. What is the difference between classical Fourier Transform and QFT?**
+
+Classical Fourier Transform works on classical data, whereas QFT operates on quantum states.
+
+**Q4. What is a qubit?**
+
+A qubit is the basic unit of quantum information. It can exist in a superposition of 0 and 1.
+
+**Q5. How many qubits are used in your program?**
+
+Five qubits are used, specified by `n = 5`.
+
+**Q6. What is Qiskit?**
+
+Qiskit is an open-source quantum computing framework used to create and simulate quantum circuits.
+
+**Q7. What is a quantum circuit?**
+
+A quantum circuit is a sequence of quantum gates applied to qubits to perform quantum computations.
+
+**Q8. What is a Hadamard gate?**
+
+A Hadamard gate creates an equal superposition of 0 and 1 when applied to the state \(|0\rangle\).
+
+**Q9. Why are Hadamard gates used in QFT?**
+
+They create superposition and form an important part of the QFT transformation.
+
+**Q10. How many Hadamard gates are used in your program?**
+
+Five Hadamard gates, one for each qubit.
+
+**Q11. What is a controlled phase gate?**
+
+It is a two-qubit gate that applies a phase rotation depending on the state of the control qubit.
+
+**Q12. What is the purpose of `qc.cp()`?**
+
+It applies a controlled phase gate between two qubits using a specified angle.
+
+**Q13. What formula is used to calculate the controlled phase angle?**
+
+\[
+\theta=\frac{2\pi}{2^{k-j+1}}
+\]
+
+**Q14. Why are controlled phase gates used in QFT?**
+
+They introduce phase relationships between qubits required for the Fourier transformation.
+
+**Q15. What is quantum phase?**
+
+Phase is a property of a quantum state. Relative phase affects interference and measurement probabilities.
+
+**Q16. What is a SWAP gate?**
+
+A SWAP gate exchanges the quantum states of two qubits.
+
+**Q17. Why are SWAP gates used in your program?**
+
+They reverse the order of qubits to arrange the output in the conventional QFT order.
+
+**Q18. How many SWAP gates are used in your program?**
+
+Two SWAP gates are used for five qubits.
+
+**Q19. How many controlled phase gates are used?**
+
+The number is:
+
+\[
+\frac{n(n-1)}{2}=\frac{5(4)}{2}=10
+\]
+
+**Q20. What is the role of the outer for loop?**
+
+It iterates through all five qubits and applies a Hadamard gate to each qubit.
+
+**Q21. What is the role of the inner for loop?**
+
+It applies controlled phase gates between the current qubit and the remaining qubits.
+
+**Q22. What is the complexity of QFT?**
+
+The standard QFT circuit has approximately \(O(n^2)\) gate complexity.
+
+**Q23. What is inverse QFT?**
+
+Inverse QFT reverses the Fourier transformation and converts the transformed quantum state back to its original representation.
+
+**Q24. What is quantum interference?**
+
+Quantum interference occurs when probability amplitudes combine constructively or destructively.
+
+**Q25. What is quantum phase estimation?**
+
+It is an algorithm used to estimate the phase or eigenvalue information of a unitary operator.
+
+**Q26. What is Shor's algorithm?**
+
+Shor's algorithm is a quantum algorithm used for integer factorization and uses QFT as an important component.
+
+**Q27. What is the difference between X gate and H gate?**
+
+The X gate flips a qubit, whereas the H gate creates superposition.
+
+**Q28. What is the purpose of `qc.draw()`?**
+
+It displays the quantum circuit and the arrangement of gates applied to the qubits.
+
+**Q29. Does your program perform actual quantum computation?**
+
+It constructs and displays the quantum circuit. It does not execute it on quantum hardware or simulate its measurement results.
+
+**Q30. What is the limitation of your implementation?**
+
+It constructs a 5-qubit QFT circuit but does not initialize an input state, perform measurements, or verify the transformed output.
+
+---
+
+
+
+PRACTICAL 5: IMPLEMENTING A 5-QUBIT QUANTUM FOURIER TRANSFORM (QFT)
+
+1. AIM
+
+To implement a 5-qubit Quantum Fourier Transform (QFT) circuit using Python and Qiskit.
+
+2. DESCRIPTION
+
+Quantum Fourier Transform (QFT) is a quantum algorithm that transforms a quantum state from the computational basis into the Fourier basis.
+
+It is the quantum version of the Discrete Fourier Transform (DFT).
+
+QFT is used in various quantum algorithms, such as Shor's factoring algorithm and quantum phase estimation.
+
+In this experiment:
+- A quantum circuit containing five qubits is created.
+- Hadamard gates are applied to the qubits.
+- Controlled phase gates are used to introduce phase rotations.
+- SWAP gates reverse the order of the qubits.
+- Finally, the complete QFT circuit is displayed.
+
+3. LIBRARIES USED
+
+1. Qiskit: Used to create and manipulate quantum circuits.
+2. Math: Used to calculate phase rotation angles.
+
+4. IMPORTANT QUANTUM GATES
+
+1. Hadamard Gate (H):
+   Creates superposition by transforming the computational basis states.
+
+2. Controlled Phase Gate (CP):
+   Applies a phase rotation to the target qubit depending on the state of the control qubit.
+
+3. SWAP Gate:
+   Exchanges the states of two qubits.
+
+5. CODE EXPLANATION (STEP-BY-STEP)
+
+STEP 1: INSTALL REQUIRED LIBRARY
+
+!pip install -q qiskit
+
+Explanation:
+
+- This command installs the Qiskit library.
+- The -q option enables quiet installation, reducing unnecessary output.
+- The exclamation mark is used to execute a shell command in Jupyter Notebook or Google Colab.
+
+STEP 2: IMPORT REQUIRED LIBRARIES
+
+from qiskit import QuantumCircuit
+import math
+
+Explanation:
+
+- QuantumCircuit is used to create the quantum circuit.
+- math is used to calculate the phase rotation angles.
+
+STEP 3: DEFINE NUMBER OF QUBITS
+
+n = 5
+
+Explanation:
+
+The variable n stores the number of qubits used in the experiment.
+
+Here, five qubits are used to implement the Quantum Fourier Transform.
+
+STEP 4: CREATE 5-QUBIT QUANTUM CIRCUIT
+
+qc = QuantumCircuit(n)
+
+Explanation:
+
+This statement creates a quantum circuit containing five qubits.
+
+The qubits are numbered from 0 to 4.
+
+STEP 5: IMPLEMENT QUANTUM FOURIER TRANSFORM
+
+for j in range(n):
+
+    qc.h(j)
+
+    for k in range(j + 1, n):
+
+        angle = 2 * math.pi / (2 ** (k - j + 1))
+
+        qc.cp(angle, k, j)
+
+Explanation:
+
+This step implements the main QFT operations.
+
+1. The outer loop iterates through all five qubits.
+2. A Hadamard gate is applied to the current qubit.
+3. The inner loop applies controlled phase gates between the current qubit and the remaining qubits.
+4. The phase angle is calculated using:
+
+   angle = 2π / 2^(k-j+1)
+
+5. The controlled phase gate applies the calculated phase rotation.
+
+The Hadamard gates create superposition, while the controlled phase gates introduce phase relationships between qubits.
+
+Together, these operations implement the QFT transformation.
+
+STEP 6: APPLY SWAP GATES
+
+for i in range(n // 2):
+
+    qc.swap(i, n - i - 1)
+
+Explanation:
+
+- QFT circuit operations produce the output qubits in reversed order.
+- SWAP gates are used to reverse the qubit order.
+- The loop exchanges the first qubit with the last qubit and the second qubit with the fourth qubit.
+- The middle qubit remains unchanged.
+
+For five qubits, the SWAP operations are:
+
+SWAP(0, 4)
+SWAP(1, 3)
+
+STEP 7: DISPLAY QUANTUM CIRCUIT
+
+print("\n========== 5-QUBIT QUANTUM FOURIER TRANSFORM ==========\n")
+
+print(qc.draw(output='text', fold=-1))
+
+Explanation:
+
+- qc.draw() displays the quantum circuit in text format.
+- output='text' specifies the text representation.
+- fold=-1 displays the circuit without folding it into multiple lines.
+
+STEP 8: DISPLAY CIRCUIT INFORMATION
+
+print("\nNumber of Qubits:", n)
+
+print("Hadamard Gates:", n)
+
+print("Controlled Phase Gates:", n * (n - 1) // 2)
+
+print("SWAP Gates:", n // 2)
+
+print("Total Gates:", qc.size())
+
+Explanation:
+
+This step displays the information about the QFT circuit.
+
+- Number of Qubits: Displays the total number of qubits.
+- Hadamard Gates: Displays the number of Hadamard gates.
+- Controlled Phase Gates: Calculates the number of controlled phase gates.
+- SWAP Gates: Displays the number of SWAP operations.
+- Total Gates: qc.size() returns the total number of circuit instructions.
+
+For five qubits:
+
+Number of Qubits = 5
+
+Hadamard Gates = 5
+
+Controlled Phase Gates = 10
+
+SWAP Gates = 2
+
+Total Gates = 17
+
+6. RESULT
+
+The 5-qubit Quantum Fourier Transform circuit was successfully implemented using Python and Qiskit.
+
+The circuit uses five Hadamard gates, ten controlled phase gates, and two SWAP gates to perform the QFT transformation.
+
+7. CONCLUSION
+
+Thus, we successfully implemented a 5-qubit Quantum Fourier Transform circuit using Qiskit and understood the role of Hadamard, controlled phase, and SWAP gates in quantum Fourier transformation.
+
+IMPORTANT POINTS FOR PRACTICAL EXAM
+
+1. QFT stands for Quantum Fourier Transform.
+2. QFT is the quantum equivalent of the Discrete Fourier Transform.
+3. Hadamard gates create superposition.
+4. Controlled phase gates introduce phase rotations.
+5. SWAP gates reverse the order of qubits.
+6. QFT is used in Shor's algorithm and Quantum Phase Estimation.
+
+NOTE:
+This code constructs the QFT circuit but does not execute a simulation or measure the output. The circuit is built using the specified gate sequence.

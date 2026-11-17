@@ -1,0 +1,607 @@
+
+# ============================================================
+# EXPERIMENT:
+# AGGLOMERATIVE HIERARCHICAL CLUSTERING
+# ============================================================
+
+
+# STEP 1: IMPORT REQUIRED LIBRARIES
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage
+
+
+# STEP 2: LOAD IRIS DATASET
+
+iris = load_iris()
+
+df = pd.DataFrame(
+    iris.data,
+    columns=iris.feature_names
+)
+
+print("========== IRIS DATASET ==========")
+
+print(df.head())
+
+print("\nDataset Shape:", df.shape)
+
+
+# STEP 3: CHECK DATASET INFORMATION
+
+print("\n========== DATASET INFORMATION ==========")
+
+print(df.info())
+
+print("\nMissing Values:")
+
+print(df.isnull().sum())
+
+
+# STEP 4: SELECT FEATURES
+
+X = df.values
+
+
+# STEP 5: STANDARDIZE THE DATA
+
+scaler = StandardScaler()
+
+X_scaled = scaler.fit_transform(X)
+
+print("\nData Standardized Successfully!")
+
+
+# STEP 6: CREATE DENDROGRAM
+
+plt.figure(figsize=(12, 6))
+
+linked = linkage(
+    X_scaled,
+    method='ward'
+)
+
+dendrogram(
+    linked,
+    truncate_mode='lastp',
+    p=30,
+    leaf_rotation=90,
+    leaf_font_size=10
+)
+
+plt.title("Dendrogram - Agglomerative Hierarchical Clustering")
+
+plt.xlabel("Data Points / Clusters")
+
+plt.ylabel("Euclidean Distance")
+
+plt.tight_layout()
+
+plt.show()
+
+
+# STEP 7: APPLY AGGLOMERATIVE CLUSTERING
+
+model = AgglomerativeClustering(
+    n_clusters=3,
+    metric='euclidean',
+    linkage='ward'
+)
+
+clusters = model.fit_predict(X_scaled)
+
+
+# STEP 8: ADD CLUSTER LABELS TO DATASET
+
+df['Cluster'] = clusters
+
+print("\n========== CLUSTERED DATA ==========")
+
+print(df.head(10))
+
+
+# STEP 9: DISPLAY NUMBER OF DATA POINTS IN EACH CLUSTER
+
+print("\n========== CLUSTER DISTRIBUTION ==========")
+
+print(df['Cluster'].value_counts().sort_index())
+
+
+# STEP 10: VISUALIZE CLUSTERS
+
+plt.figure(figsize=(8, 6))
+
+sns.scatterplot(
+    x=X_scaled[:, 0],
+    y=X_scaled[:, 1],
+    hue=clusters,
+    palette='viridis',
+    s=70
+)
+
+plt.title("Agglomerative Hierarchical Clustering")
+
+plt.xlabel("Standardized Sepal Length")
+
+plt.ylabel("Standardized Sepal Width")
+
+plt.legend(title="Cluster")
+
+plt.show()
+
+
+# STEP 11: FINAL RESULT
+
+print("\n==============================================")
+
+print("AGGLOMERATIVE HIERARCHICAL CLUSTERING COMPLETED")
+
+print("Number of Clusters:", len(np.unique(clusters)))
+
+print("==============================================")
+
+
+
+# Oral Questions and Answers – Agglomerative Hierarchical Clustering
+
+### Q1. What is clustering?
+**Answer:** Clustering is an unsupervised machine learning technique used to group similar data points into clusters.
+
+### Q2. What is hierarchical clustering?
+**Answer:** Hierarchical clustering is a clustering technique that creates a hierarchy of clusters based on the similarity or distance between data points.
+
+### Q3. What are the types of hierarchical clustering?
+**Answer:** There are two types:
+1. Agglomerative clustering (Bottom-up approach).
+2. Divisive clustering (Top-down approach).
+
+### Q4. What is Agglomerative Hierarchical Clustering?
+**Answer:** It is a bottom-up clustering algorithm in which every data point initially forms a separate cluster. The closest clusters are repeatedly merged until the required number of clusters is obtained.
+
+### Q5. What is the difference between Agglomerative and Divisive Clustering?
+**Answer:**
+- Agglomerative clustering starts with individual data points and merges them.
+- Divisive clustering starts with one large cluster and divides it into smaller clusters.
+
+### Q6. What is a dendrogram?
+**Answer:** A dendrogram is a tree-like diagram that represents the merging of clusters at different distance levels.
+
+### Q7. What is linkage in hierarchical clustering?
+**Answer:** Linkage is a method used to calculate the distance between two clusters and decide which clusters should be merged.
+
+### Q8. What are the different linkage methods?
+**Answer:** Common linkage methods are:
+1. Single Linkage
+2. Complete Linkage
+3. Average Linkage
+4. Ward Linkage
+
+### Q9. What is Ward Linkage?
+**Answer:** Ward Linkage merges clusters in such a way that the increase in within-cluster variance is minimized.
+
+### Q10. What is Euclidean Distance?
+**Answer:** Euclidean Distance is the straight-line distance between two points in a multidimensional space.
+
+### Q11. Why is StandardScaler used?
+**Answer:** StandardScaler transforms features to have approximately zero mean and unit standard deviation. It prevents features with larger numerical ranges from dominating distance calculations.
+
+### Q12. Which dataset is used in this practical?
+**Answer:** The Iris dataset provided by Scikit-learn is used. It contains 150 flower samples and four numerical features.
+
+### Q13. What are the four features of the Iris dataset?
+**Answer:**
+1. Sepal Length
+2. Sepal Width
+3. Petal Length
+4. Petal Width
+
+### Q14. Why do we use `n_clusters=3`?
+**Answer:** It specifies that the algorithm should divide the dataset into three clusters.
+
+### Q15. What does `fit_predict()` do?
+**Answer:** It trains the clustering model on the input data and returns the cluster label assigned to each data point.
+
+### Q16. What is the purpose of the `linkage()` function?
+**Answer:** The `linkage()` function from SciPy calculates the hierarchical relationships between data points and helps construct a dendrogram.
+
+### Q17. What does `method='ward'` mean?
+**Answer:** It specifies that Ward's linkage method is used to merge clusters while minimizing the increase in within-cluster variance.
+
+### Q18. What is the difference between supervised and unsupervised learning?
+**Answer:**
+- Supervised learning uses labelled data to make predictions.
+- Unsupervised learning uses unlabelled data to discover hidden patterns or groups.
+
+### Q19. Is Agglomerative Clustering a supervised or unsupervised algorithm?
+**Answer:** It is an unsupervised machine learning algorithm because it does not require target labels during clustering.
+
+### Q20. What is the advantage of hierarchical clustering?
+**Answer:** It provides a hierarchical representation of clusters through a dendrogram and does not require us to specify the number of clusters when constructing the full hierarchy.
+
+### Q21. What is the disadvantage of hierarchical clustering?
+**Answer:** It can be computationally expensive for large datasets and merging decisions are generally difficult to reverse.
+
+### Q22. Does hierarchical clustering require the number of clusters in advance?
+**Answer:** Not necessarily. A dendrogram can help determine the number of clusters. However, in our implementation, `n_clusters=3` specifies the required number.
+
+### Q23. What does `value_counts()` do?
+**Answer:** It counts the number of data points assigned to each cluster.
+
+### Q24. Why is a scatter plot used in this practical?
+**Answer:** A scatter plot helps visualize the clusters by displaying data points in two dimensions using different colors for different cluster labels.
+
+### Q25. Does the algorithm use all four Iris features in this practical?
+**Answer:** Yes. Clustering is performed using all four standardized features. The scatter plot displays only the first two features for visualization.
+
+---
+
+### Important Functions Used
+
+| Function | Purpose |
+|---|---|
+| `load_iris()` | Loads the Iris dataset |
+| `StandardScaler()` | Standardizes the features |
+| `fit_transform()` | Fits the scaler and transforms the data |
+| `linkage()` | Calculates hierarchical relationships |
+| `dendrogram()` | Displays the hierarchical tree |
+| `AgglomerativeClustering()` | Creates the clustering model |
+| `fit_predict()` | Performs clustering and returns labels |
+| `np.unique()` | Finds unique cluster labels |
+| `value_counts()` | Counts data points in each cluster |
+
+**Most Important Viva Topics:** Agglomerative vs Divisive, Dendrogram, Linkage Methods, Ward Linkage, Euclidean Distance, StandardScaler, and `n_clusters`.
+
+
+
+1. Practical Explanation
+
+Aim
+To implement the Agglomerative Hierarchical Clustering algorithm using the Iris dataset and visualize the generated clusters using a dendrogram and scatter plot.
+Description
+Agglomerative Hierarchical Clustering is an unsupervised machine learning algorithm used to group similar data points into clusters.
+
+It follows a bottom-up approach, where each data point initially forms its own cluster. The algorithm repeatedly merges the closest clusters until the required number of clusters is obtained.
+
+In this practical, we use the Iris dataset provided by Scikit-learn. It contains 150 flower samples with four features:
+- Sepal Length
+- Sepal Width
+- Petal Length
+- Petal Width
+The program performs the following operations:
+1. Imports the required libraries and loads the Iris dataset.
+2. Converts the dataset into a Pandas DataFrame.
+3. Checks dataset information and missing values.
+4. Selects all four numerical features for clustering.
+5. Standardizes the features using StandardScaler.
+6. Constructs a dendrogram using the Ward linkage method.
+7. Applies Agglomerative Hierarchical Clustering to create three clusters.
+8. Adds cluster labels to the dataset.
+9. Displays the number of data points in each cluster.
+10. Visualizes the clusters using a scatter plot.
+Libraries Used
+Library	Purpose
+NumPy	Numerical operations
+Pandas	Dataset handling
+Matplotlib	Creating visualizations
+Seaborn	Creating cluster scatter plots
+Scikit-learn	Loading data, standardization, and clustering
+SciPy	Generating the dendrogram using hierarchical linkage
+
+Result
+Agglomerative Hierarchical Clustering was successfully implemented on the Iris dataset. The algorithm grouped the flower samples into three clusters and visualized the clustering results using a dendrogram and scatter plot.
+
+# Code Explanation – Agglomerative Hierarchical Clustering
+
+## Step 1: Import Required Libraries
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage
+```
+
+This step imports all the required libraries.
+
+- `numpy`: Performs numerical operations.
+- `pandas`: Handles the dataset in tabular format.
+- `matplotlib`: Creates graphs and visualizations.
+- `seaborn`: Creates attractive statistical plots.
+- `load_iris`: Loads the built-in Iris dataset.
+- `StandardScaler`: Standardizes the numerical features.
+- `AgglomerativeClustering`: Implements hierarchical clustering.
+- `dendrogram`: Displays the hierarchical clustering structure.
+- `linkage`: Calculates distances and relationships between clusters.
+
+## Step 2: Load the Iris Dataset
+
+```python
+iris = load_iris()
+
+df = pd.DataFrame(
+    iris.data,
+    columns=iris.feature_names
+)
+
+print(df.head())
+print(df.shape)
+```
+
+This step loads the Iris dataset from Scikit-learn.
+
+The dataset contains 150 flower samples and four numerical features.
+
+| Feature | Meaning |
+|---|---|
+| Sepal Length | Length of the flower sepal |
+| Sepal Width | Width of the flower sepal |
+| Petal Length | Length of the flower petal |
+| Petal Width | Width of the flower petal |
+
+**Explanation:**
+
+1. `load_iris()` loads the Iris dataset.
+2. `iris.data` contains the numerical feature values.
+3. `iris.feature_names` contains the feature names.
+4. `pd.DataFrame()` converts the dataset into a DataFrame.
+5. `df.head()` displays the first five records.
+6. `df.shape` displays the number of rows and columns.
+
+## Step 3: Check Dataset Information
+
+```python
+print(df.info())
+
+print(df.isnull().sum())
+```
+
+This step checks the structure and quality of the dataset.
+
+- `df.info()` displays column names, data types, and non-null counts.
+- `df.isnull().sum()` checks the number of missing values in each column.
+
+This helps us understand whether the dataset requires cleaning before clustering.
+
+## Step 4: Select Features
+
+```python
+X = df.values
+```
+
+This step selects all four numerical features for clustering.
+
+- `df.values` converts the DataFrame into a NumPy array.
+- `X` stores the input data.
+
+Since clustering is an unsupervised learning technique, we do not use target labels during the clustering process.
+
+## Step 5: Standardize the Data
+
+```python
+scaler = StandardScaler()
+
+X_scaled = scaler.fit_transform(X)
+
+print("Data Standardized Successfully!")
+```
+
+**What is standardization?**
+
+Standardization is the process of transforming numerical features so that they have approximately:
+
+- Mean = 0
+- Standard Deviation = 1
+
+**Explanation:**
+
+1. `StandardScaler()` creates a standardization object.
+2. `fit_transform(X)` calculates the mean and standard deviation of each feature and transforms the values.
+3. `X_scaled` stores the standardized data.
+
+Standardization is important because clustering algorithms use distances to measure similarity. Features with larger numerical ranges could otherwise have more influence on the results.
+
+## Step 6: Create a Dendrogram
+
+```python
+plt.figure(figsize=(12, 6))
+
+linked = linkage(
+    X_scaled,
+    method='ward'
+)
+
+dendrogram(
+    linked,
+    truncate_mode='lastp',
+    p=30,
+    leaf_rotation=90,
+    leaf_font_size=10
+)
+
+plt.title("Dendrogram - Agglomerative Hierarchical Clustering")
+plt.xlabel("Data Points / Clusters")
+plt.ylabel("Euclidean Distance")
+
+plt.tight_layout()
+plt.show()
+```
+
+**What is a dendrogram?**
+
+A dendrogram is a tree-like diagram that represents how individual data points or clusters are merged during hierarchical clustering.
+
+**Explanation:**
+
+1. `plt.figure(figsize=(12, 6))` creates a plotting area.
+2. `linkage()` calculates the hierarchical relationships between data points.
+3. `method='ward'` uses the Ward linkage method to merge clusters while minimizing the increase in within-cluster variance.
+4. `dendrogram()` generates the tree-like diagram.
+5. `truncate_mode='lastp'` displays a simplified dendrogram containing the final cluster-merging steps.
+6. `p=30` limits the displayed final groups to 30.
+7. `leaf_rotation=90` rotates the labels.
+8. `leaf_font_size=10` sets the label font size.
+9. `plt.xlabel()` and `plt.ylabel()` set the axis labels.
+10. `plt.show()` displays the dendrogram.
+
+The vertical height at which branches merge represents the distance between the merged clusters.
+
+The dendrogram helps us understand the hierarchical structure and choose an appropriate number of clusters.
+
+## Step 7: Apply Agglomerative Clustering
+
+```python
+model = AgglomerativeClustering(
+    n_clusters=3,
+    metric='euclidean',
+    linkage='ward'
+)
+
+clusters = model.fit_predict(X_scaled)
+```
+
+This step applies the Agglomerative Hierarchical Clustering algorithm.
+
+**Explanation:**
+
+- `AgglomerativeClustering()` creates the clustering model.
+- `n_clusters=3` specifies that the dataset should be divided into three clusters.
+- `metric='euclidean'` uses Euclidean distance to measure the distance between data points.
+- `linkage='ward'` uses Ward's method to decide which clusters to merge.
+- `fit_predict()` performs clustering and returns the cluster labels.
+
+Each data point is assigned a cluster label such as 0, 1, or 2.
+
+**How Agglomerative Clustering works:**
+
+1. Initially, every data point is treated as a separate cluster.
+2. The distances between clusters are calculated.
+3. The closest clusters are merged.
+4. This process continues repeatedly.
+5. The process stops when three clusters remain.
+
+## Step 8: Add Cluster Labels to the Dataset
+
+```python
+df['Cluster'] = clusters
+
+print(df.head(10))
+```
+
+This step adds the generated cluster labels to the original dataset.
+
+- `df['Cluster']` creates a new column.
+- `clusters` contains the predicted cluster labels.
+- `df.head(10)` displays the first ten records with their cluster assignments.
+
+Each flower sample now belongs to one of the three clusters.
+
+## Step 9: Display Cluster Distribution
+
+```python
+print(df['Cluster'].value_counts().sort_index())
+```
+
+This step displays the number of data points present in each cluster.
+
+- `value_counts()` counts the number of samples in each cluster.
+- `sort_index()` arranges the cluster labels in ascending order.
+
+This helps us understand how the 150 flower samples are distributed among the three clusters.
+
+## Step 10: Visualize the Clusters
+
+```python
+plt.figure(figsize=(8, 6))
+
+sns.scatterplot(
+    x=X_scaled[:, 0],
+    y=X_scaled[:, 1],
+    hue=clusters,
+    palette='viridis',
+    s=70
+)
+
+plt.title("Agglomerative Hierarchical Clustering")
+
+plt.xlabel("Standardized Sepal Length")
+plt.ylabel("Standardized Sepal Width")
+
+plt.legend(title="Cluster")
+
+plt.show()
+```
+
+This step visualizes the generated clusters using a scatter plot.
+
+**Explanation:**
+
+1. `plt.figure()` creates the plotting area.
+2. `X_scaled[:, 0]` selects the first feature (standardized sepal length).
+3. `X_scaled[:, 1]` selects the second feature (standardized sepal width).
+4. `hue=clusters` assigns different colors to different clusters.
+5. `palette='viridis'` specifies the color palette.
+6. `s=70` sets the marker size.
+7. `plt.title()` sets the graph title.
+8. `plt.xlabel()` and `plt.ylabel()` set the axis labels.
+9. `plt.legend()` displays the cluster legend.
+10. `plt.show()` displays the scatter plot.
+
+The scatter plot provides a visual representation of the three clusters using the first two standardized features.
+
+Note that the clustering itself uses all four features; only the visualization uses two.
+
+## Step 11: Final Result
+
+```python
+print("AGGLOMERATIVE HIERARCHICAL CLUSTERING COMPLETED")
+
+print("Number of Clusters:", len(np.unique(clusters)))
+```
+
+- `np.unique(clusters)` returns the distinct cluster labels.
+- `len()` counts the number of unique clusters.
+
+The program displays the total number of clusters generated, which is three.
+
+---
+
+## Important Concepts to Remember
+
+| Concept | Meaning |
+|---|---|
+| Hierarchical Clustering | Groups similar data points into a hierarchy of clusters |
+| Agglomerative Clustering | Bottom-up clustering approach |
+| Unsupervised Learning | Learning patterns without target labels |
+| Dendrogram | Tree-like diagram showing cluster merging |
+| Linkage | Method used to calculate distances between clusters |
+| Ward Linkage | Merges clusters while minimizing the increase in within-cluster variance |
+| Euclidean Distance | Straight-line distance between two points |
+| Standardization | Transforms features to a common scale |
+| `n_clusters=3` | Specifies the required number of clusters |
+
+## Overall Workflow
+
+1. Import required libraries.
+2. Load the Iris dataset.
+3. Check dataset information and missing values.
+4. Select numerical features.
+5. Standardize the data.
+6. Generate the dendrogram.
+7. Apply Agglomerative Hierarchical Clustering.
+8. Assign cluster labels.
+9. Display cluster distribution.
+10. Visualize clusters using a scatter plot.
+
+**Conclusion:** The practical demonstrates how Agglomerative Hierarchical Clustering groups similar flower samples into three clusters using a bottom-up approach and visualizes the hierarchical relationships through a dendrogram.

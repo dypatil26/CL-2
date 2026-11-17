@@ -1,0 +1,699 @@
+import re
+import pandas as pd
+from collections import defaultdict
+
+# Document Collection
+documents = {
+    1: "Machine learning is a branch of artificial intelligence",
+    2: "Artificial intelligence is transforming healthcare",
+    3: "Information retrieval helps users search documents",
+    4: "Machine learning and data mining are important",
+    5: "Deep learning is a subset of machine learning",
+    6: "Search engines use information retrieval techniques",
+    7: "Data science uses machine learning algorithms",
+    8: "Artificial intelligence uses deep learning"
+}
+
+print("DOCUMENT COLLECTION:\n")
+
+for doc_id, text in documents.items():
+    print("Document", doc_id, ":", text)
+
+# Preprocessing Function
+def preprocess(text):
+    text = text.lower()
+    words = re.findall(r'\b[a-z]+\b', text)
+    return words
+
+# Construct Inverted Index
+inverted_index = defaultdict(set)
+
+for doc_id, text in documents.items():
+    words = preprocess(text)
+
+    for word in words:
+        inverted_index[word].add(doc_id)
+
+print("\nINVERTED INDEX:\n")
+
+for word in sorted(inverted_index):
+    print(word, ":", sorted(inverted_index[word]))
+
+# Display Index Table
+index_table = []
+
+for word, doc_ids in sorted(inverted_index.items()):
+    index_table.append({
+        'Term': word,
+        'Document Frequency': len(doc_ids),
+        'Posting List': sorted(doc_ids)
+    })
+
+index_df = pd.DataFrame(index_table)
+
+print("\nINVERTED INDEX TABLE:")
+print(index_df.to_string(index=False))
+
+# Boolean AND Search
+def search_and(query):
+    terms = preprocess(query)
+
+    if not terms:
+        return set()
+
+    result = inverted_index.get(terms[0], set()).copy()
+
+    for term in terms[1:]:
+        result = result.intersection(inverted_index.get(term, set()))
+
+    return result
+
+# Boolean OR Search
+def search_or(query):
+    terms = preprocess(query)
+    result = set()
+
+    for term in terms:
+        result = result.union(inverted_index.get(term, set()))
+
+    return result
+
+# Interactive Search
+print("\nDOCUMENT RETRIEVAL SYSTEM")
+
+query = input("Enter search query: ")
+operation = input("Enter operation (AND/OR): ").upper()
+
+if operation == "AND":
+    result = search_and(query)
+elif operation == "OR":
+    result = search_or(query)
+else:
+    result = set()
+    print("Invalid operation!")
+
+print("\nSEARCH RESULTS:")
+
+if result:
+    for doc_id in sorted(result):
+        print("\nDocument ID:", doc_id)
+        print("Content:", documents[doc_id])
+else:
+    print("No matching documents found.")
+
+
+
+
+ORAL QUESTIONS:
+# PRACTICAL 2: DOCUMENT RETRIEVAL USING INVERTED FILES
+## Top 30 Viva Questions and Answers
+
+### A. Basic Information Retrieval Concepts
+
+**Q1. What is Information Retrieval (IR)?**
+
+Information Retrieval is the process of finding relevant information or documents from a large collection based on a user's search query.
+
+Example: Searching for information on Google.
+
+**Q2. What is a document retrieval system?**
+
+A document retrieval system is a system that searches a collection of documents and retrieves documents that match the user's query.
+
+**Q3. What is an inverted index?**
+
+An inverted index is a data structure that maps each term or word to the list of documents in which that word appears.
+
+Example:
+
+machine → [1, 4, 5, 7]
+
+It means the word machine appears in documents 1, 4, 5 and 7.
+
+**Q4. Why do we use an inverted index?**
+
+We use an inverted index to make document searching faster and more efficient instead of scanning every document for every query.
+
+**Q5. What is the difference between a normal index and an inverted index?**
+
+- Normal index: Maps documents to the terms present in them.
+- Inverted index: Maps terms to the documents containing them.
+
+**Q6. What is a term in Information Retrieval?**
+
+A term is an individual word extracted from a document after preprocessing.
+
+Example: "Machine learning is useful"
+
+Terms: Machine, learning, is, useful.
+
+**Q7. What is a posting list?**
+
+A posting list is the list of document IDs in which a particular term appears.
+
+Example:
+
+learning → [1, 4, 5, 7]
+
+**Q8. What is document frequency?**
+
+Document Frequency (DF) is the number of documents in which a particular term appears.
+
+Example:
+
+If the word "machine" occurs in documents 1, 4, 5 and 7, its document frequency is 4.
+
+**Q9. What is a search query?**
+
+A search query is a word or combination of words entered by a user to retrieve relevant documents.
+
+Example: "machine learning".
+
+**Q10. What are Boolean retrieval models?**
+
+Boolean retrieval models retrieve documents using logical operators such as AND, OR and NOT.
+
+### B. Preprocessing Concepts
+
+**Q11. What is text preprocessing?**
+
+Text preprocessing is the process of cleaning and preparing raw text before indexing or searching.
+
+Common steps include:
+- Lowercasing
+- Tokenization
+- Removing special characters
+- Stopword removal
+- Stemming
+- Lemmatization
+
+**Q12. Why do we convert text into lowercase?**
+
+To make searching case-insensitive.
+
+Example: "Machine" and "machine" are treated as the same term.
+
+**Q13. What is tokenization?**
+
+Tokenization is the process of splitting text into smaller units called tokens, usually words.
+
+Example:
+
+"Machine learning is useful"
+
+Output: ['machine', 'learning', 'is', 'useful']
+
+**Q14. What is the purpose of regular expressions in your code?**
+
+Regular expressions are used to identify patterns in text.
+
+In our code:
+
+re.findall(r'\b[a-z]+\b', text)
+
+It extracts sequences of lowercase English letters as words.
+
+**Q15. What is the difference between stemming and lemmatization?**
+
+- Stemming removes word endings to obtain a word stem, which may not be a valid dictionary word.
+- Lemmatization converts a word into its meaningful dictionary base form.
+
+Example:
+- Stemming: studies → studi
+- Lemmatization: studies → study
+
+### C. Inverted Index Implementation
+
+**Q16. Which Python data structure have you used to construct the inverted index?**
+
+We have used defaultdict with set from Python's collections module.
+
+Code:
+
+inverted_index = defaultdict(set)
+
+**Q17. What is defaultdict?**
+
+defaultdict is a dictionary subclass that automatically creates a default value when a new key is accessed.
+
+In our code, it automatically creates an empty set for a new term.
+
+**Q18. Why have you used set instead of list?**
+
+A set stores unique elements and avoids duplicate document IDs.
+
+It also supports efficient set operations such as intersection and union.
+
+**Q19. What is the purpose of preprocess() in your code?**
+
+The preprocess() function converts text into lowercase and extracts individual words using regular expressions.
+
+**Q20. How is the inverted index constructed in your practical?**
+
+First, we iterate through all documents. Then we preprocess each document, extract its terms and add the corresponding document ID to the posting list of each term.
+
+**Q21. Why do we sort the terms while displaying the inverted index?**
+
+To display the terms in alphabetical order, making the index easier to read and understand.
+
+**Q22. What is the purpose of pandas DataFrame in your code?**
+
+We use Pandas DataFrame to display the inverted index in tabular form with three columns:
+
+1. Term
+2. Document Frequency
+3. Posting List
+
+### D. Boolean Searching and Retrieval
+
+**Q23. What is Boolean AND search?**
+
+AND search retrieves only those documents that contain all the terms present in the query.
+
+Example:
+
+machine AND learning
+
+It retrieves documents containing both machine and learning.
+
+**Q24. What is Boolean OR search?**
+
+OR search retrieves documents containing at least one of the terms present in the query.
+
+Example:
+
+machine OR healthcare
+
+It retrieves documents containing machine, healthcare or both.
+
+**Q25. What is the difference between AND and OR operations?**
+
+- AND: Returns common documents containing all query terms.
+- OR: Returns documents containing any of the query terms.
+
+**Q26. Which Python set operation is used for AND search?**
+
+We use intersection().
+
+Code:
+
+result = result.intersection(inverted_index.get(term, set()))
+
+It returns only common document IDs.
+
+**Q27. Which Python set operation is used for OR search?**
+
+We use union().
+
+Code:
+
+result = result.union(inverted_index.get(term, set()))
+
+It combines document IDs from all query terms without duplicates.
+
+**Q28. What happens if a search term is not present in the inverted index?**
+
+The expression:
+
+inverted_index.get(term, set())
+
+returns an empty set if the term is missing.
+
+Therefore, the search does not return documents for that term.
+
+**Q29. What is the purpose of sorted(result) in your code?**
+
+It displays the retrieved document IDs in ascending order.
+
+**Q30. Where are inverted indexes used in real life?**
+
+Inverted indexes are widely used in:
+
+1. Google and other search engines.
+2. Library management systems.
+3. Document search applications.
+4. Email search systems.
+5. Digital libraries.
+6. Enterprise search engines.
+7. Full-text search databases such as Elasticsearch.
+
+---
+
+## IMPORTANT PYTHON FUNCTIONS – QUICK REVISION
+
+| Function / Library | Purpose |
+|---|---|
+| re.findall() | Extracts words using regular expressions |
+| text.lower() | Converts text into lowercase |
+| defaultdict(set) | Creates dictionary with default sets |
+| set.add() | Adds a document ID to a set |
+| sorted() | Sorts terms or document IDs |
+| len() | Counts the number of elements |
+| intersection() | Performs AND operation |
+| union() | Performs OR operation |
+| .get() | Retrieves a dictionary value safely |
+| pd.DataFrame() | Creates a tabular structure |
+| pd.to_string() | Displays the complete DataFrame as text |
+| input() | Accepts user input |
+| .upper() | Converts operation input to uppercase |
+
+## IMPORTANT OUTPUT EXAMPLE
+
+Suppose the user enters:
+
+Query: machine learning
+
+Operation: AND
+
+The result will contain:
+
+- Document 1: Machine learning is a branch of artificial intelligence.
+- Document 4: Machine learning and data mining are important.
+- Document 5: Deep learning is a subset of machine learning.
+- Document 7: Data science uses machine learning algorithms.
+
+For OR search, the system returns documents containing either machine or learning.
+
+## PRACTICAL CONCLUSION
+
+Thus, a document retrieval system using an inverted index was successfully implemented. The documents were preprocessed, an inverted index was constructed using posting lists, and Boolean AND and OR operations were used to retrieve relevant documents based on the user's search query.
+
+
+Part 1: Practical Explanation
+
+1. Aim
+To implement a document retrieval system using an inverted index (inverted file) and perform Boolean AND and OR searches to retrieve relevant documents.
+2. Description
+This practical demonstrates how an inverted index is created and used to retrieve documents efficiently from a document collection.
+
+An inverted index is a data structure that stores each unique word along with the IDs of documents in which that word appears. Instead of searching every document individually, the system uses this index to quickly identify relevant documents.
+
+The practical involves the following operations:
+1. Document Collection: Create a collection of eight sample documents containing information about machine learning, artificial intelligence, and information retrieval.
+2. Text Preprocessing: Convert text into lowercase and extract individual words using regular expressions.
+3. Construct Inverted Index: Create a mapping between each unique word and the document IDs containing that word.
+4. Display Inverted Index: Display the inverted index in a tabular format containing the term, document frequency, and posting list.
+5. Boolean AND Search: Retrieve documents that contain all the words entered in the search query.
+6. Boolean OR Search: Retrieve documents that contain at least one of the words entered in the search query.
+7. Interactive Search: Accept a search query and operation (AND/OR) from the user and display the matching documents.
+3. Libraries Used
+Library	Purpose
+re	Used for extracting words from text using regular expressions.
+pandas	Used to create and display the inverted index table.
+collections.defaultdict	Used to create the inverted index with sets of document IDs.
+
+4. Result
+Successfully implemented a document retrieval system using an inverted index. The system creates a posting list for each unique term and supports Boolean AND and OR searches to retrieve relevant documents efficiently.
+
+
+Code Explanation
+
+## Step 1: Import Required Libraries
+
+```python
+import re
+import pandas as pd
+from collections import defaultdict
+```
+
+- `re`: Used for text preprocessing and extracting words using regular expressions.
+- `pandas`: Used to create and display the inverted index in tabular format.
+- `defaultdict`: Used to create a dictionary that automatically assigns a default value to a new key.
+
+## Step 2: Create the Document Collection
+
+```python
+documents = {
+    1: "Machine learning is a branch of artificial intelligence",
+    2: "Artificial intelligence is transforming healthcare",
+    3: "Information retrieval helps users search documents",
+    4: "Machine learning and data mining are important",
+    5: "Deep learning is a subset of machine learning",
+    6: "Search engines use information retrieval techniques",
+    7: "Data science uses machine learning algorithms",
+    8: "Artificial intelligence uses deep learning"
+}
+```
+
+- A dictionary named `documents` stores the document collection.
+- Each document has a unique document ID as its key.
+- The corresponding text is stored as its value.
+- There are eight documents in this collection.
+
+```python
+print("DOCUMENT COLLECTION:\n")
+
+for doc_id, text in documents.items():
+    print("Document", doc_id, ":", text)
+```
+
+- `documents.items()` returns the document IDs and their corresponding text.
+- The `for` loop displays each document.
+
+## Step 3: Create the Preprocessing Function
+
+```python
+def preprocess(text):
+    text = text.lower()
+    words = re.findall(r'\b[a-z]+\b', text)
+    return words
+```
+
+This function cleans the text and extracts individual words.
+
+**Explanation:**
+
+1. `def preprocess(text)`: Defines a function that accepts text as input.
+2. `text.lower()`: Converts all text into lowercase.
+3. `re.findall(r'\b[a-z]+\b', text)`: Extracts all sequences of English letters.
+   - `\b` represents a word boundary.
+   - `[a-z]+` matches one or more lowercase English letters.
+4. `return words`: Returns the extracted words as a list.
+
+**Example:**
+
+Input:
+`"Machine Learning is Important"`
+
+Output:
+`['machine', 'learning', 'is', 'important']`
+
+## Step 4: Construct the Inverted Index
+
+```python
+inverted_index = defaultdict(set)
+
+for doc_id, text in documents.items():
+    words = preprocess(text)
+
+    for word in words:
+        inverted_index[word].add(doc_id)
+```
+
+This step creates the inverted index.
+
+**Explanation:**
+
+1. `defaultdict(set)` creates a dictionary where every new term automatically gets an empty set.
+2. The outer `for` loop visits every document.
+3. `preprocess(text)` extracts words from the current document.
+4. The inner `for` loop processes each extracted word.
+5. `inverted_index[word].add(doc_id)` adds the current document ID to the set associated with that word.
+
+A set stores unique document IDs, so the same word appearing multiple times in one document does not duplicate its document ID.
+
+**Example:**
+
+If the word `machine` appears in documents 1, 4, 5, and 7, its posting list will be:
+
+`machine: {1, 4, 5, 7}`
+
+## Step 5: Display the Inverted Index
+
+```python
+print("\nINVERTED INDEX:\n")
+
+for word in sorted(inverted_index):
+    print(word, ":", sorted(inverted_index[word]))
+```
+
+- `sorted(inverted_index)` sorts all terms alphabetically.
+- The loop visits each term.
+- `sorted(inverted_index[word])` sorts the document IDs in its posting list.
+- `print()` displays each word and its corresponding document IDs.
+
+This produces the inverted index in a readable format.
+
+## Step 6: Create the Inverted Index Table
+
+```python
+index_table = []
+
+for word, doc_ids in sorted(inverted_index.items()):
+    index_table.append({
+        'Term': word,
+        'Document Frequency': len(doc_ids),
+        'Posting List': sorted(doc_ids)
+    })
+
+index_df = pd.DataFrame(index_table)
+
+print("\nINVERTED INDEX TABLE:")
+print(index_df.to_string(index=False))
+```
+
+This step converts the inverted index into a table.
+
+**Explanation:**
+
+1. `index_table = []` creates an empty list.
+2. `inverted_index.items()` returns each term and its posting list.
+3. `len(doc_ids)` calculates the number of documents containing that term. This is called Document Frequency (DF).
+4. `index_table.append()` adds a dictionary containing:
+   - `Term`: The word.
+   - `Document Frequency`: Number of documents containing the word.
+   - `Posting List`: IDs of the documents containing the word.
+5. `pd.DataFrame(index_table)` converts the list into a Pandas DataFrame.
+6. `to_string(index=False)` displays the table without row indices.
+
+## Step 7: Implement Boolean AND Search
+
+```python
+def search_and(query):
+    terms = preprocess(query)
+
+    if not terms:
+        return set()
+
+    result = inverted_index.get(terms[0], set()).copy()
+
+    for term in terms[1:]:
+        result = result.intersection(inverted_index.get(term, set()))
+
+    return result
+```
+
+This function retrieves documents containing **all the words** in the search query.
+
+**Explanation:**
+
+1. `def search_and(query)`: Defines the AND search function.
+2. `preprocess(query)`: Converts the query into lowercase words.
+3. `if not terms`: Checks whether the query contains any valid words. If not, it returns an empty set.
+4. `inverted_index.get(terms[0], set()).copy()` gets the posting list of the first term.
+5. `for term in terms[1:]`: Iterates through the remaining query terms.
+6. `intersection()` finds the common document IDs between the current result and the next term's posting list.
+7. `return result`: Returns documents containing all query terms.
+
+**Example:**
+
+Query: `machine learning`
+
+- Machine posting list: `{1, 4, 5, 7}`
+- Learning posting list: `{1, 4, 5, 7, 8}`
+
+AND result: `{1, 4, 5, 7}`
+
+Only documents containing both words are retrieved.
+
+## Step 8: Implement Boolean OR Search
+
+```python
+def search_or(query):
+    terms = preprocess(query)
+    result = set()
+
+    for term in terms:
+        result = result.union(inverted_index.get(term, set()))
+
+    return result
+```
+
+This function retrieves documents containing **at least one word** from the search query.
+
+**Explanation:**
+
+1. `preprocess(query)` converts the query into lowercase words.
+2. `result = set()` creates an empty set to store matching document IDs.
+3. The `for` loop processes every query term.
+4. `inverted_index.get(term, set())` retrieves the posting list of the current term.
+5. `union()` combines the document IDs from different posting lists without duplicates.
+6. `return result` returns all matching document IDs.
+
+**Example:**
+
+Query: `machine retrieval`
+
+- Machine posting list: `{1, 4, 5, 7}`
+- Retrieval posting list: `{3, 6}`
+
+OR result: `{1, 3, 4, 5, 6, 7}`
+
+Documents containing either word are retrieved.
+
+## Step 9: Implement Interactive Search
+
+```python
+print("\nDOCUMENT RETRIEVAL SYSTEM")
+
+query = input("Enter search query: ")
+operation = input("Enter operation (AND/OR): ").upper()
+```
+
+- Displays the document retrieval system heading.
+- `input()` accepts a search query from the user.
+- The second `input()` accepts the search operation.
+- `.upper()` converts the operation into uppercase so that inputs such as `and` and `or` are handled correctly.
+
+```python
+if operation == "AND":
+    result = search_and(query)
+elif operation == "OR":
+    result = search_or(query)
+else:
+    result = set()
+    print("Invalid operation!")
+```
+
+- If the operation is `AND`, the `search_and()` function is called.
+- If the operation is `OR`, the `search_or()` function is called.
+- Otherwise, an empty set is assigned and an invalid operation message is displayed.
+
+## Step 10: Display Search Results
+
+```python
+print("\nSEARCH RESULTS:")
+
+if result:
+    for doc_id in sorted(result):
+        print("\nDocument ID:", doc_id)
+        print("Content:", documents[doc_id])
+else:
+    print("No matching documents found.")
+```
+
+- `if result` checks whether matching documents were found.
+- `sorted(result)` sorts the matching document IDs.
+- The `for` loop visits each matching document.
+- `documents[doc_id]` retrieves the original document content using its ID.
+- If the result is empty, the program displays "No matching documents found."
+
+## Important Concepts
+
+| Concept | Meaning |
+|---|---|
+| Inverted Index | A data structure that maps each term to the documents containing it. |
+| Posting List | A list or set of document IDs associated with a term. |
+| Document Frequency | Number of documents containing a particular term. |
+| Boolean AND | Retrieves documents containing all query terms. |
+| Boolean OR | Retrieves documents containing at least one query term. |
+| Union | Combines two sets without duplicate elements. |
+| Intersection | Finds common elements between two sets. |
+
+## Overall Workflow
+
+Document Collection → Text Preprocessing → Inverted Index Construction → Posting List Generation → User Query → AND/OR Search → Display Retrieved Documents
+
+## Conclusion
+
+The program successfully implements an inverted file-based document retrieval system. It constructs an inverted index, generates posting lists, and retrieves relevant documents using Boolean AND and OR operations.

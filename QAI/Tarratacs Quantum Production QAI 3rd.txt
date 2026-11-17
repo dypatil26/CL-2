@@ -1,0 +1,857 @@
+
+# ============================================================
+# TARRATACA'S QUANTUM PRODUCTION SYSTEM
+# 3-PUZZLE USING QISKIT
+# ============================================================
+
+# STEP 1: IMPORT LIBRARIES
+
+import itertools
+import matplotlib.pyplot as plt
+
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+from qiskit.visualization import plot_histogram
+
+
+# STEP 2: INITIALIZE THE 3-PUZZLE
+
+# 0 represents the blank space
+
+initial_state = (3, 0, 1, 2)
+
+goal_state = (0, 2, 3, 1)
+
+# Clockwise order of positions in a 2x2 puzzle
+
+clockwise_order = [0, 1, 3, 2]
+
+
+# STEP 3: DEFINE PRODUCTION RULES
+
+def production_rule(state, move):
+
+    board = list(state)
+
+    # Locate blank space
+    blank = board.index(0)
+
+    # Find blank position in clockwise order
+    position = clockwise_order.index(blank)
+
+    # Apply production rule
+    if move == 0:
+        next_position = clockwise_order[
+            (position + 1) % 4
+        ]
+    else:
+        next_position = clockwise_order[
+            (position - 1) % 4
+        ]
+
+    # Swap blank with adjacent tile
+    board[blank], board[next_position] = (
+        board[next_position],
+        board[blank]
+    )
+
+    return tuple(board)
+
+
+# STEP 4: EXECUTE A PATH
+
+def execute_path(path):
+
+    state = initial_state
+
+    for move in path:
+        state = production_rule(state, int(move))
+
+    return state
+
+
+# STEP 5: GENERATE ALL POSSIBLE PATHS
+
+depth = 3
+
+all_paths = [
+    ''.join(map(str, path))
+    for path in itertools.product([0, 1], repeat=depth)
+]
+
+print("All Possible Paths:")
+
+for path in all_paths:
+    print(path, ":", execute_path(path))
+
+
+# STEP 6: IDENTIFY GOAL PATH
+
+marked_paths = [
+    path for path in all_paths
+    if execute_path(path) == goal_state
+]
+
+print("\nGoal Paths:", marked_paths)
+
+if len(marked_paths) == 0:
+    raise ValueError("No goal path found at depth 3.")
+
+
+# STEP 7: CREATE QUANTUM ORACLE
+
+def create_oracle(marked_paths):
+
+    oracle = QuantumCircuit(depth)
+
+    for path in marked_paths:
+
+        # Convert zero bits into one controls
+        for i, bit in enumerate(path):
+            if bit == '0':
+                oracle.x(i)
+
+        # Apply controlled-controlled Z
+        oracle.h(2)
+        oracle.ccx(0, 1, 2)
+        oracle.h(2)
+
+        # Restore qubits
+        for i, bit in enumerate(path):
+            if bit == '0':
+                oracle.x(i)
+
+    return oracle
+
+
+# STEP 8: CREATE GROVER DIFFUSER
+
+def create_diffuser():
+
+    diffuser = QuantumCircuit(depth)
+
+    diffuser.h([0, 1, 2])
+    diffuser.x([0, 1, 2])
+
+    diffuser.h(2)
+    diffuser.ccx(0, 1, 2)
+    diffuser.h(2)
+
+    diffuser.x([0, 1, 2])
+    diffuser.h([0, 1, 2])
+
+    return diffuser
+
+
+# STEP 9: CREATE QUANTUM CIRCUIT
+
+qc = QuantumCircuit(depth, depth)
+
+# Initialize superposition
+
+qc.h([0, 1, 2])
+
+# Create oracle and diffuser
+
+oracle = create_oracle(marked_paths)
+diffuser = create_diffuser()
+
+# Apply two Grover iterations
+
+for i in range(2):
+
+    qc.compose(oracle, inplace=True)
+    qc.barrier()
+
+    qc.compose(diffuser, inplace=True)
+    qc.barrier()
+
+# Measure quantum path register
+
+qc.measure([0, 1, 2], [0, 1, 2])
+
+
+# STEP 10: DISPLAY QUANTUM CIRCUIT
+
+print("\nQuantum Circuit:")
+print(qc.draw())
+
+
+# STEP 11: SIMULATE QUANTUM CIRCUIT
+
+simulator = AerSimulator()
+
+compiled_circuit = transpile(qc, simulator)
+
+result = simulator.run(
+    compiled_circuit,
+    shots=1024
+).result()
+
+counts = result.get_counts()
+
+
+# STEP 12: DISPLAY RESULTS
+
+print("\n========== QUANTUM PRODUCTION SYSTEM ==========")
+
+print("Initial State:", initial_state)
+print("Goal State:", goal_state)
+
+print("\nMeasurement Counts:")
+
+for key, value in counts.items():
+    print(key, ":", value)
+
+
+# STEP 13: FIND MOST PROBABLE PATH
+
+best_key = max(counts, key=counts.get)
+
+# Reverse because Qiskit displays classical bits
+# in reverse order
+
+best_path = best_key[::-1]
+
+final_state = execute_path(best_path)
+
+print("\n========== FINAL RESULT ==========")
+
+print("Selected Path:", best_path)
+
+print("Final Puzzle State:", final_state)
+
+print("Goal State:", goal_state)
+
+if final_state == goal_state:
+
+    print("SUCCESS: Goal state reached!")
+
+else:
+
+    print("Goal state not reached.")
+
+
+# STEP 14: DISPLAY FINAL PUZZLE
+
+print("\nFinal Puzzle Configuration:")
+
+print(final_state[0], final_state[1])
+print(final_state[2], final_state[3])
+
+
+# STEP 15: DISPLAY HISTOGRAM
+
+plot_histogram(counts)
+
+plt.title("Tarrataca's Quantum Production System")
+
+plt.show()
+
+print("\nExperiment Completed Successfully!")
+
+
+
+
+ORAL QUESTIONS:
+# Tarrataca’s Quantum Production System – 3-Puzzle Using Qiskit
+## Top 40 Viva Questions and Answers
+
+**Q1. What is a production system in Artificial Intelligence?**
+
+A production system is a problem-solving approach that uses rules to move from an initial state to a goal state.
+
+**Q2. What is the 3-puzzle problem?**
+
+It is a sliding puzzle played on a 2×2 board containing three numbered tiles and one blank space. The objective is to reach the desired arrangement.
+
+**Q3. What is the initial state in your program?**
+
+The initial state is `(3, 0, 1, 2)`, where 0 represents the blank space.
+
+**Q4. What is the goal state?**
+
+The goal state is `(0, 2, 3, 1)`.
+
+**Q5. What is a state in the 3-puzzle?**
+
+A state represents the current arrangement of tiles and the blank space on the board.
+
+**Q6. What are production rules?**
+
+Production rules are actions used to change the current state into a new state. Here, they move the blank space clockwise or anticlockwise.
+
+**Q7. What does 0 represent in your code?**
+
+Zero represents the blank space.
+
+**Q8. What is the purpose of `clockwise_order = [0, 1, 3, 2]`?**
+
+It defines the clockwise order of positions on the 2×2 puzzle board.
+
+**Q9. What is the purpose of the `production_rule()` function?**
+
+It finds the blank position, swaps it with an adjacent tile according to the selected move, and returns the new state.
+
+**Q10. What are the two possible moves?**
+
+- 0 – Move the blank space clockwise.
+- 1 – Move the blank space anticlockwise.
+
+**Q11. What is `execute_path()`?**
+
+It executes a sequence of moves starting from the initial state and returns the final puzzle state.
+
+**Q12. What is a path in this program?**
+
+A path is a sequence of moves represented using binary digits 0 and 1. For example, `010` represents three moves.
+
+**Q13. Why is depth set to 3?**
+
+It means the program considers paths containing exactly three moves.
+
+**Q14. How many possible paths are generated at depth 3?**
+
+There are \(2^3 = 8\) possible paths.
+
+**Q15. What is `itertools.product()` used for?**
+
+It generates all possible combinations of 0 and 1 for the given path length.
+
+**Q16. What is Qiskit?**
+
+Qiskit is an open-source quantum computing framework used to create, simulate, and execute quantum circuits.
+
+**Q17. What is a qubit?**
+
+A qubit is the basic unit of quantum information. It can exist in a superposition of 0 and 1.
+
+**Q18. What is quantum superposition?**
+
+Superposition is the ability of a qubit to exist in a combination of the states 0 and 1 until measurement.
+
+**Q19. Why are Hadamard gates used?**
+
+Hadamard gates create an equal superposition of 0 and 1. Applying them to three qubits generates all eight possible binary paths.
+
+**Q20. What is a quantum oracle?**
+
+A quantum oracle is a circuit that marks the desired solution by changing the phase of its quantum state.
+
+**Q21. What is the purpose of `create_oracle()`?**
+
+It creates a quantum circuit that marks paths reaching the goal state.
+
+**Q22. What is a CCZ gate?**
+
+A CCZ gate is a three-qubit controlled-controlled-Z operation. It changes the phase of the \(|111\rangle\) state.
+
+**Q23. Why are Hadamard gates applied before and after the CCX gate?**
+
+They convert the CCX operation into a CCZ operation by applying Hadamard gates to its target qubit.
+
+**Q24. What is Grover’s algorithm?**
+
+Grover’s algorithm is a quantum search algorithm that increases the probability of finding a marked solution in an unsorted search space.
+
+**Q25. What is a diffuser?**
+
+A diffuser performs inversion about the average amplitude and increases the probability of measuring the marked solution.
+
+**Q26. Why are two Grover iterations applied?**
+
+The program applies two iterations to amplify the probability of measuring the marked paths. The ideal number depends on the number of solutions and the search-space size.
+
+**Q27. What is quantum measurement?**
+
+Measurement converts a quantum state into a classical result, such as 000, 010, or 111.
+
+**Q28. What is `AerSimulator()`?**
+
+AerSimulator is a Qiskit simulator used to simulate quantum circuits on a classical computer.
+
+**Q29. What is the purpose of `shots=1024`?**
+
+It means the circuit is executed 1024 times to collect measurement results.
+
+**Q30. What is the purpose of `plot_histogram(counts)`?**
+
+It displays a histogram showing the frequency of each measured binary result.
+
+**Q31. What is the difference between classical and quantum computing?**
+
+Classical computing uses bits with values 0 or 1, whereas quantum computing uses qubits that can also exist in superposition.
+
+**Q32. What is a quantum circuit?**
+
+A quantum circuit is a sequence of quantum gates and measurements applied to qubits.
+
+**Q33. What is a quantum gate?**
+
+A quantum gate is an operation that changes the state of one or more qubits. Examples include X, H, and controlled gates.
+
+**Q34. What is the X gate?**
+
+The X gate is a quantum NOT gate. It changes \(|0\rangle\) to \(|1\rangle\) and \(|1\rangle\) to \(|0\rangle\).
+
+**Q35. What is the difference between an oracle and a diffuser?**
+
+The oracle marks the correct solution, whereas the diffuser amplifies the probability of measuring that solution.
+
+**Q36. What is amplitude amplification?**
+
+Amplitude amplification is a quantum technique that increases the probability of measuring desired states by applying suitable quantum operations repeatedly.
+
+**Q37. Why do we use barriers in a quantum circuit?**
+
+Barriers separate circuit operations and prevent certain compiler optimizations from moving gates across them.
+
+**Q38. What is transpilation in Qiskit?**
+
+Transpilation converts a quantum circuit into a form suitable for execution on a particular quantum backend or simulator.
+
+**Q39. What does `get_counts()` return?**
+
+It returns a dictionary containing the measured binary outcomes and their occurrence counts.
+
+**Q40. What is the limitation of this implementation?**
+
+It searches only paths of exactly three moves and uses a small 2×2 puzzle. It demonstrates Grover-based search using a quantum simulator.
+
+---
+
+## Important Formulas and Quick Revision
+
+1. Number of possible paths = \(2^n\)
+2. Number of qubits = 3
+3. Number of classical bits = 3
+4. Number of possible paths = \(2^3 = 8\)
+5. Number of shots = 1024
+6. Grover iteration = Oracle + Diffuser
+
+## Most Important Questions for Viva
+
+1. What is a production system?
+2. What is the 3-puzzle?
+3. What are production rules?
+4. What is quantum superposition?
+5. What is a Hadamard gate?
+6. What is a quantum oracle?
+7. What is a CCZ gate?
+8. What is Grover’s algorithm?
+9. What is a diffuser?
+10. Why are Grover iterations applied?
+11. What is quantum measurement?
+12. What is AerSimulator?
+
+**Remember:** The oracle marks the correct path, and the diffuser amplifies its probability. The final measurement gives the classical binary result.
+
+
+PRACTICAL 3: IMPLEMENT TARRATACA'S QUANTUM PRODUCTION SYSTEM WITH THE 3-PUZZLE PROBLEM
+
+1. AIM
+
+To implement Tarrataca's Quantum Production System for solving the 3-puzzle problem using Qiskit and Grover's Search Algorithm.
+
+2. DESCRIPTION
+
+Tarrataca's Quantum Production System is a quantum-based approach to solving search problems using production rules.
+
+The 3-puzzle problem consists of a 2x2 board containing three numbered tiles and one blank space. The blank space is represented by 0.
+
+The objective is to move the tiles and transform the initial state into the given goal state.
+
+In this experiment:
+- The initial state is (3, 0, 1, 2).
+- The goal state is (0, 2, 3, 1).
+- Two production rules are used to move the blank space clockwise or anticlockwise.
+- All possible paths of depth 3 are generated.
+- A quantum oracle marks the paths that reach the goal state.
+- Grover's Search Algorithm amplifies the probability of the marked paths.
+- The simulator measures the quantum circuit and identifies the most probable path.
+
+3. LIBRARIES USED
+
+1. itertools: Generates all possible combinations of moves.
+2. matplotlib: Displays the measurement histogram.
+3. Qiskit: Creates and manipulates quantum circuits.
+4. Qiskit Aer: Simulates the quantum circuit.
+5. Qiskit Visualization: Displays measurement results using a histogram.
+
+4. IMPORTANT CONCEPTS
+
+1. Production System:
+   A production system consists of rules that transform one state into another state.
+
+2. Initial State:
+   The starting configuration of the puzzle.
+
+3. Goal State:
+   The required final configuration of the puzzle.
+
+4. Production Rules:
+   Rules that define the possible movements of the blank space.
+
+5. Quantum Oracle:
+   Marks the quantum states that satisfy the goal condition by changing their phase.
+
+6. Grover's Algorithm:
+   A quantum search algorithm that increases the probability of measuring the marked states.
+
+7. Diffuser:
+   Amplifies the probability of marked states by performing inversion about the average amplitude.
+
+5. CODE EXPLANATION (STEP-BY-STEP)
+
+STEP 1: IMPORT LIBRARIES
+
+import itertools
+import matplotlib.pyplot as plt
+
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import AerSimulator
+from qiskit.visualization import plot_histogram
+
+Explanation:
+
+- itertools is used to generate all possible paths.
+- matplotlib.pyplot is used to display the histogram.
+- QuantumCircuit is used to create quantum circuits.
+- transpile converts the circuit into simulator-compatible instructions.
+- AerSimulator simulates the quantum circuit.
+- plot_histogram displays the measurement results.
+
+STEP 2: INITIALIZE THE 3-PUZZLE
+
+initial_state = (3, 0, 1, 2)
+
+goal_state = (0, 2, 3, 1)
+
+clockwise_order = [0, 1, 3, 2]
+
+Explanation:
+
+- initial_state represents the starting puzzle configuration.
+- goal_state represents the required final configuration.
+- 0 represents the blank space.
+- clockwise_order defines the order in which the blank space can move around the four positions.
+
+The puzzle is represented as:
+
+3  0
+1  2
+
+The goal configuration is:
+
+0  2
+3  1
+
+STEP 3: DEFINE PRODUCTION RULES
+
+def production_rule(state, move):
+
+    board = list(state)
+
+    blank = board.index(0)
+
+    position = clockwise_order.index(blank)
+
+    if move == 0:
+        next_position = clockwise_order[
+            (position + 1) % 4
+        ]
+    else:
+        next_position = clockwise_order[
+            (position - 1) % 4
+        ]
+
+    board[blank], board[next_position] = (
+        board[next_position],
+        board[blank]
+    )
+
+    return tuple(board)
+
+Explanation:
+
+This function defines the production rules used to move the blank space.
+
+- The current puzzle state is converted into a list.
+- board.index(0) finds the position of the blank space.
+- clockwise_order.index(blank) finds its position in the clockwise sequence.
+- If move is 0, the blank moves clockwise.
+- If move is 1, the blank moves anticlockwise.
+- The blank is swapped with the adjacent tile.
+- The updated puzzle state is returned as a tuple.
+
+STEP 4: EXECUTE A PATH
+
+def execute_path(path):
+
+    state = initial_state
+
+    for move in path:
+        state = production_rule(state, int(move))
+
+    return state
+
+Explanation:
+
+This function executes a sequence of production rules.
+
+- It starts from the initial state.
+- It reads each move from the given path.
+- It applies the production_rule() function.
+- It updates the puzzle state after every move.
+- Finally, it returns the resulting puzzle configuration.
+
+STEP 5: GENERATE ALL POSSIBLE PATHS
+
+depth = 3
+
+all_paths = [
+    ''.join(map(str, path))
+    for path in itertools.product([0, 1], repeat=depth)
+]
+
+Explanation:
+
+- depth = 3 means that each path contains three moves.
+- itertools.product([0, 1], repeat=3) generates all possible combinations of 0 and 1.
+- 0 represents a clockwise move.
+- 1 represents an anticlockwise move.
+- Each generated path is converted into a string.
+
+Since there are two possible moves at each step, the total number of paths is:
+
+2^3 = 8
+
+The generated paths are:
+
+000
+001
+010
+011
+100
+101
+110
+111
+
+The program then executes each path and displays its resulting puzzle state.
+
+STEP 6: IDENTIFY GOAL PATH
+
+marked_paths = [
+    path for path in all_paths
+    if execute_path(path) == goal_state
+]
+
+Explanation:
+
+This step identifies the paths that reach the goal state.
+
+- Each generated path is executed.
+- Its final puzzle state is compared with the goal state.
+- If both states are equal, the path is stored in marked_paths.
+- If no goal path is found, the program raises an error.
+
+These marked paths will be given to the quantum oracle.
+
+STEP 7: CREATE QUANTUM ORACLE
+
+def create_oracle(marked_paths):
+
+    oracle = QuantumCircuit(depth)
+
+    for path in marked_paths:
+
+        for i, bit in enumerate(path):
+            if bit == '0':
+                oracle.x(i)
+
+        oracle.h(2)
+        oracle.ccx(0, 1, 2)
+        oracle.h(2)
+
+        for i, bit in enumerate(path):
+            if bit == '0':
+                oracle.x(i)
+
+    return oracle
+
+Explanation:
+
+The quantum oracle marks the paths that reach the goal state.
+
+- QuantumCircuit(depth) creates a three-qubit oracle circuit.
+- The function checks each marked path.
+- X gates are applied to qubits corresponding to 0 bits. This converts the target pattern into the all-ones pattern.
+- H gate is applied to qubit 2.
+- CCX gate performs a Toffoli operation using qubits 0 and 1 as controls and qubit 2 as the target.
+- Another H gate converts the operation into a controlled-controlled Z phase flip.
+- Finally, the X gates are applied again to restore the original bit pattern.
+
+The oracle changes the phase of the marked state without changing its measured bit values directly.
+
+STEP 8: CREATE GROVER DIFFUSER
+
+def create_diffuser():
+
+    diffuser = QuantumCircuit(depth)
+
+    diffuser.h([0, 1, 2])
+    diffuser.x([0, 1, 2])
+
+    diffuser.h(2)
+    diffuser.ccx(0, 1, 2)
+    diffuser.h(2)
+
+    diffuser.x([0, 1, 2])
+    diffuser.h([0, 1, 2])
+
+    return diffuser
+
+Explanation:
+
+The diffuser is used to increase the probability of measuring the marked paths.
+
+- H gates create a superposition transformation.
+- X gates invert the qubit values.
+- H and CCX gates implement a controlled phase operation.
+- X gates are applied again to restore the qubit values.
+- Final H gates complete the diffusion operation.
+
+The diffuser performs inversion about the average amplitude and amplifies the marked states.
+
+STEP 9: CREATE QUANTUM CIRCUIT
+
+qc = QuantumCircuit(depth, depth)
+
+qc.h([0, 1, 2])
+
+oracle = create_oracle(marked_paths)
+diffuser = create_diffuser()
+
+for i in range(2):
+
+    qc.compose(oracle, inplace=True)
+    qc.barrier()
+
+    qc.compose(diffuser, inplace=True)
+    qc.barrier()
+
+qc.measure([0, 1, 2], [0, 1, 2])
+
+Explanation:
+
+- QuantumCircuit(3, 3) creates a circuit with three qubits and three classical bits.
+- Hadamard gates are applied to all qubits to create an equal superposition of eight possible paths.
+- The oracle and diffuser circuits are created.
+- The oracle marks the goal paths.
+- The diffuser amplifies their probabilities.
+- Two Grover iterations are performed.
+- Finally, all three qubits are measured.
+
+STEP 10: DISPLAY QUANTUM CIRCUIT
+
+print(qc.draw())
+
+Explanation:
+
+This statement displays the complete quantum circuit in text format.
+
+It shows the Hadamard gates, oracle, diffuser, barriers, and measurement operations.
+
+STEP 11: SIMULATE QUANTUM CIRCUIT
+
+simulator = AerSimulator()
+
+compiled_circuit = transpile(qc, simulator)
+
+result = simulator.run(
+    compiled_circuit,
+    shots=1024
+).result()
+
+counts = result.get_counts()
+
+Explanation:
+
+- AerSimulator() creates the quantum simulator.
+- transpile() converts the circuit into simulator-compatible instructions.
+- shots=1024 executes the circuit 1024 times.
+- result() collects the simulation results.
+- get_counts() returns the frequency of each measured output.
+
+STEP 12: DISPLAY RESULTS
+
+print("Initial State:", initial_state)
+print("Goal State:", goal_state)
+
+for key, value in counts.items():
+    print(key, ":", value)
+
+Explanation:
+
+This step displays the initial state, goal state, and measurement counts.
+
+The measurement counts show how frequently each possible path was obtained during simulation.
+
+STEP 13: FIND MOST PROBABLE PATH
+
+best_key = max(counts, key=counts.get)
+
+best_path = best_key[::-1]
+
+final_state = execute_path(best_path)
+
+Explanation:
+
+- max(counts, key=counts.get) selects the measurement result with the highest frequency.
+- Qiskit displays classical bits in reverse order, so [::-1] reverses the measured string to obtain the path in the program's qubit order.
+- execute_path() applies the selected path to the initial puzzle state.
+- The resulting state is compared with the goal state.
+
+If both states match, the program displays the success message.
+
+STEP 14: DISPLAY FINAL PUZZLE
+
+print(final_state[0], final_state[1])
+print(final_state[2], final_state[3])
+
+Explanation:
+
+This step displays the final puzzle configuration in a 2x2 format.
+
+The first two values represent the first row, and the remaining two values represent the second row.
+
+STEP 15: DISPLAY HISTOGRAM
+
+plot_histogram(counts)
+
+plt.title("Tarrataca's Quantum Production System")
+
+plt.show()
+
+Explanation:
+
+- plot_histogram() displays the measurement counts graphically.
+- plt.title() sets the title of the histogram.
+- plt.show() displays the histogram.
+
+The histogram helps visualize which paths have the highest measurement probabilities.
+
+6. RESULT
+
+The quantum production system was implemented using Qiskit for the 3-puzzle problem.
+
+Production rules were used to generate possible puzzle states. A quantum oracle marked the goal paths, and Grover's Search Algorithm was used to amplify their probabilities.
+
+The most probable path was selected from the measurement results and executed to obtain the final puzzle configuration.
+
+7. CONCLUSION
+
+Thus, Tarrataca's Quantum Production System was implemented for the 3-puzzle problem using Qiskit and Grover's Search Algorithm.
+
+NOTE:
+The supplied code performs a fixed-depth search with three moves and uses a quantum simulator. It does not guarantee that the most probable measured path will reach the goal in every run.

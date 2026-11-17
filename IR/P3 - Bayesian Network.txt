@@ -1,0 +1,981 @@
+
+!pip install -q pgmpy pandas numpy matplotlib scikit-learn
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.estimators import BayesianEstimator
+from pgmpy.inference import VariableElimination
+
+
+# 1. LOAD CSV DATASET
+
+df = pd.read_csv("heart_disease.csv")
+
+print("DATASET LOADED SUCCESSFULLY")
+
+print("\nFIRST FIVE RECORDS:")
+print(df.head())
+
+print("\nDATASET SHAPE:")
+print(df.shape)
+
+print("\nCOLUMN NAMES:")
+print(df.columns.tolist())
+
+
+# 2. SELECT MEDICAL ATTRIBUTES
+
+df = df[['age', 'sex', 'cp', 'thalach', 'oldpeak', 'num']].copy()
+
+# Convert columns to numeric
+df = df.apply(pd.to_numeric, errors='coerce')
+
+# Remove missing values
+df.dropna(inplace=True)
+
+# Convert target into binary classification
+# 0 = No Heart Disease
+# 1 = Heart Disease
+
+df['target'] = (df['num'] > 0).astype(int)
+
+df.drop(columns=['num'], inplace=True)
+
+print("\nTARGET DISTRIBUTION:")
+print(df['target'].value_counts())
+
+
+# 3. DISCRETIZATION
+
+continuous_columns = ['age', 'thalach', 'oldpeak']
+
+for column in continuous_columns:
+
+    df[column] = pd.cut(
+        df[column],
+        bins=3,
+        labels=False,
+        include_lowest=True
+    )
+
+df = df.astype(int)
+
+print("\nDISCRETIZED DATA:")
+print(df.head())
+
+
+# 4. TRAIN-TEST SPLIT
+
+train_data, test_data = train_test_split(
+    df,
+    test_size=0.2,
+    random_state=42,
+    stratify=df['target']
+)
+
+print("\nTRAINING RECORDS:", len(train_data))
+print("TESTING RECORDS:", len(test_data))
+
+
+# 5. CONSTRUCT BAYESIAN NETWORK
+
+model = DiscreteBayesianNetwork([
+    ('age', 'target'),
+    ('sex', 'target'),
+    ('cp', 'target'),
+    ('thalach', 'target'),
+    ('oldpeak', 'target')
+])
+
+print("\nBAYESIAN NETWORK STRUCTURE:")
+print(model.edges())
+
+
+# 6. TRAIN BAYESIAN NETWORK
+
+# Create Bayesian Estimator
+estimator = BayesianEstimator(
+    model,
+    train_data
+)
+
+# Estimate conditional probability distributions
+# Pass prior parameters to get_parameters()
+
+cpds = estimator.get_parameters(
+    prior_type='BDeu',
+    equivalent_sample_size=10
+)
+
+# Add CPDs to the network
+model.add_cpds(*cpds)
+
+print("\nBAYESIAN NETWORK TRAINED SUCCESSFULLY!")
+
+# Validate model
+print("MODEL VALID:", model.check_model())
+
+
+# 7. DISPLAY CONDITIONAL PROBABILITY TABLES
+
+print("\nCONDITIONAL PROBABILITY TABLES:")
+
+for cpd in model.get_cpds():
+    print("\n", cpd)
+
+
+# 8. BAYESIAN INFERENCE
+
+inference = VariableElimination(model)
+
+# Select one test patient
+patient = test_data.iloc[0]
+
+evidence = {
+    'age': int(patient['age']),
+    'sex': int(patient['sex']),
+    'cp': int(patient['cp']),
+    'thalach': int(patient['thalach']),
+    'oldpeak': int(patient['oldpeak'])
+}
+
+print("\nPATIENT MEDICAL INFORMATION:")
+print(evidence)
+
+# Calculate probability
+result = inference.query(
+    variables=['target'],
+    evidence=evidence,
+    show_progress=False
+)
+
+print("\nDIAGNOSIS PROBABILITY:")
+print(result)
+
+probability = result.values[1]
+
+print("\nHEART DISEASE PROBABILITY:", probability)
+
+if probability >= 0.5:
+    print("PREDICTION: HEART DISEASE")
+else:
+    print("PREDICTION: NO HEART DISEASE")
+
+
+# 9. MODEL EVALUATION
+
+y_actual = []
+y_predicted = []
+
+for _, patient in test_data.iterrows():
+
+    evidence = {
+        'age': int(patient['age']),
+        'sex': int(patient['sex']),
+        'cp': int(patient['cp']),
+        'thalach': int(patient['thalach']),
+        'oldpeak': int(patient['oldpeak'])
+    }
+
+    result = inference.query(
+        variables=['target'],
+        evidence=evidence,
+        show_progress=False
+    )
+
+    prediction = int(np.argmax(result.values))
+
+    y_actual.append(int(patient['target']))
+    y_predicted.append(prediction)
+
+
+# Calculate accuracy
+
+accuracy = accuracy_score(y_actual, y_predicted)
+
+print("\nMODEL ACCURACY:", accuracy * 100, "%")
+
+
+# Classification report
+
+print("\nCLASSIFICATION REPORT:")
+
+print(classification_report(
+    y_actual,
+    y_predicted,
+    zero_division=0
+))
+
+
+# 10. CONFUSION MATRIX
+
+cm = confusion_matrix(y_actual, y_predicted)
+
+display = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=['No Disease', 'Disease']
+)
+
+display.plot(cmap='Blues')
+
+plt.title("Bayesian Network Confusion Matrix")
+
+plt.show()
+
+
+# 11. FINAL RESULT
+
+print("\n--------------------------------")
+print("PRACTICAL EXECUTED SUCCESSFULLY")
+print("--------------------------------")
+
+
+
+
+ORAL QUESTIONS:
+# PRACTICAL 3: HEART DISEASE DIAGNOSIS USING BAYESIAN NETWORK
+## Top 30 Viva Questions and Answers
+
+### A. Basic Concepts
+
+**Q1. What is a Bayesian Network?**
+
+A Bayesian Network is a probabilistic graphical model that represents relationships between variables using a Directed Acyclic Graph (DAG).
+
+It uses probability theory to represent uncertainty and make predictions.
+
+**Q2. What is Bayes' Theorem?**
+
+Bayes' Theorem calculates the probability of an event based on previously known information.
+
+Formula:
+
+P(A|B) = [P(B|A) × P(A)] / P(B)
+
+Where:
+- P(A|B): Posterior probability.
+- P(B|A): Likelihood.
+- P(A): Prior probability.
+- P(B): Evidence.
+
+**Q3. What is conditional probability?**
+
+Conditional probability is the probability of an event occurring given that another event has already occurred.
+
+Formula:
+
+P(A|B) = P(A ∩ B) / P(B)
+
+**Q4. What is a Directed Acyclic Graph (DAG)?**
+
+A DAG is a graph containing directed edges without any directed cycles.
+
+In a Bayesian Network:
+- Nodes represent variables.
+- Edges represent probabilistic dependencies.
+
+**Q5. What is the difference between a Bayesian Network and a normal neural network?**
+
+- A Bayesian Network represents probabilistic relationships between variables.
+- A neural network learns patterns using interconnected neurons and weights.
+- Bayesian Networks can represent uncertainty explicitly.
+- Neural networks generally require numerical training and are often used for complex pattern recognition.
+
+**Q6. Why do we use a Bayesian Network for heart disease prediction?**
+
+Because heart disease depends on multiple medical factors. A Bayesian Network helps represent the probabilistic relationships between these factors and estimate the probability of heart disease.
+
+**Q7. What is a prior probability?**
+
+Prior probability is the initial probability of an event before considering new evidence.
+
+**Q8. What is posterior probability?**
+
+Posterior probability is the updated probability of an event after considering available evidence.
+
+### B. Dataset and Medical Attributes
+
+**Q9. Which dataset have you used?**
+
+We have used the Cleveland Heart Disease dataset from the UCI Machine Learning Repository.
+
+It contains 303 records and 14 original columns.
+
+**Q10. Which attributes have you selected in your practical?**
+
+We selected:
+
+1. Age
+2. Sex
+3. Chest pain type (cp)
+4. Maximum heart rate achieved (thalach)
+5. ST depression (oldpeak)
+6. Heart disease target (num, converted into target)
+
+**Q11. What is the meaning of the target column?**
+
+The target represents whether a patient has heart disease.
+
+In our code:
+
+- 0 = No Heart Disease
+- 1 = Heart Disease
+
+**Q12. Why did you convert the num column into binary classification?**
+
+The original num column contains multiple values representing the presence and severity of heart disease.
+
+We converted it into two classes:
+
+- 0 means no heart disease.
+- Greater than 0 means heart disease is present.
+
+Code:
+
+df['target'] = (df['num'] > 0).astype(int)
+
+**Q13. What is discretization?**
+
+Discretization is the process of converting continuous numerical values into a limited number of categories or intervals.
+
+Example: Age values can be divided into three groups.
+
+**Q14. Why is discretization required in your practical?**
+
+We discretize continuous attributes such as age, thalach and oldpeak into three bins to represent them as discrete states for our discrete Bayesian Network.
+
+**Q15. What is pd.cut()?**
+
+pd.cut() is a Pandas function used to divide continuous numerical data into intervals or bins.
+
+In our practical:
+
+pd.cut(df[column], bins=3, labels=False)
+
+It divides each selected continuous feature into three intervals.
+
+### C. Bayesian Network Implementation
+
+**Q16. What is pgmpy?**
+
+pgmpy is a Python library used for probabilistic graphical models, including Bayesian Networks, Bayesian inference and parameter estimation.
+
+**Q17. What is DiscreteBayesianNetwork?**
+
+DiscreteBayesianNetwork is a pgmpy class used to create Bayesian Networks containing discrete-valued variables.
+
+**Q18. What is the structure of your Bayesian Network?**
+
+In our practical, five medical attributes are connected to the target variable.
+
+The structure is:
+
+age → target
+
+sex → target
+
+cp → target
+
+thalach → target
+
+oldpeak → target
+
+**Q19. What is a Conditional Probability Distribution (CPD)?**
+
+A CPD represents the probability distribution of a variable given its parent variables.
+
+It describes how the probability of a variable changes depending on its parent nodes.
+
+**Q20. What is BayesianEstimator?**
+
+BayesianEstimator is used to estimate the conditional probability distributions of variables in a Bayesian Network using training data and prior assumptions.
+
+**Q21. What is BDeu?**
+
+BDeu stands for Bayesian Dirichlet equivalent uniform.
+
+It is a Bayesian parameter estimation method that uses a uniform prior distribution when estimating conditional probability distributions.
+
+**Q22. What is equivalent_sample_size=10?**
+
+It is a parameter that controls the strength of the prior information used by the BDeu estimator.
+
+In our code, its value is set to 10.
+
+**Q23. What is model.check_model()?**
+
+It checks whether the Bayesian Network is valid.
+
+It verifies whether the network structure and its conditional probability distributions are consistent.
+
+### D. Bayesian Inference and Evaluation
+
+**Q24. What is Bayesian inference?**
+
+Bayesian inference is the process of calculating the probability of an unknown variable using observed evidence and probability distributions.
+
+In our practical, it calculates the probability of heart disease based on a patient's medical attributes.
+
+**Q25. What is Variable Elimination?**
+
+Variable Elimination is an exact inference algorithm used to calculate probabilities in a Bayesian Network by eliminating unnecessary variables through probability factor operations.
+
+**Q26. What is evidence in a Bayesian Network?**
+
+Evidence refers to the known values of variables that are provided to calculate the probability of another variable.
+
+In our practical, age, sex, cp, thalach and oldpeak are used as evidence.
+
+**Q27. What does inference.query() do?**
+
+The query() function calculates the probability distribution of the requested variable based on the given evidence.
+
+In our practical:
+
+result = inference.query(
+    variables=['target'],
+    evidence=evidence,
+    show_progress=False
+)
+
+It calculates the probability distribution of the heart disease target.
+
+**Q28. What is train-test splitting?**
+
+Train-test splitting divides the dataset into two parts:
+
+- Training data: Used to estimate the Bayesian Network parameters.
+- Testing data: Used to evaluate model performance.
+
+In our practical, 80% is used for training and 20% for testing.
+
+**Q29. What is accuracy and confusion matrix?**
+
+Accuracy measures the percentage of correctly predicted results.
+
+Formula:
+
+Accuracy = (TP + TN) / (TP + TN + FP + FN)
+
+A confusion matrix compares actual and predicted classifications.
+
+It contains:
+
+- True Positive: Disease correctly predicted.
+- True Negative: No disease correctly predicted.
+- False Positive: No disease incorrectly predicted as disease.
+- False Negative: Disease incorrectly predicted as no disease.
+
+**Q30. Where are Bayesian Networks used in real life?**
+
+Bayesian Networks are used in:
+
+1. Medical diagnosis.
+2. Disease prediction.
+3. Weather forecasting.
+4. Risk assessment.
+5. Fraud detection.
+6. Decision support systems.
+7. Fault diagnosis in machines.
+
+---
+
+## IMPORTANT PYTHON FUNCTIONS – QUICK REVISION
+
+| Function / Library | Purpose |
+|---|---|
+| pd.read_csv() | Reads CSV dataset |
+| pd.to_numeric() | Converts values into numeric format |
+| dropna() | Removes missing values |
+| pd.cut() | Performs discretization |
+| train_test_split() | Splits training and testing data |
+| DiscreteBayesianNetwork() | Creates Bayesian Network |
+| BayesianEstimator() | Estimates network probabilities |
+| get_parameters() | Calculates CPDs |
+| add_cpds() | Adds CPDs to the network |
+| check_model() | Validates the Bayesian Network |
+| VariableElimination() | Performs probabilistic inference |
+| inference.query() | Calculates probability distributions |
+| accuracy_score() | Calculates model accuracy |
+| classification_report() | Displays evaluation metrics |
+| confusion_matrix() | Creates confusion matrix |
+
+## IMPORTANT VALUES FROM YOUR PRACTICAL
+
+| Parameter | Value |
+|---|---:|
+| Original dataset records | 303 |
+| Original dataset columns | 14 |
+| Selected medical attributes | 5 |
+| Training records | 242 |
+| Testing records | 61 |
+| Number of bins | 3 |
+| Prior type | BDeu |
+| Equivalent sample size | 10 |
+| Classification classes | 2 |
+
+## PRACTICAL CONCLUSION
+
+Thus, a Bayesian Network was successfully implemented for heart disease diagnosis using the Cleveland Heart Disease dataset. The selected medical attributes were discretized, and the network was trained using Bayesian estimation. Variable Elimination was used to calculate the probability of heart disease, and the model was evaluated using accuracy, classification report and confusion matrix.
+
+
+1. Practical Explanation
+
+
+Aim
+To construct a Bayesian Network using medical data and use it to diagnose heart disease in patients using the standard Heart Disease Dataset.
+Description
+A Bayesian Network is a probabilistic graphical model that represents relationships between different variables using nodes and directed edges. It uses conditional probabilities to make predictions or decisions.
+
+In this practical, we use the Heart Disease Dataset and select five medical attributes:
+- Age: Patient's age.
+- Sex: Patient's gender.
+- CP: Type of chest pain.
+- Thalach: Maximum heart rate achieved.
+- Oldpeak: ST depression induced by exercise.
+The target variable indicates whether the patient has heart disease:
+- 0 – No Heart Disease
+- 1 – Heart Disease
+The program performs the following operations:
+1. Loads the heart disease dataset and selects the required medical attributes.
+2. Removes missing values and converts the target into binary classification.
+3. Discretizes continuous attributes such as age, maximum heart rate, and oldpeak into three categories.
+4. Splits the dataset into training and testing data.
+5. Constructs a Bayesian Network by connecting medical attributes to the target variable.
+6. Uses Bayesian Estimation to calculate conditional probability distributions (CPDs).
+7. Applies Bayesian Inference to calculate the probability of heart disease for a patient.
+8. Evaluates the model using accuracy, a classification report, and a confusion matrix.
+Libraries Used
+Library	Purpose
+pandas	Loading and handling medical data
+numpy	Numerical operations
+matplotlib	Plotting the confusion matrix
+scikit-learn	Dataset splitting and model evaluation
+pgmpy	Constructing and performing inference in the Bayesian Network
+
+Result
+The Bayesian Network was successfully constructed and trained using the Heart Disease Dataset. It calculated the probability of heart disease for a patient based on medical attributes and evaluated its predictions using accuracy, a classification report, and a confusion matrix.
+
+
+Code Explanation – Heart Disease Diagnosis Using Bayesian Network
+
+## Step 1: Install and Import Libraries
+
+```python
+!pip install -q pgmpy pandas numpy matplotlib scikit-learn
+```
+
+This command installs all the required libraries.
+
+- **pgmpy:** Used to create and train Bayesian Networks.
+- **pandas:** Used for loading and manipulating datasets.
+- **numpy:** Used for numerical operations.
+- **matplotlib:** Used for visualization.
+- **scikit-learn:** Used for splitting data and evaluating model performance.
+
+Next, we import the required modules:
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.estimators import BayesianEstimator
+from pgmpy.inference import VariableElimination
+```
+
+Here:
+- `DiscreteBayesianNetwork` constructs the Bayesian Network.
+- `BayesianEstimator` estimates conditional probabilities.
+- `VariableElimination` performs probabilistic inference.
+- `train_test_split` divides the dataset into training and testing sets.
+- The evaluation functions measure the model's performance.
+
+## Step 2: Load the Heart Disease Dataset
+
+```python
+df = pd.read_csv("heart_disease.csv")
+
+print("DATASET LOADED SUCCESSFULLY")
+print(df.head())
+print(df.shape)
+print(df.columns.tolist())
+```
+
+- `pd.read_csv()` loads the heart disease CSV file into a DataFrame.
+- `df.head()` displays the first five records.
+- `df.shape` displays the number of rows and columns.
+- `df.columns.tolist()` displays all column names.
+
+This step helps us understand the structure of the medical dataset.
+
+## Step 3: Select Medical Attributes
+
+```python
+df = df[['age', 'sex', 'cp', 'thalach', 'oldpeak', 'num']].copy()
+
+df = df.apply(pd.to_numeric, errors='coerce')
+
+df.dropna(inplace=True)
+
+df['target'] = (df['num'] > 0).astype(int)
+
+df.drop(columns=['num'], inplace=True)
+```
+
+We select six columns from the original dataset.
+
+| Attribute | Meaning |
+|---|---|
+| age | Patient's age |
+| sex | Patient's gender |
+| cp | Chest pain type |
+| thalach | Maximum heart rate |
+| oldpeak | ST depression |
+| num | Original heart disease indicator |
+
+**Explanation:**
+
+1. `df[...]` selects the required medical attributes.
+2. `pd.to_numeric()` converts column values into numeric format.
+3. `errors='coerce'` converts invalid values into NaN.
+4. `dropna()` removes rows containing missing values.
+5. `(df['num'] > 0).astype(int)` converts the original target into binary classification.
+6. `drop()` removes the original `num` column.
+
+The new target column contains:
+- `0` – No Heart Disease.
+- `1` – Heart Disease.
+
+## Step 4: Discretization
+
+```python
+continuous_columns = ['age', 'thalach', 'oldpeak']
+
+for column in continuous_columns:
+
+    df[column] = pd.cut(
+        df[column],
+        bins=3,
+        labels=False,
+        include_lowest=True
+    )
+
+df = df.astype(int)
+```
+
+**What is discretization?**
+
+Discretization is the process of converting continuous numerical values into a limited number of categories or groups.
+
+For example, instead of using exact age values, we divide age into three groups.
+
+In this code:
+- `continuous_columns` contains the attributes that need discretization.
+- `pd.cut()` divides each continuous column into three equal-width intervals.
+- `bins=3` specifies three groups.
+- `labels=False` assigns numerical labels such as 0, 1, and 2.
+- `include_lowest=True` includes the lowest value in the first interval.
+- `astype(int)` converts all columns into integers.
+
+Discretization is performed because this practical uses a discrete Bayesian Network.
+
+## Step 5: Train-Test Split
+
+```python
+train_data, test_data = train_test_split(
+    df,
+    test_size=0.2,
+    random_state=42,
+    stratify=df['target']
+)
+```
+
+This step divides the dataset into two parts.
+
+- **80% Training Data:** Used to train the Bayesian Network.
+- **20% Testing Data:** Used to evaluate the trained model.
+
+Parameters:
+- `test_size=0.2` reserves 20% for testing.
+- `random_state=42` ensures reproducible splitting.
+- `stratify=df['target']` maintains approximately the same target-class proportions in both sets.
+
+## Step 6: Construct the Bayesian Network
+
+```python
+model = DiscreteBayesianNetwork([
+    ('age', 'target'),
+    ('sex', 'target'),
+    ('cp', 'target'),
+    ('thalach', 'target'),
+    ('oldpeak', 'target')
+])
+
+print(model.edges())
+```
+
+This step creates the structure of the Bayesian Network.
+
+In a Bayesian Network:
+- **Nodes** represent variables.
+- **Directed edges** represent relationships between variables.
+
+Our network contains six nodes:
+- Age
+- Sex
+- Chest Pain
+- Maximum Heart Rate
+- Oldpeak
+- Target
+
+All five medical attributes point towards the target variable.
+
+This means the model uses these five medical attributes to estimate the probability of heart disease.
+
+## Step 7: Train the Bayesian Network
+
+```python
+estimator = BayesianEstimator(
+    model,
+    train_data
+)
+
+cpds = estimator.get_parameters(
+    prior_type='BDeu',
+    equivalent_sample_size=10
+)
+
+model.add_cpds(*cpds)
+
+print(model.check_model())
+```
+
+This step estimates the conditional probability distributions of the Bayesian Network.
+
+**Explanation:**
+
+1. `BayesianEstimator()` creates an estimator using the network structure and training data.
+2. `get_parameters()` calculates the conditional probability distributions (CPDs).
+3. `prior_type='BDeu'` specifies the Bayesian estimation method.
+4. `equivalent_sample_size=10` specifies the strength of the prior information.
+5. `add_cpds(*cpds)` adds the calculated probability distributions to the network.
+6. `check_model()` checks whether the network structure and probability distributions are valid.
+
+CPDs describe the probabilities associated with each variable, considering its parent variables.
+
+## Step 8: Display Conditional Probability Tables
+
+```python
+for cpd in model.get_cpds():
+    print(cpd)
+```
+
+This code displays the conditional probability distributions (CPDs) of all the variables in the Bayesian Network.
+
+These tables show the probabilities associated with different values of the variables.
+
+They help us understand how the model represents medical information and estimates heart disease probabilities.
+
+## Step 9: Perform Bayesian Inference
+
+```python
+inference = VariableElimination(model)
+
+patient = test_data.iloc[0]
+
+evidence = {
+    'age': int(patient['age']),
+    'sex': int(patient['sex']),
+    'cp': int(patient['cp']),
+    'thalach': int(patient['thalach']),
+    'oldpeak': int(patient['oldpeak'])
+}
+```
+
+**What is Bayesian Inference?**
+
+Bayesian Inference is the process of calculating the probability of an unknown variable using known information or evidence.
+
+**Explanation:**
+
+1. `VariableElimination(model)` creates an inference engine.
+2. `test_data.iloc[0]` selects the first patient from the testing dataset.
+3. The `evidence` dictionary stores the patient's medical information.
+
+Next, we calculate the probability:
+
+```python
+result = inference.query(
+    variables=['target'],
+    evidence=evidence,
+    show_progress=False
+)
+
+probability = result.values[1]
+```
+
+- `query()` calculates the probability of the target variable.
+- `variables=['target']` specifies that we want to predict the target.
+- `evidence=evidence` provides the patient's medical attributes.
+- `result.values[1]` extracts the probability of heart disease (target = 1).
+
+Finally, the program checks the probability:
+
+```python
+if probability >= 0.5:
+    print("PREDICTION: HEART DISEASE")
+else:
+    print("PREDICTION: NO HEART DISEASE")
+```
+
+If the probability is greater than or equal to 0.5, the patient is classified as having heart disease. Otherwise, the prediction is no heart disease.
+
+## Step 10: Evaluate the Model
+
+```python
+y_actual = []
+y_predicted = []
+
+for _, patient in test_data.iterrows():
+
+    evidence = {
+        'age': int(patient['age']),
+        'sex': int(patient['sex']),
+        'cp': int(patient['cp']),
+        'thalach': int(patient['thalach']),
+        'oldpeak': int(patient['oldpeak'])
+    }
+
+    result = inference.query(
+        variables=['target'],
+        evidence=evidence,
+        show_progress=False
+    )
+
+    prediction = int(np.argmax(result.values))
+
+    y_actual.append(int(patient['target']))
+    y_predicted.append(prediction)
+```
+
+This step predicts heart disease for every patient in the testing dataset.
+
+- `iterrows()` iterates through each patient.
+- The evidence dictionary stores that patient's medical attributes.
+- `inference.query()` calculates the probabilities for both target classes.
+- `np.argmax()` selects the class with the highest probability.
+- `y_actual` stores the actual target values.
+- `y_predicted` stores the predicted target values.
+
+### Calculate Accuracy
+
+```python
+accuracy = accuracy_score(y_actual, y_predicted)
+
+print("MODEL ACCURACY:", accuracy * 100, "%")
+```
+
+Accuracy measures the percentage of correctly predicted patients.
+
+### Classification Report
+
+```python
+print(classification_report(
+    y_actual,
+    y_predicted,
+    zero_division=0
+))
+```
+
+The classification report displays:
+
+- **Precision:** How many predicted positive cases were actually positive.
+- **Recall:** How many actual positive cases were correctly identified.
+- **F1-score:** Harmonic mean of precision and recall.
+- **Support:** Number of actual samples in each class.
+
+`zero_division=0` avoids undefined metric warnings when a class has no predicted samples.
+
+## Step 11: Display Confusion Matrix
+
+```python
+cm = confusion_matrix(y_actual, y_predicted)
+
+display = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=['No Disease', 'Disease']
+)
+
+display.plot(cmap='Blues')
+
+plt.title("Bayesian Network Confusion Matrix")
+
+plt.show()
+```
+
+A confusion matrix compares actual and predicted classifications.
+
+It contains four important values:
+
+| Term | Meaning |
+|---|---|
+| True Positive (TP) | Disease correctly predicted |
+| True Negative (TN) | No disease correctly predicted |
+| False Positive (FP) | No disease incorrectly predicted as disease |
+| False Negative (FN) | Disease incorrectly predicted as no disease |
+
+The confusion matrix helps us understand the types of prediction errors made by the model.
+
+## Step 12: Final Result
+
+```python
+print("\n--------------------------------")
+print("PRACTICAL EXECUTED SUCCESSFULLY")
+print("--------------------------------")
+```
+
+This displays the final success message after completing the Bayesian Network construction, training, inference, and evaluation.
+
+---
+
+## Important Concepts to Remember
+
+| Concept | Meaning |
+|---|---|
+| Bayesian Network | A probabilistic graphical model representing relationships between variables |
+| Node | Represents a variable |
+| Edge | Represents a directed relationship |
+| CPD | Conditional Probability Distribution |
+| Bayesian Estimator | Estimates probabilities from training data |
+| Bayesian Inference | Calculates probabilities using known evidence |
+| Variable Elimination | An algorithm used for probabilistic inference |
+| Discretization | Converts continuous values into categories |
+| Confusion Matrix | Compares actual and predicted classifications |
+
+## Overall Workflow
+
+1. Load medical dataset.
+2. Select medical attributes.
+3. Clean and discretize data.
+4. Split data into training and testing sets.
+5. Construct the Bayesian Network.
+6. Estimate conditional probability distributions.
+7. Perform Bayesian inference.
+8. Predict heart disease.
+9. Evaluate model performance.
+10. Display confusion matrix.
+
+**Conclusion:** The practical demonstrates how a Bayesian Network can use medical attributes and probabilistic inference to estimate the likelihood of heart disease in patients.

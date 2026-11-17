@@ -1,0 +1,968 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import re
+import urllib.request
+import zipfile
+import io
+
+import nltk
+nltk.download('stopwords')
+
+from nltk.corpus import stopwords
+
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import KNeighborsClassifier
+
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score,
+    f1_score, classification_report,
+    confusion_matrix, ConfusionMatrixDisplay
+)
+
+# 1. DOWNLOAD DATASET AND SAVE AS CSV
+
+url = "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip"
+
+response = urllib.request.urlopen(url)
+zip_file = zipfile.ZipFile(io.BytesIO(response.read()))
+
+with zip_file.open('SMSSpamCollection') as file:
+    df = pd.read_csv(
+        file,
+        sep='\t',
+        header=None,
+        names=['label', 'message']
+    )
+
+# Save dataset as CSV
+df.to_csv("spam.csv", index=False)
+
+print("Dataset downloaded and saved as spam.csv")
+
+# 2. LOAD CSV FILE
+
+df = pd.read_csv("spam.csv")
+
+print("\nFIRST FIVE RECORDS:")
+print(df.head())
+
+print("\nDATASET SHAPE:")
+print(df.shape)
+
+print("\nDATASET INFORMATION:")
+print(df.info())
+
+print("\nMISSING VALUES:")
+print(df.isnull().sum())
+
+print("\nCLASS DISTRIBUTION:")
+print(df['label'].value_counts())
+
+# 3. VISUALIZE DATASET
+
+df['label'].value_counts().plot(kind='bar', figsize=(6, 4))
+
+plt.title("Spam and Ham Message Distribution")
+plt.xlabel("Message Type")
+plt.ylabel("Number of Messages")
+plt.xticks(rotation=0)
+plt.show()
+
+# 4. TEXT PREPROCESSING
+
+stop_words = set(stopwords.words('english'))
+
+def clean_text(text):
+    text = str(text).lower()
+    text = re.sub(r'[^a-z\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    words = text.split()
+    words = [word for word in words if word not in stop_words]
+
+    return ' '.join(words)
+
+df['cleaned_message'] = df['message'].apply(clean_text)
+
+print("\nPREPROCESSED DATA:")
+print(df[['message', 'cleaned_message']].head())
+
+# 5. LABEL ENCODING
+# Ham = 0, Spam = 1
+
+df['label'] = df['label'].map({
+    'ham': 0,
+    'spam': 1
+})
+
+# 6. FEATURES AND TARGET
+
+X = df['cleaned_message']
+y = df['label']
+
+# 7. TRAIN-TEST SPLIT
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+
+print("\nTraining Records:", len(X_train))
+print("Testing Records:", len(X_test))
+
+# 8. TF-IDF VECTORIZATION
+
+vectorizer = TfidfVectorizer(
+    max_features=5000,
+    ngram_range=(1, 2)
+)
+
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+print("\nTF-IDF VECTORIZATION COMPLETED")
+print("Training Matrix:", X_train_tfidf.shape)
+print("Testing Matrix:", X_test_tfidf.shape)
+
+# 9. TRAIN KNN CLASSIFIER
+
+knn = KNeighborsClassifier(
+    n_neighbors=5,
+    metric='cosine',
+    algorithm='brute',
+    weights='distance'
+)
+
+knn.fit(X_train_tfidf, y_train)
+
+print("\nKNN MODEL TRAINED SUCCESSFULLY!")
+
+# 10. PREDICTION
+
+y_pred = knn.predict(X_test_tfidf)
+
+print("\nFIRST 20 PREDICTIONS:")
+print(y_pred[:20])
+
+# 11. MODEL EVALUATION
+
+print("\nMODEL PERFORMANCE")
+
+print("Accuracy:", accuracy_score(y_test, y_pred) * 100, "%")
+print("Precision:", precision_score(y_test, y_pred, zero_division=0))
+print("Recall:", recall_score(y_test, y_pred, zero_division=0))
+print("F1 Score:", f1_score(y_test, y_pred, zero_division=0))
+
+# 12. CLASSIFICATION REPORT
+
+print("\nCLASSIFICATION REPORT:")
+
+print(classification_report(
+    y_test,
+    y_pred,
+    target_names=['Ham', 'Spam'],
+    zero_division=0
+))
+
+# 13. CONFUSION MATRIX
+
+cm = confusion_matrix(y_test, y_pred)
+
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=['Ham', 'Spam']
+)
+
+disp.plot(cmap='Blues')
+plt.title("KNN Spam Detection Confusion Matrix")
+plt.show()
+
+# 14. CUSTOM MESSAGE TESTING
+
+def predict_spam(message):
+    cleaned = clean_text(message)
+    vector = vectorizer.transform([cleaned])
+    prediction = knn.predict(vector)[0]
+
+    if prediction == 1:
+        print("RESULT: SPAM MESSAGE")
+    else:
+        print("RESULT: HAM MESSAGE (NOT SPAM)")
+
+print("\nCUSTOM MESSAGE TESTING")
+
+predict_spam("Congratulations! You have won a free cash prize. Claim now!")
+
+predict_spam("Hello, are we meeting tomorrow for the project?")
+
+# 15. FINAL RESULT
+
+print("\n================================")
+print("KNN SPAM CLASSIFICATION COMPLETED")
+print("PRACTICAL EXECUTED SUCCESSFULLY")
+print("================================")
+
+
+
+
+ORAL QUESTIONS:
+# PRACTICAL 4: SPAM CLASSIFICATION USING K-NEAREST NEIGHBORS (KNN)
+## Top 30 Viva Questions and Answers
+
+### A. Basic Machine Learning Concepts
+
+**Q1. What is spam classification?**
+
+Spam classification is a machine learning task used to identify unwanted or irrelevant messages and classify them as Spam or Ham (Not Spam).
+
+**Q2. What is Ham and Spam?**
+
+- Ham: A genuine or normal message.
+- Spam: An unwanted, promotional or fraudulent message.
+
+**Q3. What is supervised learning?**
+
+Supervised learning is a machine learning technique in which a model learns from labelled training data to predict outputs for new data.
+
+**Q4. What is classification?**
+
+Classification is a supervised machine learning technique used to assign data points to predefined categories or classes.
+
+**Q5. Which algorithm have you used in this practical?**
+
+I have used the K-Nearest Neighbors (KNN) classification algorithm.
+
+**Q6. What is KNN?**
+
+K-Nearest Neighbors is a supervised machine learning algorithm that classifies a new data point based on the majority class among its K nearest neighbours.
+
+**Q7. Why is KNN called a lazy learning algorithm?**
+
+Because KNN does not build an explicit model during training. It stores the training data and performs calculations when a new prediction is required.
+
+**Q8. What is the role of K in KNN?**
+
+K represents the number of nearest neighbours considered when classifying a new data point.
+
+In our practical, K = 5.
+
+**Q9. What happens if the value of K is too small or too large?**
+
+- Small K: The model may become sensitive to noise and overfit.
+- Large K: The model may become too generalized and underfit.
+
+**Q10. What is the difference between KNN and K-Means?**
+
+- KNN is a supervised learning algorithm.
+- K-Means is an unsupervised learning algorithm.
+- KNN is used for classification and regression.
+- K-Means is used for clustering.
+
+### B. Text Preprocessing and NLP
+
+**Q11. What is NLP?**
+
+Natural Language Processing (NLP) is a field of Artificial Intelligence that enables computers to understand, process and analyze human language.
+
+**Q12. What is text preprocessing?**
+
+Text preprocessing is the process of cleaning and preparing raw text before providing it to a machine learning model.
+
+Examples include:
+- Lowercasing
+- Removing special characters
+- Removing stopwords
+- Tokenization
+- Stemming
+- Lemmatization
+
+**Q13. What is tokenization?**
+
+Tokenization is the process of splitting text into smaller units called tokens, such as words or sentences.
+
+Example:
+
+"Hello how are you"
+
+Tokens: ["Hello", "how", "are", "you"]
+
+**Q14. What are stopwords?**
+
+Stopwords are commonly occurring words that may carry limited useful information for a particular text analysis task.
+
+Examples: is, the, a, an, and, are.
+
+**Q15. Why do we remove stopwords?**
+
+We remove stopwords to reduce unnecessary words and simplify text processing.
+
+**Q16. What is NLTK?**
+
+NLTK stands for Natural Language Toolkit. It is a Python library used for natural language processing tasks such as tokenization, stopword removal and stemming.
+
+**Q17. Why do we convert text into lowercase?**
+
+To ensure that words with different capitalization are treated as the same word.
+
+Example: "HELLO" and "hello" become identical.
+
+**Q18. Why do we remove special characters and numbers?**
+
+To remove unnecessary symbols and simplify the text before feature extraction. However, in real-world spam detection, numbers can sometimes contain useful information, such as phone numbers or promotional codes.
+
+### C. TF-IDF and Feature Extraction
+
+**Q19. What is TF-IDF?**
+
+TF-IDF stands for Term Frequency-Inverse Document Frequency. It is a technique used to convert text into numerical values based on the importance of words in a document relative to the entire collection.
+
+**Q20. What is Term Frequency (TF)?**
+
+Term Frequency measures how frequently a word appears in a particular document.
+
+**Q21. What is Inverse Document Frequency (IDF)?**
+
+Inverse Document Frequency measures how rare or common a word is across all documents. Rare words generally receive higher IDF values.
+
+**Q22. Why do we use TF-IDF in our practical?**
+
+Machine learning algorithms cannot directly process raw text. TF-IDF converts text messages into numerical feature vectors that can be used by the KNN classifier.
+
+**Q23. What does max_features=5000 mean?**
+
+It limits the TF-IDF vocabulary to a maximum of 5,000 features.
+
+**Q24. What does ngram_range=(1,2) mean?**
+
+It considers both:
+- Unigrams: Single words.
+- Bigrams: Combinations of two consecutive words.
+
+Example: "Free entry now"
+
+Unigrams: Free, entry, now.
+
+Bigrams: Free entry, entry now.
+
+### D. Training and Model Evaluation
+
+**Q25. What is train-test splitting?**
+
+Train-test splitting divides the dataset into two parts:
+
+- Training data: Used to train the model.
+- Testing data: Used to evaluate the model on unseen data.
+
+In our practical, we use 80% training data and 20% testing data.
+
+**Q26. What is accuracy?**
+
+Accuracy measures the percentage of correctly classified predictions out of the total predictions.
+
+Formula:
+
+Accuracy = (TP + TN) / (TP + TN + FP + FN)
+
+**Q27. What are precision, recall and F1-score?**
+
+- Precision: Out of all messages predicted as Spam, how many were actually Spam?
+
+  Precision = TP / (TP + FP)
+
+- Recall: Out of all actual Spam messages, how many were correctly identified?
+
+  Recall = TP / (TP + FN)
+
+- F1-score: Harmonic mean of precision and recall.
+
+  F1 = 2 × (Precision × Recall) / (Precision + Recall)
+
+**Q28. What is a confusion matrix?**
+
+A confusion matrix is a table used to evaluate a classification model by comparing actual labels with predicted labels.
+
+It contains:
+
+- True Positive (TP): Spam correctly classified as Spam.
+- True Negative (TN): Ham correctly classified as Ham.
+- False Positive (FP): Ham incorrectly classified as Spam.
+- False Negative (FN): Spam incorrectly classified as Ham.
+
+**Q29. What does metric='cosine' mean in your KNN model?**
+
+It means the model uses cosine distance to identify the nearest neighbours.
+
+Cosine similarity measures the angle between two vectors, while cosine distance is generally calculated as:
+
+Cosine Distance = 1 - Cosine Similarity
+
+It is useful for comparing text feature vectors.
+
+**Q30. Where is spam classification used in real life?**
+
+Spam classification is used in:
+
+1. Gmail spam filtering.
+2. SMS spam detection.
+3. Fraudulent message detection.
+4. Phishing email detection.
+5. Social media spam detection.
+6. Online comment filtering.
+
+---
+
+## IMPORTANT PYTHON FUNCTIONS – QUICK REVISION
+
+| Function / Library | Purpose |
+|---|---|
+| pd.read_csv() | Reads CSV dataset |
+| df.to_csv() | Saves data as CSV |
+| nltk.download() | Downloads NLTK resources |
+| stopwords.words() | Retrieves stopwords |
+| re.sub() | Removes or replaces text patterns |
+| train_test_split() | Divides training and testing data |
+| TfidfVectorizer() | Converts text into numerical features |
+| KNeighborsClassifier() | Creates KNN classifier |
+| knn.fit() | Trains the classifier |
+| knn.predict() | Predicts output classes |
+| accuracy_score() | Calculates accuracy |
+| precision_score() | Calculates precision |
+| recall_score() | Calculates recall |
+| f1_score() | Calculates F1-score |
+| classification_report() | Displays evaluation metrics |
+| confusion_matrix() | Creates confusion matrix |
+| ConfusionMatrixDisplay() | Visualizes confusion matrix |
+
+## IMPORTANT VALUES FROM YOUR PRACTICAL OUTPUT
+
+| Parameter | Your Result |
+|---|---:|
+| Total messages | 5,572 |
+| Ham messages | 4,825 |
+| Spam messages | 747 |
+| Training records | 4,457 |
+| Testing records | 1,115 |
+| TF-IDF features | 5,000 |
+| K value | 5 |
+| Accuracy | 97.49% |
+| Precision | 98.40% |
+| Recall | 82.55% |
+| F1-score | 89.78% |
+
+## PRACTICAL CONCLUSION
+
+Thus, spam message classification was successfully implemented using the K-Nearest Neighbors algorithm. Text preprocessing and TF-IDF vectorization were performed to convert messages into numerical features. The model was trained and evaluated using accuracy, precision, recall, F1-score and a confusion matrix. The model achieved approximately 97.49% accuracy.
+
+
+ Practical Explanation
+
+
+Aim
+To implement an e-mail spam filtering system using a text classification algorithm and an appropriate dataset to classify messages as Spam or Ham (Not Spam).
+Description
+Spam filtering is a text classification technique used to identify unwanted or fraudulent messages. In this practical, we use the SMS Spam Collection Dataset from the UCI Machine Learning Repository.
+
+The dataset contains two types of messages:
+- Ham: Genuine or legitimate messages.
+- Spam: Unwanted promotional or fraudulent messages.
+The program uses the K-Nearest Neighbors (KNN) classification algorithm to classify messages.
+
+The following operations are performed:
+1. Downloads the SMS Spam Collection dataset and saves it as a CSV file.
+2. Loads the dataset and explores its records, shape, missing values, and class distribution.
+3. Visualizes the number of Spam and Ham messages.
+4. Preprocesses text by converting it to lowercase, removing special characters, and removing stop words.
+5. Converts labels into numerical values: Ham = 0 and Spam = 1.
+6. Splits the dataset into training and testing sets.
+7. Uses TF-IDF Vectorization to convert text messages into numerical feature vectors.
+8. Trains a KNN classifier using cosine distance.
+9. Predicts whether test messages are Spam or Ham.
+10. Evaluates the model using accuracy, precision, recall, F1-score, classification report, and confusion matrix.
+11. Tests the trained model with custom messages.
+Libraries Used
+Library	Purpose
+Pandas	Loading and manipulating the dataset
+NumPy	Numerical operations
+Matplotlib	Visualizing class distribution and confusion matrix
+re	Removing special characters and cleaning text
+urllib.request	Downloading the dataset
+zipfile	Extracting the downloaded ZIP file
+io	Reading ZIP data from memory
+NLTK	Removing English stop words
+Scikit-learn	TF-IDF, KNN classification, data splitting, and evaluation
+
+Result
+The spam filtering system was successfully implemented using TF-IDF Vectorization and the KNN classification algorithm. It classifies messages as Spam or Ham and evaluates its performance using standard classification metrics and a confusion matrix.
+
+Code Explanation – E-mail Spam Filtering Using KNN
+
+## Step 1: Import Required Libraries
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import re
+import urllib.request
+import zipfile
+import io
+
+import nltk
+nltk.download('stopwords')
+
+from nltk.corpus import stopwords
+
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import KNeighborsClassifier
+
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score,
+    f1_score, classification_report,
+    confusion_matrix, ConfusionMatrixDisplay
+)
+```
+
+This step imports all the required libraries.
+
+- `pandas`: Handles the dataset.
+- `numpy`: Performs numerical operations.
+- `matplotlib`: Creates graphs and visualizations.
+- `re`: Performs text cleaning using regular expressions.
+- `urllib.request`: Downloads the dataset from the internet.
+- `zipfile`: Extracts files from a ZIP archive.
+- `io`: Handles ZIP file data in memory.
+- `nltk`: Provides natural language processing functionality.
+- `stopwords`: Provides a collection of common English words to remove.
+
+From Scikit-learn:
+- `train_test_split`: Splits the dataset into training and testing data.
+- `TfidfVectorizer`: Converts text into numerical feature vectors.
+- `KNeighborsClassifier`: Implements the KNN classification algorithm.
+- The metrics functions evaluate classification performance.
+
+`nltk.download('stopwords')` downloads the English stop words required for text preprocessing.
+
+## Step 2: Download the Dataset and Save as CSV
+
+```python
+url = "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip"
+
+response = urllib.request.urlopen(url)
+zip_file = zipfile.ZipFile(io.BytesIO(response.read()))
+
+with zip_file.open('SMSSpamCollection') as file:
+    df = pd.read_csv(
+        file,
+        sep='\t',
+        header=None,
+        names=['label', 'message']
+    )
+
+df.to_csv("spam.csv", index=False)
+```
+
+This step downloads the SMS Spam Collection dataset from the UCI Machine Learning Repository.
+
+**Explanation:**
+
+1. `url` stores the dataset download link.
+2. `urlopen()` downloads the dataset.
+3. `response.read()` reads the downloaded content.
+4. `io.BytesIO()` treats the downloaded content as an in-memory file.
+5. `zipfile.ZipFile()` opens the ZIP archive.
+6. `zip_file.open()` accesses the file named `SMSSpamCollection`.
+7. `pd.read_csv()` reads the dataset.
+
+Important parameters:
+- `sep='\t'` specifies that the dataset uses tab separation.
+- `header=None` indicates that the file does not contain column headings.
+- `names=['label', 'message']` assigns column names.
+
+Finally, `to_csv()` saves the downloaded dataset as `spam.csv`.
+
+## Step 3: Load and Explore the Dataset
+
+```python
+df = pd.read_csv("spam.csv")
+
+print(df.head())
+print(df.shape)
+print(df.info())
+print(df.isnull().sum())
+print(df['label'].value_counts())
+```
+
+This step loads and explores the dataset.
+
+- `df.head()` displays the first five messages.
+- `df.shape` displays the number of rows and columns.
+- `df.info()` displays column names, data types, and non-null counts.
+- `df.isnull().sum()` checks missing values.
+- `value_counts()` displays the number of Spam and Ham messages.
+
+This helps us understand the dataset before applying machine learning.
+
+## Step 4: Visualize the Dataset
+
+```python
+df['label'].value_counts().plot(kind='bar', figsize=(6, 4))
+
+plt.title("Spam and Ham Message Distribution")
+plt.xlabel("Message Type")
+plt.ylabel("Number of Messages")
+plt.xticks(rotation=0)
+plt.show()
+```
+
+This step visualizes the distribution of Spam and Ham messages.
+
+- `value_counts()` counts messages belonging to each category.
+- `plot(kind='bar')` creates a bar chart.
+- `plt.title()` sets the chart title.
+- `plt.xlabel()` and `plt.ylabel()` set the axis labels.
+- `plt.show()` displays the graph.
+
+The graph helps us understand whether the dataset contains more Spam or Ham messages.
+
+## Step 5: Text Preprocessing
+
+```python
+stop_words = set(stopwords.words('english'))
+
+def clean_text(text):
+    text = str(text).lower()
+    text = re.sub(r'[^a-z\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    words = text.split()
+    words = [word for word in words if word not in stop_words]
+
+    return ' '.join(words)
+
+df['cleaned_message'] = df['message'].apply(clean_text)
+```
+
+**What is text preprocessing?**
+
+Text preprocessing is the process of cleaning raw text and converting it into a suitable format for machine learning.
+
+First, we load English stop words using NLTK.
+
+**Explanation of the `clean_text()` function:**
+
+1. `str(text).lower()` converts the message into lowercase.
+2. `re.sub(r'[^a-z\s]', '', text)` removes numbers, punctuation, and special characters.
+3. `re.sub(r'\s+', ' ', text)` replaces multiple spaces with a single space.
+4. `.strip()` removes unnecessary spaces from the beginning and end.
+5. `text.split()` splits the message into individual words.
+6. The list comprehension removes words present in the stop words collection.
+7. `' '.join(words)` combines the remaining words into a cleaned sentence.
+
+Finally:
+
+```python
+df['cleaned_message'] = df['message'].apply(clean_text)
+```
+
+The `apply()` function applies `clean_text()` to every message and stores the cleaned text in a new column called `cleaned_message`.
+
+**Example:**
+
+Original message:
+
+"Congratulations! You have won a FREE cash prize. Claim now!"
+
+After preprocessing:
+
+"congratulations won free cash prize claim"
+
+## Step 6: Label Encoding
+
+```python
+df['label'] = df['label'].map({
+    'ham': 0,
+    'spam': 1
+})
+```
+
+Machine learning algorithms require numerical target labels.
+
+Therefore, we convert the text labels into numerical values:
+
+- Ham = 0
+- Spam = 1
+
+The `map()` function performs this conversion.
+
+## Step 7: Separate Features and Target
+
+```python
+X = df['cleaned_message']
+y = df['label']
+```
+
+Here, we divide the dataset into input features and output labels.
+
+- `X` contains the cleaned text messages.
+- `y` contains the corresponding Spam or Ham labels.
+
+The model learns from the messages in `X` to predict the labels in `y`.
+
+## Step 8: Train-Test Split
+
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+```
+
+This step divides the dataset into training and testing sets.
+
+- 80% of the data is used for training.
+- 20% of the data is used for testing.
+
+Parameters:
+- `test_size=0.2`: Reserves 20% of the data for testing.
+- `random_state=42`: Ensures reproducible results.
+- `stratify=y`: Maintains approximately the same Spam and Ham proportions in both sets.
+
+## Step 9: TF-IDF Vectorization
+
+```python
+vectorizer = TfidfVectorizer(
+    max_features=5000,
+    ngram_range=(1, 2)
+)
+
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+```
+
+**What is TF-IDF?**
+
+TF-IDF stands for Term Frequency–Inverse Document Frequency.
+
+It is a technique used to convert text into numerical values based on the importance of words in a collection of documents.
+
+It considers:
+- **TF (Term Frequency):** How frequently a word appears in a message.
+- **IDF (Inverse Document Frequency):** Gives less importance to words that appear frequently across many messages.
+
+**Explanation:**
+
+1. `TfidfVectorizer()` creates the TF-IDF vectorizer.
+2. `max_features=5000` limits the vocabulary to a maximum of 5,000 features.
+3. `ngram_range=(1, 2)` considers both individual words and two-word combinations.
+4. `fit_transform(X_train)` learns the vocabulary and converts training messages into numerical vectors.
+5. `transform(X_test)` converts testing messages using the same learned vocabulary.
+
+The resulting matrices contain numerical representations of the text messages.
+
+## Step 10: Train KNN Classifier
+
+```python
+knn = KNeighborsClassifier(
+    n_neighbors=5,
+    metric='cosine',
+    algorithm='brute',
+    weights='distance'
+)
+
+knn.fit(X_train_tfidf, y_train)
+```
+
+**What is KNN?**
+
+K-Nearest Neighbors (KNN) is a supervised machine learning algorithm used for classification and regression.
+
+It predicts the class of a new data point by finding the K nearest training data points.
+
+**Explanation:**
+
+- `n_neighbors=5`: Considers the five nearest messages.
+- `metric='cosine'`: Uses cosine distance to measure the difference between text vectors.
+- `algorithm='brute'`: Calculates distances by comparing the query against training samples.
+- `weights='distance'`: Gives greater influence to closer neighbors.
+
+Finally:
+
+```python
+knn.fit(X_train_tfidf, y_train)
+```
+
+The `fit()` method trains the KNN model using the TF-IDF training vectors and their corresponding labels.
+
+## Step 11: Make Predictions
+
+```python
+y_pred = knn.predict(X_test_tfidf)
+
+print(y_pred[:20])
+```
+
+The `predict()` method classifies all testing messages.
+
+It returns:
+- `0` for Ham.
+- `1` for Spam.
+
+`y_pred[:20]` displays the first 20 predicted labels.
+
+## Step 12: Evaluate Model Performance
+
+```python
+print("Accuracy:", accuracy_score(y_test, y_pred) * 100, "%")
+print("Precision:", precision_score(y_test, y_pred, zero_division=0))
+print("Recall:", recall_score(y_test, y_pred, zero_division=0))
+print("F1 Score:", f1_score(y_test, y_pred, zero_division=0))
+```
+
+This step evaluates how well the KNN model classifies messages.
+
+**Evaluation metrics:**
+
+1. **Accuracy:** Percentage of total messages classified correctly.
+2. **Precision:** Out of all messages predicted as Spam, how many were actually Spam?
+3. **Recall:** Out of all actual Spam messages, how many were correctly detected?
+4. **F1-score:** Harmonic mean of Precision and Recall.
+
+These metrics help us understand the performance of the spam classification model.
+
+## Step 13: Classification Report
+
+```python
+print(classification_report(
+    y_test,
+    y_pred,
+    target_names=['Ham', 'Spam'],
+    zero_division=0
+))
+```
+
+The classification report provides detailed performance metrics for both classes.
+
+It displays:
+- Precision
+- Recall
+- F1-score
+- Support
+
+`target_names` assigns readable names to the numerical classes.
+
+- Class 0 = Ham
+- Class 1 = Spam
+
+## Step 14: Confusion Matrix
+
+```python
+cm = confusion_matrix(y_test, y_pred)
+
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=['Ham', 'Spam']
+)
+
+disp.plot(cmap='Blues')
+plt.title("KNN Spam Detection Confusion Matrix")
+plt.show()
+```
+
+A confusion matrix compares actual labels with predicted labels.
+
+It contains four values:
+
+| Term | Meaning |
+|---|---|
+| True Positive (TP) | Spam correctly classified as Spam |
+| True Negative (TN) | Ham correctly classified as Ham |
+| False Positive (FP) | Ham incorrectly classified as Spam |
+| False Negative (FN) | Spam incorrectly classified as Ham |
+
+The confusion matrix helps identify the classification errors made by the model.
+
+## Step 15: Custom Message Testing
+
+```python
+def predict_spam(message):
+    cleaned = clean_text(message)
+    vector = vectorizer.transform([cleaned])
+    prediction = knn.predict(vector)[0]
+
+    if prediction == 1:
+        print("RESULT: SPAM MESSAGE")
+    else:
+        print("RESULT: HAM MESSAGE (NOT SPAM)")
+```
+
+This function allows us to test new messages that are not part of the original dataset.
+
+**Explanation:**
+
+1. Accepts a message as input.
+2. Cleans the message using `clean_text()`.
+3. Converts it into a TF-IDF vector using the already-trained vectorizer.
+4. Uses the trained KNN model to predict its category.
+5. Displays whether the message is Spam or Ham.
+
+Next, we test two custom messages:
+
+```python
+predict_spam("Congratulations! You have won a free cash prize. Claim now!")
+
+predict_spam("Hello, are we meeting tomorrow for the project?")
+```
+
+The first message is expected to be classified as Spam, while the second is expected to be classified as Ham.
+
+## Step 16: Final Result
+
+```python
+print("\n================================")
+print("KNN SPAM CLASSIFICATION COMPLETED")
+print("PRACTICAL EXECUTED SUCCESSFULLY")
+print("================================")
+```
+
+This displays the final success message after completing the spam classification process.
+
+---
+
+## Important Concepts to Remember
+
+| Concept | Meaning |
+|---|---|
+| Spam | Unwanted or fraudulent messages |
+| Ham | Genuine or legitimate messages |
+| Text Preprocessing | Cleaning raw text |
+| Stop Words | Common words removed during preprocessing |
+| Label Encoding | Converting text labels into numbers |
+| TF-IDF | Converts text into numerical features based on word importance |
+| KNN | Classifies a new message using its nearest neighbors |
+| Cosine Distance | Measures the difference in direction between two vectors |
+| Precision | Correctness of positive predictions |
+| Recall | Ability to identify actual positive cases |
+| F1-score | Balance between precision and recall |
+
+## Overall Workflow
+
+1. Download and load the SMS Spam Collection dataset.
+2. Explore and visualize the dataset.
+3. Preprocess text messages.
+4. Convert Spam and Ham labels into numerical values.
+5. Split the dataset into training and testing sets.
+6. Convert text into numerical vectors using TF-IDF.
+7. Train the KNN classifier.
+8. Predict Spam or Ham messages.
+9. Evaluate the model using classification metrics.
+10. Display the confusion matrix.
+11. Test custom messages.
+
+**Conclusion:** The practical demonstrates how text preprocessing, TF-IDF vectorization, and the KNN classification algorithm can be combined to build an SMS spam filtering system.
