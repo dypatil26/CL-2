@@ -1,0 +1,3599 @@
+CL-II Practical Examination — Complete Information Retrieval (IR) Theory Preparation
+
+All 5 Information Retrieval practicals
+ Detailed theory + Concepts + Viva
+
+Now we will prepare the Information Retrieval (IR) subject in the same format as Quantum AI.
+
+Our objective is that even if you have never studied Information Retrieval before, you should be able to understand every practical, explain the working to the external examiner and confidently answer viva questions.
+
+I will cover all five practicals:
+Information Retrieval — Practical List
+1. Text Document Preprocessing — Tokenization, Stop Word Removal and Stemming.
+2. Document Retrieval Using Inverted Files.
+3. Bayesian Network for Heart Disease Diagnosis.
+4. Email Spam Filtering Using Text Classification.
+5. Agglomerative Hierarchical Clustering.
+
+How we will study
+For every practical:
+1. Basic understanding from zero.
+2. Important theoretical concepts.
+3. Explanation of every technical term.
+4. Complete working principle.
+5. Mathematical formulas wherever necessary.
+6. Applications, advantages and limitations.
+7. Ready-to-speak explanation for the external.
+8. Detailed viva questions and answers.
+
+PART 1 — FUNDAMENTALS OF INFORMATION RETRIEVAL
+Before studying individual practicals, you must understand what Information Retrieval actually means.
+1. What is Information Retrieval?
+Information Retrieval (IR) is the process of searching, finding and retrieving relevant information from a large collection of documents based on a user's query.
+
+In simple language:
+
+Suppose you search on Google:
+Best machine learning courses
+
+
+Google searches through a huge collection of webpages and returns the pages that are relevant to your query.
+
+This entire process is an example of Information Retrieval.
+
+Other examples:
+- Searching emails in Gmail.
+- Searching documents on Google.
+- Searching books in a digital library.
+- Searching research papers.
+- Searching products on Amazon.
+- Searching files on your computer.
+Definition to tell the external:
+
+"Information Retrieval is the process of finding relevant documents or information from a large collection of data based on a user's search query."
+2. What is a Document?
+A document is a unit of information that contains some text or content.
+
+In Information Retrieval, a document can be:
+- A PDF file.
+- A webpage.
+- An email.
+- A research paper.
+- A Word document.
+- A news article.
+For example:
+Document 1:
+Machine Learning is a branch of Artificial Intelligence.
+
+Document 2:
+Deep Learning uses neural networks.
+
+Document 3:
+Information Retrieval helps users find relevant documents.
+
+
+Here, we have three documents.
+3. What is a Corpus?
+A corpus is a collection of documents used for text processing, searching or analysis.
+
+For example:
+
+Suppose we have 1,000 research papers related to Artificial Intelligence.
+
+All 1,000 papers together form a corpus.
+
+Difference:
+- Document = One individual text file or information unit.
+- Corpus = Collection of documents.
+4. What is a Query?
+A query is the search term or question entered by the user to retrieve relevant information.
+
+Example:
+Query: Artificial Intelligence
+
+
+The retrieval system searches the document collection and returns documents containing relevant information.
+5. What is a Search Engine?
+A search engine is a software system that searches a collection of information and retrieves relevant results based on a user's query.
+
+Examples:
+- Google
+- Bing
+- DuckDuckGo
+A search engine generally performs:
+1. Document collection.
+2. Text preprocessing.
+3. Index creation.
+4. Query processing.
+5. Document matching.
+6. Ranking.
+7. Displaying search results.
+
+
+
+
+
+
+
+
+slideserve.com
+
+
+6. What is the difference between Information Retrieval and Database Retrieval?
+Information Retrieval	Database Retrieval
+Finds relevant documents	Finds exact structured records
+Usually works with unstructured or semi-structured data	Usually works with structured data
+Results may be ranked by relevance	Results usually satisfy specified conditions
+Uses text processing and indexing	Uses SQL and database queries
+Example: Google search	Example: SQL SELECT query
+
+Example:
+
+Information Retrieval:
+Find documents about Machine Learning.
+
+
+Database Retrieval:
+SELECT * FROM students WHERE marks > 80;
+
+
+7. What is Text Processing?
+Text processing means applying different operations to raw text to make it suitable for searching and analysis.
+
+For example:
+
+Original text:
+The Students are studying Machine Learning!
+
+
+After preprocessing:
+student study machine learning
+
+
+We remove unnecessary words, convert words into a consistent format and prepare the text for further processing.
+
+This is important because computers cannot directly understand raw human language in the same way humans do.
+8. What is NLP?
+NLP stands for Natural Language Processing.
+
+It is a field of Artificial Intelligence that enables computers to process, understand and work with human languages.
+
+Examples:
+- Chatbots.
+- Language translation.
+- Sentiment analysis.
+- Spam detection.
+- Text summarization.
+- Voice assistants.
+Difference between IR and NLP:
+- NLP focuses on processing and understanding human language.
+- IR focuses on finding relevant information from document collections.
+NLP techniques are often used inside an Information Retrieval system.
+9. What is Indexing?
+Indexing is the process of organizing information so that documents can be searched quickly.
+
+Suppose we have:
+D1: Machine Learning is interesting.
+D2: Deep Learning is powerful.
+D3: Machine Learning uses data.
+
+
+An index stores information about which documents contain which words.
+
+For example:
+Word	Documents
+Machine	D1, D3
+Learning	D1, D2, D3
+Deep	D2
+Data	D3
+
+This helps us find documents without checking every document from beginning to end.
+10. What is Document Ranking?
+Document ranking means arranging retrieved documents according to their relevance to the user's query.
+
+For example:
+
+Query:
+Machine Learning
+
+
+Results:
+1. Document about Machine Learning.
+2. Document about Deep Learning.
+3. Document about Computer Networks.
+The most relevant document should generally appear first.
+11. What is Relevance?
+Relevance means how closely a document matches the information requested by the user.
+
+For example:
+
+Query:
+Python programming
+
+
+A document explaining Python programming is highly relevant.
+
+A document about cooking is not relevant.
+12. What are Precision and Recall?
+These are two important evaluation measures in Information Retrieval.
+
+
+
+
+
+
+
+
+revisiondojo.com
+
+
+A. Precision
+Precision tells us how many retrieved documents are actually relevant.
+\[
+Precision=\frac{Relevant\ Retrieved}{Total\ Retrieved}
+\]
+
+Example:
+
+A system retrieves 10 documents.
+
+Out of these, 8 are relevant.
+\[
+Precision=\frac{8}{10}=0.8
+\]
+
+Therefore:
+\[
+Precision=80\%
+\]
+
+B. Recall
+Recall tells us how many of all relevant documents were successfully retrieved.
+\[
+Recall=\frac{Relevant\ Retrieved}{Total\ Relevant}
+\]
+
+Example:
+
+There are 20 relevant documents in the complete collection.
+
+The system retrieves 8 of them.
+\[
+Recall=\frac{8}{20}=0.4
+\]
+
+Therefore:
+\[
+Recall=40\%
+\]
+
+Difference
+Precision	Recall
+Measures correctness of retrieved results	Measures completeness of retrieved results
+Focuses on relevant results among retrieved documents	Focuses on relevant results found from all relevant documents
+High precision means fewer irrelevant results	High recall means fewer relevant documents are missed
+
+13. What is F1-Score?
+F1-score combines precision and recall into one measure.
+\[
+F1=2\times\frac{Precision\times Recall}{Precision+Recall}
+\]
+
+It is the harmonic mean of precision and recall.
+
+It is useful when we want to balance both measures.
+14. What is a Retrieval Model?
+A retrieval model is a mathematical or computational method used to determine how documents match a query.
+
+Important models include:
+1. Boolean Retrieval Model.
+2. Vector Space Model.
+3. Probabilistic Retrieval Model.
+4. Language Model for Information Retrieval.
+A. Boolean Retrieval Model
+This model uses Boolean operators:
+- AND
+- OR
+- NOT
+Example:
+Machine AND Learning
+
+
+Returns documents containing both words.
+Machine OR Learning
+
+
+Returns documents containing either word or both.
+Machine NOT Learning
+
+
+Excludes documents containing Learning.
+B. Vector Space Model
+In this model, documents and queries are represented as numerical vectors.
+
+We calculate similarity between vectors to find relevant documents.
+
+TF-IDF and cosine similarity are commonly used with this model.
+C. Probabilistic Retrieval Model
+This model estimates the probability that a document is relevant to a user's query.
+
+It ranks documents based on estimated relevance.
+
+PART 2 — PRACTICAL 1: TEXT DOCUMENT PREPROCESSING
+Practical 1
+Problem statement: Write a program for preprocessing of a text document using stop word removal and stemming.
+
+
+
+
+
+
+
+
+wasilzafar.com
+
+
+This practical is the foundation of Information Retrieval.
+
+Before searching documents, we need to clean and prepare their text.
+1. What is Text Preprocessing?
+Text preprocessing is the process of cleaning and transforming raw text into a structured format that can be used by computers for further analysis.
+
+In simple language:
+
+Suppose we have this sentence:
+The Students are Studying Information Retrieval!
+
+
+It contains:
+- Capital letters.
+- Common words.
+- Different word forms.
+- Punctuation.
+We process this text to make it easier to search and analyze.
+
+A possible preprocessed result is:
+student study information retrieval
+
+
+Why is this useful?
+
+Because different forms of the same word may have similar meanings.
+
+For example:
+Study
+Studies
+Studying
+Studied
+
+
+We may want to treat these as related words during retrieval.
+2. Why is Text Preprocessing Required?
+Text preprocessing is required because raw text contains unnecessary and inconsistent information.
+
+It helps us:
+1. Remove unnecessary words.
+2. Reduce word variations.
+3. Improve search efficiency.
+4. Reduce vocabulary size.
+5. Prepare text for machine learning.
+6. Improve the consistency of document representation.
+3. What are the steps in Text Preprocessing?
+The common preprocessing pipeline is:
+Raw Text
+
+The Students are Studying IR!
+
+Lowercasing
+
+the students are studying ir
+
+Tokenization
+
+[the, students, are, studying, ir]
+
+Stop Word Removal
+
+[students, studying, ir]
+
+Stemming
+
+[student, studi, ir]
+
+Processed Text
+
+Now understand each step.
+4. What is Lowercasing?
+Lowercasing means converting all uppercase letters into lowercase letters.
+
+Example:
+
+Original:
+MACHINE Learning
+
+
+After lowercasing:
+machine learning
+
+
+Why do we use it?
+
+Because computers may treat uppercase and lowercase words as different strings.
+
+For example:
+Machine
+machine
+MACHINE
+
+
+Lowercasing helps treat them consistently.
+5. What is Tokenization?
+
+
+
+
+
+
+
+
+sendbird.com
+
+
+Tokenization is the process of breaking a large piece of text into smaller units called tokens.
+
+A token can be:
+- A word.
+- A sentence.
+- A punctuation mark.
+- Another text unit, depending on the tokenizer.
+There are two common types.
+A. Sentence Tokenization
+It divides a paragraph into individual sentences.
+
+Example:
+Python is easy. AI is interesting.
+
+
+Output:
+Sentence 1: Python is easy.
+Sentence 2: AI is interesting.
+
+
+B. Word Tokenization
+It divides a sentence into individual words.
+
+Example:
+Information Retrieval is useful.
+
+
+Output:
+["Information", "Retrieval", "is", "useful"]
+
+
+Important term: Token
+
+A token is an individual unit produced during tokenization.
+
+Why is tokenization important?
+
+Because most text-processing operations work on individual tokens rather than complete paragraphs.
+6. What is Stop Word Removal?
+
+
+
+
+
+
+
+
+medium.com
+
+
+Stop words are common words that often carry relatively little information for a particular retrieval task.
+
+Examples:
+is, am, are, the, a, an, in, on, of, and
+
+
+Stop word removal means removing such words from the tokenized text.
+
+Example:
+
+Original:
+The student is studying in the college.
+
+
+After stop word removal:
+student studying college
+
+
+Why do we remove stop words?
+1. They occur frequently.
+2. They may contribute little to a particular search task.
+3. Removing them can reduce the size of the index.
+4. It can reduce unnecessary processing.
+Important point
+Not every common word should always be removed.
+
+For example:
+To be or not to be
+
+
+Removing all stop words would destroy the meaning of this sentence.
+
+Similarly, words such as "not" are important in sentiment analysis.
+
+So, stop word removal depends on the application.
+7. What is Stemming?
+
+
+
+
+
+
+
+
+larevueia.fr
+
+
+Stemming is the process of reducing different forms of a word to a common stem by removing prefixes or suffixes using linguistic rules.
+
+Example:
+Original word	Possible stem
+Playing	Play
+Played	Play
+Plays	Play
+Connected	Connect
+Connecting	Connect
+
+Stemming reduces different word forms to a common representation.
+What is a Stemmer?
+A stemmer is an algorithm or tool that performs stemming.
+What is Porter Stemmer?
+Porter Stemmer is a popular stemming algorithm used in Natural Language Processing.
+
+It removes common suffixes using a series of rules.
+
+For example, it can reduce:
+playing
+played
+plays
+
+
+to:
+play
+
+
+However, a stem does not always have to be a valid dictionary word.
+
+For example, Porter Stemmer can reduce variations of "argue" to "argu".
+
+This is an important characteristic of stemming.
+8. What is Lemmatization?
+Lemmatization is the process of converting a word into its meaningful dictionary base form, called a lemma.
+
+Examples:
+Original word	Lemma
+Studies	Study
+Better	Good (with appropriate context/POS)
+Running	Run
+Children	Child
+Was	Be
+
+Lemmatization uses vocabulary and morphological information to find the correct base form.
+Difference between Stemming and Lemmatization
+Very important viva question
+Stemming	Lemmatization
+Removes word endings using rules	Finds the dictionary base form
+Usually faster	Usually more computationally intensive
+May produce invalid words	Produces meaningful dictionary words
+Does not generally require context	Can use context and part of speech
+Example: arguing → argu	Example: studies → study
+
+External explanation:
+
+"Stemming removes prefixes or suffixes to produce a common stem, whereas lemmatization converts a word into its meaningful dictionary form."
+9. What is POS Tagging?
+POS stands for Part of Speech.
+
+POS Tagging is the process of assigning grammatical categories to words in a sentence.
+
+Common parts of speech include:
+Part of Speech	Meaning	Example
+Noun	Name of person, place or thing	Student
+Verb	Action	Study
+Adjective	Describes a noun	Intelligent
+Adverb	Describes an action or adjective	Quickly
+Pronoun	Replaces a noun	He
+Preposition	Shows relationship	In
+
+Example:
+The intelligent student studies quickly.
+
+
+Possible tags:
+- The → Determiner.
+- Intelligent → Adjective.
+- Student → Noun.
+- Studies → Verb.
+- Quickly → Adverb.
+Why is POS Tagging useful?
+It helps understand the grammatical role of words.
+
+It is useful in:
+- Sentiment analysis.
+- Text analysis.
+- Machine translation.
+- Question answering.
+- Natural Language Processing.
+10. What is NLTK?
+NLTK stands for Natural Language Toolkit.
+
+It is a Python library used for processing human language data.
+
+It provides tools for:
+- Tokenization.
+- Stop word removal.
+- Stemming.
+- Lemmatization.
+- POS tagging.
+- Text classification.
+Some important NLTK components:
+Component	Purpose
+word_tokenize()	Splits text into words
+sent_tokenize()	Splits text into sentences
+stopwords	Provides common stop words
+PorterStemmer()	Performs stemming
+WordNetLemmatizer()	Performs lemmatization
+pos_tag()	Assigns POS tags
+
+These are the same main text-analysis operations described in the text-analysis section of your available laboratory reference. 
+Data_Science_LabManual.pdf
+
+11. What is Regular Expression?
+Regular Expression (Regex) is a technique used to search, match and manipulate text based on patterns.
+
+For example:
+re.sub('[^a-zA-Z]', ' ', text)
+
+
+
+This replaces characters other than English letters with spaces.
+
+It can be used to remove punctuation and digits during preprocessing.
+12. Applications of Text Preprocessing
+- Search engines.
+- Email classification.
+- Spam detection.
+- Sentiment analysis.
+- Document retrieval.
+- Text mining.
+- Chatbots.
+13. Advantages
+1. Reduces unnecessary text.
+2. Reduces vocabulary size.
+3. Improves text consistency.
+4. Helps in document matching.
+5. Makes text suitable for machine learning.
+14. Limitations
+1. Removing stop words can sometimes remove important meaning.
+2. Stemming may generate invalid words.
+3. Lemmatization requires additional linguistic resources.
+4. Incorrect preprocessing may reduce retrieval accuracy.
+5. Different applications require different preprocessing methods.
+15. How to explain Practical 1 to the external examiner
+Ready-to-speak explanation
+
+"Ma'am, the aim of this practical is to perform text preprocessing on a document.
+
+Text preprocessing is the process of cleaning and transforming raw text into a suitable format for further processing.
+
+First, we convert the text into lowercase.
+
+Then we perform tokenization, which divides the text into individual words or sentences.
+
+After that, we remove stop words such as is, am, are and the because they often carry less information for retrieval.
+
+Next, we perform stemming using Porter Stemmer to reduce different forms of words to a common stem.
+
+We can also perform lemmatization to obtain meaningful dictionary forms and POS tagging to identify grammatical categories.
+
+Finally, we obtain cleaned and normalized text that can be used for document retrieval and text analysis."
+
+16. Detailed viva questions — Practical 1
+Q1. What is the aim of this practical?
+
+To perform text preprocessing using tokenization, stop word removal and stemming.
+
+Q2. What is Information Retrieval?
+
+It is the process of finding relevant information from a collection of documents based on a user's query.
+
+Q3. What is text preprocessing?
+
+It is the process of cleaning and transforming raw text before further analysis.
+
+Q4. What is tokenization?
+
+Breaking text into smaller units called tokens.
+
+Q5. What is a token?
+
+An individual unit of text, such as a word or sentence.
+
+Q6. What is sentence tokenization?
+
+Dividing a paragraph into individual sentences.
+
+Q7. What is word tokenization?
+
+Dividing a sentence into individual words.
+
+Q8. What are stop words?
+
+Common words that often carry little retrieval value, such as is, the, a and an.
+
+Q9. Why do we remove stop words?
+
+To reduce unnecessary words and improve processing efficiency for suitable retrieval tasks.
+
+Q10. What is stemming?
+
+Reducing different forms of a word to a common stem.
+
+Q11. What is a stemmer?
+
+An algorithm used to perform stemming.
+
+Q12. What is Porter Stemmer?
+
+A rule-based stemming algorithm.
+
+Q13. What is lemmatization?
+
+Converting words into their meaningful dictionary base forms.
+
+Q14. What is the difference between stemming and lemmatization?
+
+Stemming removes word endings using rules, while lemmatization uses linguistic information to find the dictionary form.
+
+Q15. What is POS tagging?
+
+Assigning grammatical categories to words.
+
+Q16. What is NLTK?
+
+Natural Language Toolkit, a Python library for NLP and text processing.
+
+Q17. What is Regex?
+
+A pattern-matching technique used to search and manipulate text.
+
+Q18. Why do we convert text to lowercase?
+
+To maintain consistency and avoid treating uppercase and lowercase versions as separate words.
+
+Q19. Give examples of stop words.
+
+Is, am, are, the, a, an, in and on.
+
+Q20. Give an example of stemming.
+
+Playing, played and plays may be reduced to play.
+
+Q21. Give an example of lemmatization.
+
+Studies becomes study.
+
+Q22. What is the output of preprocessing?
+
+Cleaned and normalized text.
+
+Q23. Can stop word removal affect meaning?
+
+Yes. Some stop words, such as "not", can be important in certain applications.
+
+Q24. Which Python library is used?
+
+NLTK.
+
+Q25. Why is preprocessing important in Information Retrieval?
+
+It improves text consistency and helps the retrieval system match documents and queries more effectively.
+
+
+PART 3 — PRACTICAL 2: DOCUMENT RETRIEVAL USING INVERTED FILES
+Practical 2
+Problem statement: Implement a program for retrieval of documents using inverted files.
+
+
+
+
+
+
+
+
+subscription.packtpub.com
+
+
+This is one of the most important practicals in Information Retrieval.
+
+You must understand the concept of an Inverted Index very clearly because it is the foundation of search engines.
+1. What is Document Retrieval?
+Document Retrieval is the process of finding documents from a collection based on a user's search query.
+
+Example:
+
+Suppose we have three documents:
+D1: Python is a programming language.
+
+D2: Machine Learning uses Python.
+
+D3: Information Retrieval searches documents.
+
+
+User enters:
+Python
+
+
+The retrieval system should return:
+D1
+D2
+
+
+Because both documents contain the word Python.
+
+This is document retrieval.
+2. What is an Inverted File?
+An Inverted File is a data structure used in Information Retrieval to store a mapping between words and the documents in which those words occur.
+
+It is also commonly called an Inverted Index.
+
+In simple language:
+
+Instead of storing each document with its list of words, we store each word with the list of documents containing that word.
+
+This makes searching faster.
+Understand the difference
+Normal document representation:
+Document	Words
+D1	Python, programming, language
+D2	Machine, learning, Python
+D3	Information, retrieval, documents
+
+Inverted file representation:
+Word	Document IDs
+Python	D1, D2
+Programming	D1
+Language	D1
+Machine	D2
+Learning	D2
+Information	D3
+Retrieval	D3
+Documents	D3
+
+Notice the difference.
+
+In the normal representation, we store words under documents.
+
+In the inverted representation, we store documents under words.
+
+That is why it is called an inverted index.
+3. Why is it called an Inverted Index?
+Because the original relationship is:
+Document → Words
+
+
+But we reverse this relationship:
+Word → Documents
+
+
+This reversed mapping makes it easier to find documents containing a particular word.
+4. What are the main components of an Inverted Index?
+There are two important components.
+A. Dictionary / Vocabulary
+The dictionary contains all unique words found in the document collection.
+
+Example:
+Python
+Machine
+Learning
+Information
+Retrieval
+Programming
+
+
+Each unique word is stored only once in the vocabulary.
+B. Posting List
+A posting list contains the document IDs in which a particular word occurs.
+
+Example:
+Python → D1, D2
+
+Learning → D2
+
+Retrieval → D3
+
+
+Here:
+- Python is the term.
+- D1 and D2 are the postings.
+- The complete list is called the posting list.
+
+
+
+
+
+
+
+
+slideshare.net
+
+
+5. What is a Term?
+A term is a word or token used for indexing and retrieval.
+
+For example:
+Machine Learning is useful.
+
+
+Possible terms:
+- Machine
+- Learning
+- Useful
+Terms are generally generated after preprocessing.
+6. What is Document ID?
+A Document ID is a unique identifier assigned to each document.
+
+For example:
+D1 = First document
+D2 = Second document
+D3 = Third document
+
+
+These IDs are used in the inverted index to identify where a term appears.
+7. What is Document Frequency?
+Document Frequency (DF) tells us how many documents contain a particular term.
+
+Formula:
+\[
+DF(t)=\text{Number of documents containing term }t
+\]
+
+Example:
+Python → D1, D2, D4
+
+
+Therefore:
+\[
+DF(Python)=3
+\]
+
+Remember: Document frequency counts documents, not total word occurrences.
+8. What is Term Frequency?
+Term Frequency (TF) tells us how many times a particular term occurs in a document.
+
+Example:
+D1:
+Python is useful.
+Python is easy.
+Python is popular.
+
+
+Python appears three times.
+
+Therefore:
+\[
+TF(Python,D1)=3
+\]
+
+Difference between TF and DF
+TF	DF
+Counts occurrences of a word inside a document	Counts documents containing the word
+Can be calculated separately for each document	Calculated across the document collection
+Example: Python occurs 3 times in D1	Python occurs in 4 documents
+
+9. What is a Positional Index?
+A positional index is an extension of an inverted index.
+
+It stores not only the document IDs but also the positions where a term occurs in each document.
+
+Example:
+D1: Python is easy and Python is popular.
+
+
+Positional index:
+Python → D1: [1, 5]
+Easy   → D1: [3]
+Popular → D1: [7]
+
+
+Why is this useful?
+
+It supports phrase queries.
+
+For example:
+"Python is easy"
+
+
+The system can check whether the words occur next to one another in the correct order.
+10. What is Boolean Retrieval?
+Boolean Retrieval uses logical operators to search documents.
+
+There are three major operators.
+A. AND
+AND returns documents containing both search terms.
+
+Example:
+Python AND Machine
+
+
+If:
+Python → D1, D2, D3
+Machine → D2, D3, D4
+
+
+Then:
+Result → D2, D3
+
+
+B. OR
+OR returns documents containing either search term or both.
+Python OR Machine
+
+
+Result:
+D1, D2, D3, D4
+
+
+C. NOT
+NOT excludes documents containing a particular term.
+Python NOT Machine
+
+
+Result:
+D1
+
+
+
+
+
+
+
+
+
+
+library.highline.edu
+
+
+11. What is Query Processing?
+Query Processing is the process of understanding and preparing a user's search query before retrieving documents.
+
+Suppose the user searches:
+Python Programming
+
+
+The system may:
+1. Convert the query into lowercase.
+2. Tokenize it.
+3. Remove selected stop words.
+4. Apply stemming if configured.
+5. Search the inverted index.
+6. Retrieve matching document IDs.
+The query should be processed consistently with the documents.
+12. What is Query Matching?
+Query matching means comparing the search terms with the terms stored in the inverted index.
+
+For example:
+Query: Python
+
+
+The system looks up:
+Python → D1, D2
+
+
+Then retrieves documents D1 and D2.
+13. What is Ranking in Document Retrieval?
+A basic inverted index can retrieve matching documents, but it does not automatically provide a relevance ranking.
+
+For ranking, we can use methods such as:
+- Term Frequency.
+- TF-IDF.
+- Cosine similarity.
+- BM25.
+The purpose is to display the most relevant documents first.
+14. What is TF-IDF?
+Very important viva topic
+TF-IDF stands for:
+
+Term Frequency–Inverse Document Frequency.
+
+It is a numerical technique used to measure the importance of a word in a document relative to a collection of documents.
+
+It combines two measurements.
+A. Term Frequency
+It measures how frequently a term appears in a particular document.
+
+A common formula is:
+\[
+TF(t,d)=\frac{f_{t,d}}{\text{Total terms in }d}
+\]
+
+Where:
+
+- \(f_{t,d}\) = Number of occurrences of term \(t\) in document \(d\).
+B. Inverse Document Frequency
+IDF measures how rare or informative a term is across the document collection.
+
+A common formula is:
+\[
+IDF(t)=\log\left(\frac{N}{DF(t)}\right)
+\]
+
+Where:
+- \(N\) = Total number of documents.
+- \(DF(t)\) = Number of documents containing term \(t\).
+C. TF-IDF
+\[
+TFIDF(t,d)=TF(t,d)\times IDF(t)
+\]
+
+Example:
+
+Suppose there are 10 documents.
+
+The word Python occurs in 2 documents.
+\[
+IDF(Python)=\log(10/2)
+\]
+
+A word that appears in many documents generally has a lower IDF, while a rarer word generally has a higher IDF.
+
+This helps give greater importance to distinctive words.
+
+Your available text-analysis reference also explains TF-IDF as the product of term frequency and inverse document frequency. 
+Data_Science_LabManual.pdf
+
+15. What is Cosine Similarity?
+Cosine Similarity measures the similarity between two vectors based on the angle between them.
+
+It is used to compare a query vector with document vectors.
+
+Formula:
+\[
+Cosine(A,B)=
+\frac{A\cdot B}{\|A\|\|B\|}
+\]
+
+Where:
+- \(A\) = Query vector.
+- \(B\) = Document vector.
+- \(A\cdot B\) = Dot product.
+- \(\|A\|\) and \(\|B\|\) = Vector magnitudes.
+A value closer to 1 indicates greater similarity in the usual nonnegative TF-IDF setting.
+
+Example:
+
+Query:
+Machine Learning
+
+
+Document A:
+Machine Learning is useful.
+
+
+Document B:
+Cooking is interesting.
+
+
+Document A should have a higher cosine similarity.
+16. Complete Working of Inverted File Retrieval
+Document Collection
+
+D1, D2, D3, D4...
+
+Text Preprocessing
+
+Lowercase, tokenize, stop word removal
+
+Index Construction
+
+Dictionary and posting lists
+
+User Query
+
+Python AND Machine
+
+Query Processing and Matching
+
+Retrieved Documents
+
+Step-by-step example
+Suppose we have:
+D1: Python is easy.
+
+D2: Python is used in Machine Learning.
+
+D3: Machine Learning is powerful.
+
+
+First, preprocess the documents.
+
+Possible result:
+D1: python easy
+
+D2: python machine learning
+
+D3: machine learning powerful
+
+
+Now construct the inverted index:
+Term	Posting list
+Python	D1, D2
+Easy	D1
+Machine	D2, D3
+Learning	D2, D3
+Powerful	D3
+
+Now user enters:
+Python AND Machine
+
+
+Python:
+D1, D2
+
+
+Machine:
+D2, D3
+
+
+Intersection:
+D2
+
+
+Therefore, the retrieved document is D2.
+17. Advantages of Inverted Index
+1. Fast document searching.
+2. Efficient query processing.
+3. Avoids scanning every document for each query.
+4. Supports Boolean search.
+5. Can be combined with TF-IDF and ranking techniques.
+6. Suitable for large document collections.
+18. Limitations
+1. Requires additional storage.
+2. Index must be updated when documents change.
+3. Stop word removal and normalization must be consistent.
+4. Basic inverted indexes do not understand the meaning of words.
+5. Synonyms may not match unless additional techniques are used.
+19. Applications
+- Google-like search engines.
+- Digital libraries.
+- Email search.
+- E-commerce search.
+- Research paper search.
+- Document management systems.
+20. How to explain Practical 2 to the external examiner
+Ready-to-speak explanation
+
+"Ma'am, the aim of this practical is to retrieve documents using an inverted index.
+
+An inverted index is a data structure that stores each unique word along with the IDs of documents in which that word appears.
+
+First, we take a collection of documents and preprocess their text.
+
+Then we create a dictionary containing unique terms and their corresponding posting lists.
+
+When the user enters a query, the system searches for the query terms in the inverted index.
+
+It retrieves the corresponding document IDs and applies Boolean operations such as AND, OR and NOT if required.
+
+Finally, the matching documents are displayed to the user.
+
+The main advantage of an inverted index is that it makes document searching faster and more efficient."
+
+21. Detailed viva questions — Practical 2
+Q1. What is the aim of this practical?
+
+To implement document retrieval using inverted files.
+
+Q2. What is an inverted index?
+
+A data structure that maps terms to the documents containing those terms.
+
+Q3. Why is it called inverted?
+
+Because it reverses the document-to-term relationship into a term-to-document relationship.
+
+Q4. What are the main components of an inverted index?
+
+Dictionary and posting lists.
+
+Q5. What is a dictionary?
+
+A collection of unique terms in the document collection.
+
+Q6. What is a posting list?
+
+A list of document IDs containing a particular term.
+
+Q7. What is a document ID?
+
+A unique identifier assigned to a document.
+
+Q8. What is a corpus?
+
+A collection of documents.
+
+Q9. What is document frequency?
+
+The number of documents containing a particular term.
+
+Q10. What is term frequency?
+
+The number of times a term appears in a document.
+
+Q11. What is a positional index?
+
+An index that stores the positions of terms inside documents.
+
+Q12. What is Boolean Retrieval?
+
+A retrieval technique using AND, OR and NOT operators.
+
+Q13. What does AND do?
+
+Retrieves documents containing both terms.
+
+Q14. What does OR do?
+
+Retrieves documents containing either or both terms.
+
+Q15. What does NOT do?
+
+Excludes documents containing a specified term.
+
+Q16. What is query processing?
+
+Preparing a user's query for searching.
+
+Q17. What is TF-IDF?
+
+A numerical method for measuring the importance of terms in documents.
+
+Q18. What is the full form of TF-IDF?
+
+Term Frequency–Inverse Document Frequency.
+
+Q19. What is IDF?
+
+Inverse Document Frequency, which measures how rare a term is across a collection.
+
+Q20. What is cosine similarity?
+
+A measure of similarity between two vectors based on the cosine of their angle.
+
+Q21. What is document ranking?
+
+Arranging retrieved documents according to relevance.
+
+Q22. What is the advantage of an inverted index?
+
+It provides fast and efficient document searching.
+
+Q23. What is the disadvantage of an inverted index?
+
+It requires additional storage and index maintenance.
+
+Q24. What is the difference between normal indexing and inverted indexing?
+
+Normal representation maps documents to words, while inverted indexing maps words to documents.
+
+Q25. Where is an inverted index used?
+
+Search engines, digital libraries, email systems and document retrieval systems.
+
+PART 4 — PRACTICAL 3: BAYESIAN NETWORK FOR HEART DISEASE DIAGNOSIS
+Practical 3
+Problem statement: Construct a Bayesian network considering medical data and demonstrate the diagnosis of heart patients using the standard Heart Disease Dataset.
+
+
+
+
+
+
+
+
+slideserve.com
+
+
+This practical combines Information Retrieval concepts with Probability, Artificial Intelligence and Machine Learning.
+
+Before understanding the Bayesian network, first understand probability.
+1. What is Probability?
+Probability is the mathematical measure of how likely an event is to occur.
+
+Its value ranges between 0 and 1.
+\[
+0\leq P(A)\leq1
+\]
+
+Where:
+- 0 means the event is impossible.
+- 1 means the event is certain.
+Example:
+
+Suppose we have a fair coin.
+
+Probability of heads:
+\[
+P(H)=\frac12=0.5
+\]
+
+Probability of tails:
+\[
+P(T)=\frac12=0.5
+\]
+
+2. What is Conditional Probability?
+Conditional Probability means the probability of an event occurring when another event is already known to have occurred.
+
+It is represented as:
+\[
+P(A|B)
+\]
+
+Read it as:
+
+"Probability of A given B."
+
+Formula:
+\[
+P(A|B)=\frac{P(A\cap B)}{P(B)}
+\]
+
+Example:
+
+Suppose we want to calculate the probability that a patient has heart disease given that the patient has high cholesterol.
+
+We write:
+\[
+P(HeartDisease|HighCholesterol)
+\]
+
+This is a conditional probability.
+
+It does not mean that high cholesterol proves heart disease. It means we are estimating the probability of disease under that observed condition.
+3. What is Bayes' Theorem?
+Extremely important viva topic
+Bayes' Theorem is a mathematical formula used to calculate the probability of an event based on previously known information.
+
+Formula:
+\[
+P(A|B)=\frac{P(B|A)P(A)}{P(B)}
+\]
+
+Where:
+- \(P(A|B)\) = Posterior probability.
+- \(P(B|A)\) = Likelihood.
+- \(P(A)\) = Prior probability.
+- \(P(B)\) = Evidence.
+Let's understand each term.
+A. Prior Probability
+Prior probability is the initial probability of an event before considering new evidence.
+
+Example:
+
+The probability of heart disease in a population before examining a particular patient's test results.
+B. Likelihood
+Likelihood measures how probable the observed evidence is under a particular hypothesis.
+
+Example:
+
+The probability of observing high cholesterol among patients who have heart disease.
+C. Evidence
+Evidence is the overall probability of the observed information.
+D. Posterior Probability
+Posterior probability is the updated probability after considering the available evidence.
+
+Example:
+
+The probability of heart disease after considering a patient's age, cholesterol and other medical observations.
+
+External explanation:
+
+"Bayes' Theorem updates the probability of an event when new evidence becomes available. It combines prior probability and likelihood to calculate posterior probability."
+4. What is a Bayesian Network?
+Most important practical concept
+A Bayesian Network is a probabilistic graphical model that represents relationships and dependencies between different variables using a directed acyclic graph.
+
+In simple language:
+
+It is a graphical model that shows how different factors are probabilistically related.
+
+For heart disease diagnosis, we can consider:
+- Age.
+- Blood pressure.
+- Cholesterol.
+- Chest pain.
+- Blood sugar.
+- Heart disease.
+A Bayesian network represents these variables and their probabilistic relationships.
+
+
+
+
+
+
+
+
+chegg.com
+
+
+5. What are the components of a Bayesian Network?
+There are two major components.
+A. Nodes
+Nodes represent variables.
+
+Example:
+Age
+Cholesterol
+Blood Pressure
+Heart Disease
+
+
+Each node represents one variable.
+B. Directed Edges
+Directed edges represent probabilistic dependencies between variables.
+
+Example:
+Age → Heart Disease
+
+
+This represents a modeled dependency between age and heart disease.
+
+Important: A directed edge does not automatically prove direct causation. It represents a conditional dependency in the chosen probabilistic model.
+6. What is a Directed Acyclic Graph (DAG)?
+A DAG is a graph with:
+- Directed edges.
+- No directed cycles.
+For example:
+Age → Blood Pressure → Heart Disease
+
+
+This is a directed acyclic structure.
+
+But this is not a valid DAG:
+A → B → C → A
+
+
+Because it contains a cycle.
+
+Why is DAG important?
+
+Because a Bayesian Network uses a DAG to represent probabilistic dependencies without circular directed relationships.
+7. What is Conditional Probability Table (CPT)?
+A Conditional Probability Table stores the probability distribution of a node based on its parent nodes.
+
+For example:
+
+Suppose Heart Disease depends on Age and Cholesterol.
+
+The CPT represents:
+\[
+P(HeartDisease|Age,Cholesterol)
+\]
+
+An illustrative table:
+Age	Cholesterol	Probability of disease
+Young	Normal	0.05
+Young	High	0.15
+Older	Normal	0.25
+Older	High	0.65
+
+These are hypothetical values for understanding, not clinical risk estimates.
+
+The CPT helps the Bayesian Network calculate probabilities.
+8. What is a Parent Node and Child Node?
+Consider:
+Age → Heart Disease
+
+
+Here:
+- Age is the parent node.
+- Heart Disease is the child node.
+A parent node influences the conditional probability distribution of its child in the model.
+9. What is Joint Probability?
+Joint probability means the probability that multiple events occur together.
+
+It is represented as:
+\[
+P(A,B)
+\]
+
+For a Bayesian Network, the joint probability distribution can be factorized using the graph structure.
+
+For variables \(X_1,X_2,\ldots,X_n\):
+\[
+P(X_1,\ldots,X_n)
+=
+\prod_{i=1}^{n}
+P(X_i|Parents(X_i))
+\]
+
+This is a fundamental Bayesian Network formula.
+10. How does a Bayesian Network diagnose heart disease?
+Suppose a patient has the following medical observations:
+Age: Older
+Cholesterol: High
+Blood Pressure: High
+Chest Pain: Present
+
+
+The Bayesian Network receives these observations as evidence.
+
+It uses its learned conditional probability distributions to calculate the probability of heart disease.
+
+For example:
+\[
+P(HeartDisease|Evidence)
+\]
+
+The model then provides a probability estimate.
+
+A prediction may be produced using a threshold or the most probable class.
+
+Important: A Bayesian Network is a decision-support model, not a replacement for a doctor's diagnosis. Its prediction depends on dataset quality, model assumptions and clinical validation.
+11. What is the Heart Disease Dataset?
+The Heart Disease Dataset is a medical dataset containing patient-related information used for studying and predicting heart disease.
+
+A commonly used version of the UCI Cleveland Heart Disease dataset contains 303 patient records and 14 commonly selected attributes, including the target.
+
+Important features include:
+Feature	Meaning
+Age	Patient's age
+Sex	Sex category in the dataset
+cp	Chest pain type
+trestbps	Resting blood pressure
+chol	Serum cholesterol
+fbs	Fasting blood sugar indicator
+restecg	Resting ECG result
+thalach	Maximum heart rate achieved
+exang	Exercise-induced angina
+oldpeak	ST depression
+slope	Slope of peak exercise ST segment
+ca	Number of major vessels
+thal	Thalassemia-related categorical field
+target	Heart disease outcome label
+
+Note that different versions of the dataset may encode the target differently.
+12. What is a Feature?
+A feature is an input variable used by a machine learning model to make a prediction.
+
+For example:
+- Age.
+- Cholesterol.
+- Blood pressure.
+These are features in the heart disease dataset.
+13. What is a Target Variable?
+The target variable is the output that we want the model to predict.
+
+In this practical:
+Target = Heart Disease
+
+
+Depending on the dataset version, the target may be represented using 0 and 1 or multiple values.
+14. What is Evidence in Bayesian Networks?
+Evidence means the observed values provided to the Bayesian Network.
+
+Example:
+Age = 55
+Cholesterol = High
+Chest Pain = Present
+
+
+These values are used to update the probability of the target variable.
+15. What is Inference?
+Inference means calculating unknown probabilities using the available evidence and the relationships represented in the Bayesian Network.
+
+For example:
+
+We know:
+Age = Older
+Cholesterol = High
+
+
+We want to calculate:
+P(Heart Disease | Age, Cholesterol)
+
+
+This is Bayesian inference.
+16. What is Parameter Learning?
+Parameter learning means learning the probabilities of the Bayesian Network from data.
+
+For example:
+
+The model examines patient records and estimates:
+\[
+P(HeartDisease|Age,Cholesterol)
+\]
+
+It uses observed frequencies or statistical estimation methods.
+17. What is Structure Learning?
+Structure learning means determining the network's dependency structure.
+
+In simple language:
+
+It determines which variables should be connected through directed edges.
+
+For example:
+Age → Blood Pressure
+
+Age → Heart Disease
+
+Cholesterol → Heart Disease
+
+
+The network structure can be specified using domain knowledge or learned from data.
+18. What is the difference between a Bayesian Network and Naive Bayes?
+Important viva question
+Bayesian Network	Naive Bayes
+General probabilistic graphical model	Specific simplified Bayesian classifier
+Can represent different dependency structures	Assumes features are conditionally independent given the class
+Uses a DAG	Commonly represented as a class node connected to feature nodes
+More flexible	Simpler and computationally efficient
+
+Important: Naive Bayes is a special form of Bayesian Network with a particular dependency structure.
+19. Applications of Bayesian Networks
+1. Medical diagnosis.
+2. Risk assessment.
+3. Fault detection.
+4. Decision-support systems.
+5. Weather prediction.
+6. Financial risk analysis.
+7. Reliability engineering.
+20. Advantages
+1. Handles uncertainty.
+2. Represents probabilistic dependencies.
+3. Can combine multiple evidence variables.
+4. Supports reasoning and inference.
+5. Can work with incomplete observations depending on the model and inference method.
+21. Limitations
+1. Building a good network structure can be difficult.
+2. Requires suitable training data or expert knowledge.
+3. Incorrect probabilities affect predictions.
+4. Large networks can be computationally expensive.
+5. Correlation does not automatically establish causation.
+22. How to explain Practical 3 to the external examiner
+Ready-to-speak explanation
+
+"Ma'am, the aim of this practical is to construct a Bayesian Network using medical data and demonstrate heart disease diagnosis.
+
+A Bayesian Network is a probabilistic graphical model that represents relationships between variables using a directed acyclic graph.
+
+First, we load the heart disease dataset and identify important features such as age, cholesterol, blood pressure and chest pain.
+
+Then we construct the network by representing these variables as nodes and their probabilistic dependencies as directed edges.
+
+We learn or specify the conditional probability distributions for the network.
+
+Finally, we provide patient information as evidence and perform Bayesian inference to estimate the probability of heart disease.
+
+This practical demonstrates how probabilistic reasoning can support medical decision-making."
+
+23. Detailed viva questions — Practical 3
+Q1. What is the aim of this practical?
+
+To construct a Bayesian Network and demonstrate heart disease diagnosis using medical data.
+
+Q2. What is probability?
+
+The mathematical measure of how likely an event is to occur.
+
+Q3. What is conditional probability?
+
+The probability of an event occurring given that another event has occurred.
+
+Q4. State Bayes' Theorem.
+\[
+P(A|B)=\frac{P(B|A)P(A)}{P(B)}
+\]
+
+Q5. What is a Bayesian Network?
+
+A probabilistic graphical model representing dependencies between variables using a DAG.
+
+Q6. What are the components of a Bayesian Network?
+
+Nodes, directed edges and conditional probability distributions.
+
+Q7. What is a node?
+
+A node represents a variable.
+
+Q8. What is a directed edge?
+
+It represents a probabilistic dependency between variables.
+
+Q9. What is a DAG?
+
+Directed Acyclic Graph, a directed graph without directed cycles.
+
+Q10. What is CPT?
+
+Conditional Probability Table.
+
+Q11. What is a parent node?
+
+A node that has a directed edge to another node.
+
+Q12. What is a child node?
+
+A node that receives a directed edge from a parent node.
+
+Q13. What is joint probability?
+
+The probability of two or more events occurring together.
+
+Q14. What is Bayesian inference?
+
+Calculating unknown probabilities using known evidence and network relationships.
+
+Q15. What is prior probability?
+
+The initial probability before considering new evidence.
+
+Q16. What is likelihood?
+
+The probability of observing evidence under a particular hypothesis.
+
+Q17. What is posterior probability?
+
+The updated probability after considering evidence.
+
+Q18. What is evidence?
+
+Observed information provided to the Bayesian Network.
+
+Q19. What is a feature?
+
+An input variable used for prediction.
+
+Q20. What is a target variable?
+
+The output variable that the model needs to predict.
+
+Q21. What is parameter learning?
+
+Learning the conditional probability values from data.
+
+Q22. What is structure learning?
+
+Learning or identifying the dependency structure of the network.
+
+Q23. What is the difference between Bayesian Network and Naive Bayes?
+
+A Bayesian Network can represent general dependencies, while Naive Bayes assumes conditional independence of features given the class.
+
+Q24. Which dataset is used?
+
+The Heart Disease Dataset.
+
+Q25. Name some features of the dataset.
+
+Age, cholesterol, blood pressure, chest pain and maximum heart rate.
+
+Q26. Why do we use Bayesian Networks for medical diagnosis?
+
+They can represent uncertainty and calculate disease probabilities using patient observations.
+
+Q27. Does a Bayesian Network guarantee correct diagnosis?
+
+No. It provides a probability estimate based on the data and model assumptions.
+
+Q28. What is the difference between correlation and causation?
+
+Correlation indicates an association, while causation means one factor produces a change in another.
+
+Q29. What is the advantage of a Bayesian Network?
+
+It handles uncertainty and represents probabilistic dependencies.
+
+Q30. What is the main limitation of a Bayesian Network?
+
+Building the correct structure and estimating accurate probabilities can be difficult.
+
+
+PART 5 — PRACTICAL 4: EMAIL SPAM FILTERING USING TEXT CLASSIFICATION
+Practical 4
+Problem statement: Implement email spam filtering using a text classification algorithm with an appropriate dataset.
+
+
+
+
+
+
+
+
+zilliz.com
+
+
+This practical combines:
+- Natural Language Processing.
+- Text preprocessing.
+- Machine Learning.
+- Classification.
+- Probability.
+- Naive Bayes Algorithm.
+Let's understand everything from the beginning.
+1. What is Email Spam?
+Spam emails are unwanted or unsolicited emails sent in large quantities.
+
+Examples:
+Congratulations! You won a lottery.
+Click here to claim your prize.
+
+
+Get 90% discount.
+Buy now!
+Limited offer!
+
+
+These are examples of spam-like messages.
+
+Legitimate emails are genuine emails that users actually want to receive.
+
+Examples:
+- College announcements.
+- Job application updates.
+- Emails from teachers.
+- Bank transaction notifications.
+- Personal communication.
+2. What is Spam Filtering?
+Spam Filtering is the process of identifying and separating unwanted emails from legitimate emails.
+
+A spam filter examines an email and classifies it into categories.
+
+Generally:
+Email
+  |
+  v
+Spam Detection Model
+  |
+  |------ Spam
+  |
+  |------ Not Spam (Ham)
+
+
+The goal is to prevent unwanted emails from reaching the user's inbox.
+3. What is Text Classification?
+Very important concept
+Text Classification is a Natural Language Processing and Machine Learning task in which a text document is assigned to one or more predefined categories.
+
+For example:
+Email	Predicted category
+Win a free lottery	Spam
+Your college timetable	Ham
+Claim your prize now	Spam
+Meeting at 10 AM	Ham
+
+Here, the categories are:
+- Spam.
+- Ham.
+External definition:
+
+"Text Classification is the process of assigning predefined categories or labels to textual data using machine learning or other classification techniques."
+4. What is Ham?
+Ham means a legitimate or non-spam email.
+
+Example:
+Dear Student,
+
+Your practical examination is scheduled for tomorrow.
+
+
+This is a normal email and should be classified as Ham.
+5. What is a Dataset?
+A dataset is a collection of data used to train and evaluate a machine learning model.
+
+For spam filtering, a dataset generally contains:
+- Email message.
+- Email text.
+- Category label.
+Example:
+Email text	Label
+Win money now	Spam
+Meeting tomorrow	Ham
+Claim free reward	Spam
+Project submission reminder	Ham
+
+The model learns patterns from these examples.
+6. What is Supervised Learning?
+Supervised Learning is a machine learning approach in which a model is trained using labeled data.
+
+Each training example contains:
+- Input.
+- Correct output.
+In spam detection:
+
+Input = Email text.
+
+Output = Spam or Ham.
+
+The model learns the relationship between email content and its category.
+
+Example:
+Input: Congratulations, you won a prize.
+
+Correct label: Spam
+
+
+After learning from many examples, the model can classify new emails.
+7. What is Classification?
+Classification is a supervised machine learning task that predicts a category or class for an input.
+
+Examples:
+- Spam or Ham.
+- Positive or Negative sentiment.
+- Disease or No Disease.
+- Fraudulent or Genuine transaction.
+In this practical, we perform binary classification.
+8. What is Binary Classification?
+Binary Classification means classifying data into exactly two categories.
+
+For email spam filtering:
+\[
+Class=\{Spam,Ham\}
+\]
+
+The model predicts one of these two classes for each email.
+9. What is Naive Bayes Algorithm?
+Most important viva topic
+Naive Bayes is a probabilistic machine learning classification algorithm based on Bayes' Theorem.
+
+It is called "Naive" because it makes a simplifying assumption:
+
+Features are conditionally independent given the class.
+
+In simple language:
+
+The algorithm calculates the probability that an email belongs to Spam or Ham based on the words present in the email.
+
+For example:
+Email:
+Win a free prize now!
+
+
+The model examines the words:
+- Win.
+- Free.
+- Prize.
+- Now.
+It calculates the probability of the email belonging to each class.
+
+If:
+\[
+P(Spam|Email)>P(Ham|Email)
+\]
+
+The model classifies it as Spam.
+10. How does Naive Bayes work?
+It uses Bayes' Theorem:
+\[
+P(A|B)=\frac{P(B|A)P(A)}{P(B)}
+\]
+
+For spam classification:
+\[
+P(Spam|Words)
+\]
+
+We calculate the probability that the email is spam based on the words it contains.
+
+Similarly:
+\[
+P(Ham|Words)
+\]
+
+We calculate the probability that the email is legitimate.
+
+The model compares both probabilities and predicts the more probable class.
+11. What are Prior and Posterior Probabilities in Spam Detection?
+Prior Probability
+The probability of a class before examining the email's words.
+
+Example:
+\[
+P(Spam)=0.4
+\]
+
+\[
+P(Ham)=0.6
+\]
+
+These are illustrative values.
+Likelihood
+The probability of observing particular words given a class.
+
+Example:
+\[
+P(Free|Spam)
+\]
+
+It measures how frequently the word "free" occurs in spam emails under the learned model.
+Posterior Probability
+The probability of a class after considering the email words.
+
+Example:
+\[
+P(Spam|Free,Prize)
+\]
+
+This helps the model decide whether an email is spam.
+12. What is the Independence Assumption?
+Naive Bayes assumes that the features are conditionally independent given the class.
+
+For example:
+
+It treats the presence of the word "free" and the word "prize" as conditionally independent given that an email is spam.
+
+This assumption is often not perfectly true in real language, but the algorithm can still perform well.
+13. What are the Types of Naive Bayes?
+There are three important types.
+A. Gaussian Naive Bayes
+It is used when features are continuous numerical values and are modeled using a Gaussian or normal distribution.
+
+Example:
+- Height.
+- Weight.
+- Temperature.
+B. Multinomial Naive Bayes
+It is commonly used for text classification.
+
+It works with feature counts or nonnegative term weights.
+
+Example:
+- Number of times "free" appears.
+- Number of times "offer" appears.
+- Number of times "win" appears.
+This is a common choice for email spam filtering.
+C. Bernoulli Naive Bayes
+It is used when features are binary.
+
+For example:
+free present = 1
+free absent = 0
+
+
+It focuses on the presence or absence of words.
+Difference between them
+Type	Suitable data
+Gaussian NB	Continuous numerical data
+Multinomial NB	Word counts or nonnegative term frequencies
+Bernoulli NB	Binary features such as word present/absent
+
+14. What is Feature Extraction?
+Feature Extraction means converting raw text into numerical features that a machine learning model can understand.
+
+A machine learning model cannot directly work with ordinary text in its raw form.
+
+Therefore, we convert text into numbers.
+
+Example:
+Email 1: Free money now
+Email 2: Meeting tomorrow
+
+
+We create a vocabulary:
+free, money, now, meeting, tomorrow
+
+
+Then represent the emails numerically.
+Email	Free	Money	Now	Meeting	Tomorrow
+Email 1	1	1	1	0	0
+Email 2	0	0	0	1	1
+
+This numerical representation is called a feature matrix.
+15. What is Bag of Words (BoW)?
+
+
+
+
+
+
+
+
+gisyaliny.github.io
+
+
+Bag of Words is a text representation technique that converts documents into numerical vectors based on word occurrence or frequency.
+
+It considers:
+- Which words are present.
+- How many times each word occurs.
+It generally ignores word order and grammar.
+
+Example:
+Document 1:
+Python is easy.
+
+Document 2:
+Python is powerful.
+
+
+Vocabulary:
+Python, is, easy, powerful
+
+
+Bag-of-Words representation:
+Document	Python	is	easy	powerful
+D1	1	1	1	0
+D2	1	1	0	1
+
+This converts text into numbers.
+16. What is Count Vectorization?
+Count Vectorization converts a collection of text documents into a numerical matrix.
+
+Each column represents a word, and each row represents a document.
+
+The values indicate the number of times a word appears in a document.
+
+Example:
+CountVectorizer()
+
+
+
+It is commonly used for text classification.
+17. What is TF-IDF Vectorization?
+TF-IDF Vectorization converts documents into numerical vectors using term importance.
+
+Unlike basic count vectorization, it assigns weights based on:
+- Frequency within a document.
+- Rarity across the complete document collection.
+This helps identify more informative words.
+18. What is Laplace Smoothing?
+Important viva topic
+Laplace Smoothing is a technique used in Naive Bayes to avoid zero probability.
+
+Suppose the word "lottery" has never appeared in a particular class during training.
+
+Without smoothing:
+\[
+P(lottery|Ham)=0
+\]
+
+This can make the entire probability calculation zero.
+
+To avoid this, we add a small value, usually 1, to the counts.
+
+For Multinomial Naive Bayes:
+\[
+P(w|c)=
+\frac{Count(w,c)+1}
+{TotalWords(c)+V}
+\]
+
+Where:
+- \(Count(w,c)\) = Count of word \(w\) in class \(c\).
+- \(TotalWords(c)\) = Total word occurrences in class \(c\).
+- \(V\) = Vocabulary size.
+This is called add-one smoothing.
+19. What is Training Data and Testing Data?
+Training Data
+Training data is used to teach the model.
+
+For example:
+
+- 800 spam and ham email samples.
+Testing Data
+Testing data is used to evaluate the model on emails that were not used for training.
+
+For example:
+
+- 200 unseen emails.
+
+A common split is:
+80% Training
+20% Testing
+
+
+The actual split depends on the dataset and experiment.
+20. What is Model Training?
+Model training means providing labeled data to the machine learning algorithm so that it can learn patterns.
+
+In spam detection:
+
+The model learns which words and patterns are commonly associated with Spam and Ham.
+21. What is Model Prediction?
+Prediction means using the trained model to classify new, unseen emails.
+
+Example:
+Input:
+Congratulations! Claim your free prize.
+
+Output:
+Spam
+
+
+22. What is a Confusion Matrix?
+
+
+
+
+
+
+
+
+blog.trainindata.com
+
+
+A confusion matrix is a table used to evaluate classification performance.
+
+It compares actual labels with predicted labels.
+
+For binary spam classification:
+	Predicted Spam	Predicted Ham
+Actual Spam	TP	FN
+Actual Ham	FP	TN
+
+Understand these terms:
+True Positive (TP)
+Actual Spam and predicted Spam.
+True Negative (TN)
+Actual Ham and predicted Ham.
+False Positive (FP)
+Actual Ham but predicted Spam.
+
+This means a genuine email is incorrectly classified as spam.
+False Negative (FN)
+Actual Spam but predicted Ham.
+
+This means a spam email enters the legitimate inbox.
+23. What is Accuracy?
+Accuracy tells us the proportion of total predictions that are correct.
+\[
+Accuracy=
+\frac{TP+TN}{TP+TN+FP+FN}
+\]
+
+Example:
+
+Suppose:
+- TP = 40
+- TN = 50
+- FP = 5
+- FN = 5
+Then:
+\[
+Accuracy=\frac{40+50}{100}
+\]
+
+\[
+Accuracy=90\%
+\]
+
+24. What is Precision in Spam Filtering?
+Precision measures how many emails predicted as spam are actually spam.
+\[
+Precision=\frac{TP}{TP+FP}
+\]
+
+High precision means fewer genuine emails are incorrectly placed in the spam folder.
+25. What is Recall in Spam Filtering?
+Recall measures how many actual spam emails are correctly identified.
+\[
+Recall=\frac{TP}{TP+FN}
+\]
+
+High recall means fewer spam emails escape detection.
+26. What is F1-Score?
+\[
+F1=2\times\frac{Precision\times Recall}{Precision+Recall}
+\]
+
+It balances precision and recall.
+27. What is Overfitting?
+Overfitting occurs when a machine learning model learns the training data too closely, including noise or irrelevant patterns.
+
+As a result:
+- Training performance is very high.
+- Testing performance may be poor.
+Example:
+
+A spam filter memorizes specific training emails but fails to identify new spam messages.
+28. What is Underfitting?
+Underfitting occurs when the model is too simple to learn the important patterns in the training data.
+
+As a result, it performs poorly on both training and testing data.
+29. What is a Spam Dataset?
+An email spam dataset contains email messages with labels identifying them as Spam or Ham.
+
+Common datasets include:
+- UCI Spambase.
+- Enron Email Dataset.
+- SMS Spam Collection Dataset.
+Important distinction:
+
+The UCI Spambase dataset contains engineered numerical features rather than raw email text, while the SMS Spam Collection contains text messages labelled spam or ham. If your practical is specifically about email text classification, a labelled email corpus such as Enron is more directly suitable.
+30. Complete Working of Spam Filtering
+
+
+
+
+
+
+
+
+mdpi.com
+
+
+Step 1: Load the dataset
+We load email messages and their corresponding labels.
+Step 2: Preprocess the text
+We perform:
+- Lowercasing.
+- Tokenization.
+- Stop word removal, where appropriate.
+- Stemming or lemmatization, where appropriate.
+Step 3: Convert text into numerical features
+We use:
+- Bag of Words.
+- Count Vectorization.
+- TF-IDF Vectorization.
+Step 4: Split the dataset
+We divide it into training and testing data.
+Step 5: Train the classifier
+We use a suitable text classification algorithm such as Multinomial Naive Bayes.
+Step 6: Predict new emails
+The trained model predicts Spam or Ham.
+Step 7: Evaluate the model
+We calculate:
+- Accuracy.
+- Precision.
+- Recall.
+- F1-score.
+- Confusion Matrix.
+31. Applications of Spam Filtering
+1. Gmail spam detection.
+2. Yahoo Mail filtering.
+3. Outlook email filtering.
+4. Fraud detection.
+5. Phishing email identification.
+6. SMS spam detection.
+32. Advantages
+1. Automatically identifies unwanted messages.
+2. Reduces manual email checking.
+3. Can process large numbers of emails.
+4. Naive Bayes is computationally efficient.
+5. Can learn patterns from labelled data.
+33. Limitations
+1. New spam patterns may not be recognized.
+2. Poor-quality training data affects performance.
+3. Legitimate emails can be incorrectly marked as spam.
+4. Spam messages may deliberately avoid common spam keywords.
+5. Naive Bayes uses a simplifying independence assumption.
+34. How to explain Practical 4 to the external examiner
+Ready-to-speak explanation
+
+"Ma'am, the aim of this practical is to implement email spam filtering using a text classification algorithm.
+
+Spam filtering is the process of identifying unwanted emails and separating them from legitimate emails.
+
+First, we load a labelled email dataset containing Spam and Ham categories.
+
+Then we preprocess the email text by converting it into lowercase, tokenizing it and removing unnecessary words.
+
+Next, we convert the text into numerical features using techniques such as Bag of Words or TF-IDF.
+
+We train a classification algorithm, commonly Multinomial Naive Bayes, using the labelled training data.
+
+The trained model predicts whether new emails are Spam or Ham.
+
+Finally, we evaluate the model using accuracy, precision, recall, F1-score and a confusion matrix."
+
+35. Detailed viva questions — Practical 4
+Q1. What is the aim of this practical?
+
+To implement email spam filtering using a text classification algorithm.
+
+Q2. What is spam?
+
+Unwanted or unsolicited electronic messages.
+
+Q3. What is Ham?
+
+A legitimate or non-spam email.
+
+Q4. What is spam filtering?
+
+The process of identifying and separating spam emails from genuine emails.
+
+Q5. What is text classification?
+
+Assigning predefined categories to text documents.
+
+Q6. What is binary classification?
+
+Classification into two categories.
+
+Q7. Which algorithm is commonly used for spam detection?
+
+Naive Bayes.
+
+Q8. What is Naive Bayes?
+
+A probabilistic classification algorithm based on Bayes' Theorem.
+
+Q9. Why is it called Naive Bayes?
+
+Because it assumes that features are conditionally independent given the class.
+
+Q10. State Bayes' Theorem.
+\[
+P(A|B)=\frac{P(B|A)P(A)}{P(B)}
+\]
+
+Q11. What are the types of Naive Bayes?
+
+Gaussian, Multinomial and Bernoulli Naive Bayes.
+
+Q12. Which Naive Bayes is commonly used for word counts in spam detection?
+
+Multinomial Naive Bayes.
+
+Q13. What is Bag of Words?
+
+A technique that represents text using word occurrence or frequency.
+
+Q14. What is Count Vectorization?
+
+It converts text documents into numerical word-count matrices.
+
+Q15. What is TF-IDF?
+
+A technique used to calculate the importance of words in documents.
+
+Q16. What is feature extraction?
+
+Converting raw data into numerical features suitable for machine learning.
+
+Q17. What is Laplace Smoothing?
+
+A technique used to avoid zero probabilities in Naive Bayes.
+
+Q18. What is training data?
+
+Data used to train the model.
+
+Q19. What is testing data?
+
+Unseen data used to evaluate the trained model.
+
+Q20. What is a confusion matrix?
+
+A table comparing actual and predicted classification labels.
+
+Q21. What is True Positive?
+
+An actual spam email correctly classified as spam.
+
+Q22. What is True Negative?
+
+An actual ham email correctly classified as ham.
+
+Q23. What is False Positive?
+
+A genuine email incorrectly classified as spam.
+
+Q24. What is False Negative?
+
+A spam email incorrectly classified as ham.
+
+Q25. What is accuracy?
+
+The proportion of total predictions that are correct.
+
+Q26. What is precision?
+
+The proportion of predicted spam emails that are actually spam.
+
+Q27. What is recall?
+
+The proportion of actual spam emails correctly identified.
+
+Q28. What is F1-score?
+
+The harmonic mean of precision and recall.
+
+Q29. What is overfitting?
+
+When a model learns training data too closely and performs poorly on unseen data.
+
+Q30. What is underfitting?
+
+When a model fails to learn important patterns from the data.
+
+Q31. What is supervised learning?
+
+Learning from labelled training data.
+
+Q32. Give examples of spam datasets.
+
+UCI Spambase, Enron Email Dataset and SMS Spam Collection.
+
+Q33. Why do we preprocess emails?
+
+To clean the text and convert it into a suitable representation for classification.
+
+Q34. What is the advantage of Naive Bayes?
+
+It is simple, fast and effective for many text classification tasks.
+
+Q35. What is the limitation of Naive Bayes?
+
+Its conditional independence assumption may not hold for real-world text data.
+
+
+PART 6 — PRACTICAL 5: AGGLOMERATIVE HIERARCHICAL CLUSTERING
+Practical 5
+Problem statement: Implement the Agglomerative Hierarchical Clustering algorithm using an appropriate dataset.
+
+
+
+
+
+
+
+
+wandb.ai
+
+
+This practical is based on Unsupervised Machine Learning.
+
+It is important to understand:
+- Machine Learning.
+- Supervised and Unsupervised Learning.
+- Clustering.
+- Hierarchical Clustering.
+- Agglomerative Clustering.
+- Distance Measures.
+- Linkage Methods.
+- Dendrogram.
+- Euclidean Distance.
+Let's understand each concept.
+1. What is Machine Learning?
+Machine Learning is a branch of Artificial Intelligence that enables computers to learn patterns from data and make predictions or decisions without explicitly programming every rule.
+
+Examples:
+- Email spam detection.
+- House price prediction.
+- Customer segmentation.
+- Disease prediction.
+- Recommendation systems.
+There are three major types:
+1. Supervised Learning.
+2. Unsupervised Learning.
+3. Reinforcement Learning.
+2. What is Supervised Learning?
+Supervised Learning is a machine learning technique in which the model is trained using labelled data.
+
+Example:
+Study Hours	Result
+2	Fail
+5	Pass
+8	Pass
+
+The model learns the relationship between study hours and results.
+
+Examples of supervised algorithms:
+- Linear Regression.
+- Logistic Regression.
+- Decision Tree.
+- Random Forest.
+- Naive Bayes.
+- SVM.
+3. What is Unsupervised Learning?
+
+
+
+
+
+
+
+
+sharpsight.ai
+
+
+Unsupervised Learning is a machine learning technique in which the model works with data that does not contain predefined class labels.
+
+The model tries to identify hidden patterns, similarities or structures in the data.
+
+Example:
+
+Suppose we have customer data:
+Customer	Annual Income	Spending
+A	20,000	15,000
+B	22,000	17,000
+C	90,000	80,000
+D	95,000	85,000
+
+The algorithm may group A and B together and C and D together based on their similarity.
+
+We did not provide the groups beforehand.
+
+The algorithm discovered them.
+
+Examples of unsupervised algorithms:
+- K-Means Clustering.
+- Hierarchical Clustering.
+- DBSCAN.
+- Gaussian Mixture Models.
+4. What is Clustering?
+Most important concept
+Clustering is an unsupervised machine learning technique that groups similar data points into clusters.
+
+In simple language:
+
+Clustering means dividing data into groups based on similarity.
+
+Example:
+
+Suppose we have customer data.
+
+The algorithm groups customers according to their:
+- Income.
+- Spending habits.
+- Age.
+- Purchasing behaviour.
+
+
+
+
+
+
+
+
+developers.google.com
+
+
+Points in the same cluster should generally be more similar to one another than to points in different clusters.
+5. What is a Cluster?
+A cluster is a group of data points that are similar according to a chosen distance or similarity measure.
+
+Example:
+Cluster 1: A, B, C
+
+Cluster 2: D, E, F
+
+Cluster 3: G, H, I
+
+
+Each group is a separate cluster.
+6. What is Similarity and Dissimilarity?
+Similarity measures how alike two data points are.
+
+Dissimilarity measures how different two data points are.
+
+For example:
+
+Two customers with similar income and spending behaviour may have high similarity.
+
+Two customers with very different income and spending behaviour may have high dissimilarity.
+
+Clustering algorithms use distance or similarity measures to group data.
+7. What is Hierarchical Clustering?
+Very important viva topic
+Hierarchical Clustering is an unsupervised learning algorithm that groups data into a hierarchy of clusters.
+
+It creates a tree-like structure showing how data points or groups are related.
+
+This tree structure is represented using a Dendrogram.
+
+There are two main types:
+1. Agglomerative Hierarchical Clustering.
+2. Divisive Hierarchical Clustering.
+A. Agglomerative Hierarchical Clustering
+Agglomerative means combining or merging.
+
+It follows a bottom-up approach.
+
+Initially, every data point is treated as an individual cluster.
+
+Then the closest clusters are repeatedly merged until the required number of clusters is reached or all points become one cluster.
+B. Divisive Hierarchical Clustering
+Divisive means dividing or splitting.
+
+It follows a top-down approach.
+
+Initially, all data points belong to one cluster.
+
+The algorithm repeatedly divides the cluster into smaller clusters.
+Difference
+Agglomerative	Divisive
+Bottom-up approach	Top-down approach
+Starts with individual clusters	Starts with one large cluster
+Merges similar clusters	Splits clusters
+Commonly used	Less commonly used
+
+8. What is Agglomerative Hierarchical Clustering?
+
+
+
+
+
+
+
+
+utsavdesai26.medium.com
+
+
+Agglomerative Hierarchical Clustering is a bottom-up clustering algorithm.
+
+It starts by treating every data point as a separate cluster.
+
+Then it repeatedly:
+1. Calculates distances between clusters.
+2. Identifies the closest clusters.
+3. Merges them.
+4. Updates the cluster distances.
+5. Repeats the process.
+The process continues until the desired number of clusters is obtained.
+9. How does Agglomerative Clustering work?
+Suppose we have five data points:
+A, B, C, D, E
+
+
+Initially, each point is a separate cluster:
+{A} {B} {C} {D} {E}
+
+
+Suppose A and B are closest.
+
+We merge them:
+{A,B} {C} {D} {E}
+
+
+Now suppose D and E are closest.
+
+We merge them:
+{A,B} {C} {D,E}
+
+
+Now suppose C is closest to the cluster .
+
+We merge:
+{A,B,C} {D,E}
+
+
+Finally, both clusters can be merged.
+{A,B,C,D,E}
+
+
+This is the complete bottom-up process.
+10. What is a Distance Matrix?
+A Distance Matrix is a table that stores the distances between pairs of data points or clusters.
+
+Example:
+	A	B	C
+A	0	2	7
+B	2	0	5
+C	7	5	0
+
+Interpretation:
+- Distance between A and B = 2.
+- Distance between A and C = 7.
+- Distance between B and C = 5.
+The algorithm uses these distances to identify the closest clusters.
+11. What is Euclidean Distance?
+Important viva topic
+Euclidean Distance is the straight-line distance between two points in a multidimensional space.
+
+For two points:
+\[
+A=(x_1,y_1)
+\]
+
+\[
+B=(x_2,y_2)
+\]
+
+Formula:
+\[
+d(A,B)=
+\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
+\]
+
+Example:
+
+Suppose:
+\[
+A=(2,3)
+\]
+
+\[
+B=(5,7)
+\]
+
+Then:
+\[
+d(A,B)=
+\sqrt{(5-2)^2+(7-3)^2}
+\]
+
+\[
+=\sqrt{9+16}
+\]
+
+\[
+=\sqrt{25}=5
+\]
+
+Therefore, the Euclidean distance is 5.
+
+It is commonly used in clustering.
+12. What are Linkage Methods?
+Very important viva topic
+Linkage methods determine how the distance between two clusters is calculated.
+
+There are four important linkage methods.
+A. Single Linkage
+Single Linkage calculates the minimum distance between any two points belonging to different clusters.
+
+Formula:
+\[
+D(A,B)=
+\min_{a\in A,b\in B}d(a,b)
+\]
+
+In simple language:
+
+It considers the two closest points from the two clusters.
+B. Complete Linkage
+Complete Linkage calculates the maximum distance between any two points belonging to different clusters.
+
+Formula:
+\[
+D(A,B)=
+\max_{a\in A,b\in B}d(a,b)
+\]
+
+In simple language:
+
+It considers the two farthest points from the two clusters.
+C. Average Linkage
+Average Linkage calculates the average distance between all pairs of points from two clusters.
+
+Formula:
+\[
+D(A,B)=
+\frac{1}{|A||B|}
+\sum_{a\in A}\sum_{b\in B}d(a,b)
+\]
+
+It considers the average distance between the clusters.
+D. Ward Linkage
+Ward Linkage merges clusters that result in the smallest increase in within-cluster variance.
+
+In simple language:
+
+It tries to combine clusters in a way that keeps the groups compact.
+
+
+
+
+
+
+
+
+perfecxion.ai
+
+
+Difference between linkage methods
+Method	How distance is calculated
+Single	Minimum distance
+Complete	Maximum distance
+Average	Average distance
+Ward	Minimum increase in within-cluster variance
+
+Remember this for viva:
+- Single = Minimum.
+- Complete = Maximum.
+- Average = Mean.
+- Ward = Minimum increase in variance.
+13. What is a Dendrogram?
+
+
+
+
+
+
+
+
+ned.ipac.caltech.edu
+
+
+A Dendrogram is a tree-like diagram that represents the hierarchy of clusters.
+
+It shows:
+- Which data points are merged.
+- The order of merging.
+- The distance at which clusters are merged.
+- The hierarchy of clusters.
+How to read a Dendrogram?
+The horizontal axis generally represents the data points.
+
+The vertical axis represents the distance or linkage value at which clusters merge.
+
+A lower merge indicates more similar clusters under the chosen distance and linkage method.
+
+A higher merge indicates that more distant clusters are being combined.
+14. What is a Dendrogram Cut?
+A Dendrogram Cut means drawing a horizontal line across the dendrogram to decide how many clusters should be formed.
+
+For example:
+
+If we cut the dendrogram at a suitable height, it may produce three clusters.
+
+If we cut it at another height, it may produce two clusters.
+
+Therefore, the cut height determines the number of clusters.
+15. What is the Difference Between K-Means and Hierarchical Clustering?
+Frequently asked viva question
+K-Means	Hierarchical Clustering
+Partitional clustering algorithm	Hierarchy-based clustering algorithm
+Requires the number of clusters in advance	Does not require the number of clusters to construct the hierarchy
+Uses centroids	Uses cluster-to-cluster distances
+Iteratively updates cluster assignments and centroids	Repeatedly merges or splits clusters
+Usually faster on large datasets	Can be computationally expensive
+Produces flat clusters	Produces a dendrogram
+
+16. What is Feature Scaling?
+Feature Scaling is the process of bringing numerical features to comparable scales.
+
+Example:
+
+Suppose a dataset has:
+Age: 20 to 80
+
+Salary: 10,000 to 1,00,000
+
+
+Salary has a much larger numerical range.
+
+If we use Euclidean distance directly, salary may dominate the distance calculation.
+
+Feature scaling helps prevent this problem.
+
+Common techniques:
+A. Standardization
+It transforms data using the mean and standard deviation.
+\[
+z=\frac{x-\mu}{\sigma}
+\]
+
+Where:
+- \(x\) = Original value.
+- \(\mu\) = Mean.
+- \(\sigma\) = Standard deviation.
+B. Min-Max Normalization
+It scales data into a specified range, commonly 0 to 1.
+\[
+x'=\frac{x-x_{min}}{x_{max}-x_{min}}
+\]
+
+Feature scaling is important in distance-based clustering.
+17. What is the Number of Clusters?
+The number of clusters is the number of groups we want the data to be divided into.
+
+In Agglomerative Clustering, we can specify the desired number of clusters.
+
+For example:
+n_clusters = 3
+
+
+
+This means we want the algorithm to produce three clusters.
+
+Alternatively, we can examine the dendrogram and choose an appropriate cut height.
+18. What is Cluster Label?
+A cluster label is an identifier assigned to each data point to indicate which cluster it belongs to.
+
+Example:
+A → Cluster 0
+B → Cluster 0
+C → Cluster 1
+D → Cluster 2
+
+
+The numerical labels are identifiers, not rankings.
+
+Cluster 0 is not necessarily better than Cluster 1.
+19. What is Silhouette Score?
+Silhouette Score is a measure used to evaluate the quality of clustering.
+
+It measures how well a data point fits into its own cluster compared with neighbouring clusters.
+
+Formula:
+\[
+S=\frac{b-a}{\max(a,b)}
+\]
+
+Where:
+- \(a\) = Average distance to points in the same cluster.
+- \(b\) = Lowest average distance to points in another cluster.
+Interpretation:
+Score	Meaning
+Close to +1	Good clustering
+Around 0	Overlapping clusters
+Negative	Possible incorrect assignment
+
+The score generally ranges from -1 to +1.
+20. What is Intra-Cluster Distance?
+Intra-cluster distance measures how far points are from other points within the same cluster.
+
+A smaller intra-cluster distance generally indicates a more compact cluster.
+21. What is Inter-Cluster Distance?
+Inter-cluster distance measures the separation between different clusters.
+
+A larger inter-cluster distance generally indicates better separation.
+22. Complete Working of Agglomerative Hierarchical Clustering
+Input Dataset
+
+Numerical data points
+
+Preprocessing and Scaling
+
+Calculate Distance Matrix
+
+Select Closest Clusters
+
+Merge Clusters
+
+Repeat Until Desired Number of Clusters
+
+Final Clusters and Dendrogram
+
+Step-by-step explanation
+Step 1: Load the dataset.
+
+We take a dataset containing numerical observations.
+
+Step 2: Preprocess the dataset.
+
+We handle missing values and select suitable numerical features.
+
+Step 3: Apply feature scaling.
+
+We scale the features so that large numerical ranges do not dominate distance calculations.
+
+Step 4: Calculate distances.
+
+We calculate distances between data points using a distance measure such as Euclidean distance.
+
+Step 5: Initialize individual clusters.
+
+Every data point starts as a separate cluster.
+
+For example:
+{A} {B} {C} {D} {E}
+
+
+Step 6: Find the closest clusters.
+
+We identify the two clusters with the smallest linkage distance.
+
+Step 7: Merge the clusters.
+
+We combine the closest clusters into a single cluster.
+
+Step 8: Repeat the process.
+
+We recalculate cluster distances and continue merging.
+
+Step 9: Stop.
+
+We stop when the desired number of clusters is reached.
+
+Step 10: Visualize the result.
+
+We can use a dendrogram to visualize the hierarchy.
+23. Applications
+1. Customer segmentation.
+2. Document clustering.
+3. Grouping research papers.
+4. Image segmentation.
+5. Biological data analysis.
+6. Market research.
+7. Social network analysis.
+24. Advantages
+1. Does not require the number of clusters to build the hierarchy.
+2. Provides a visual representation through dendrograms.
+3. Shows relationships between clusters at different levels.
+4. Can identify nested structures in data.
+5. Supports different linkage methods.
+25. Limitations
+1. Can be computationally expensive for large datasets.
+2. Sensitive to the distance measure.
+3. Sensitive to the linkage method.
+4. Scaling can affect the result.
+5. In standard agglomerative clustering, merged clusters cannot be separated again.
+6. Outliers may affect the merging process.
+26. How to explain Practical 5 to the external examiner
+Ready-to-speak explanation
+
+"Ma'am, the aim of this practical is to implement Agglomerative Hierarchical Clustering.
+
+It is an unsupervised machine learning algorithm used to group similar data points into clusters.
+
+It follows a bottom-up approach.
+
+Initially, every data point is considered as an individual cluster.
+
+Then the algorithm calculates distances between clusters and merges the closest clusters using a selected linkage method.
+
+This process continues until the required number of clusters is obtained.
+
+We can visualize the merging process using a dendrogram, which is a tree-like diagram showing how the clusters are formed.
+
+This algorithm is useful for customer segmentation, document grouping and discovering patterns in data."
+
+27. Detailed viva questions — Practical 5
+Q1. What is the aim of this practical?
+
+To implement Agglomerative Hierarchical Clustering.
+
+Q2. What is clustering?
+
+Grouping similar data points together.
+
+Q3. What is unsupervised learning?
+
+Learning patterns from data without predefined labels.
+
+Q4. What is hierarchical clustering?
+
+A clustering technique that creates a hierarchy of groups.
+
+Q5. What is agglomerative clustering?
+
+A bottom-up clustering algorithm that repeatedly merges the closest clusters.
+
+Q6. What is divisive clustering?
+
+A top-down clustering algorithm that repeatedly splits clusters.
+
+Q7. What is a cluster?
+
+A group of similar data points.
+
+Q8. What is a dendrogram?
+
+A tree-like diagram showing the merging or splitting of clusters.
+
+Q9. What is a distance matrix?
+
+A matrix containing pairwise distances between data points or clusters.
+
+Q10. What is Euclidean distance?
+
+The straight-line distance between two points.
+
+Q11. State the Euclidean distance formula.
+\[
+d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
+\]
+
+Q12. What is linkage?
+
+A method used to calculate the distance between clusters.
+
+Q13. What are the four major linkage methods?
+
+Single, Complete, Average and Ward.
+
+Q14. What is Single Linkage?
+
+It uses the minimum distance between two clusters.
+
+Q15. What is Complete Linkage?
+
+It uses the maximum distance between two clusters.
+
+Q16. What is Average Linkage?
+
+It uses the average distance between all cross-cluster pairs.
+
+Q17. What is Ward Linkage?
+
+It merges clusters that produce the minimum increase in within-cluster variance.
+
+Q18. What is a bottom-up approach?
+
+Starting with individual data points and repeatedly merging them.
+
+Q19. What is the top-down approach?
+
+Starting with one large cluster and repeatedly dividing it.
+
+Q20. What is feature scaling?
+
+Transforming features into comparable numerical scales.
+
+Q21. Why is scaling important?
+
+Because features with larger numerical ranges can dominate distance calculations.
+
+Q22. What is a Silhouette Score?
+
+A measure of how well a data point fits into its assigned cluster compared with other clusters.
+
+Q23. What is intra-cluster distance?
+
+Distance between points within the same cluster.
+
+Q24. What is inter-cluster distance?
+
+Distance between different clusters.
+
+Q25. What is the difference between K-Means and Hierarchical Clustering?
+
+K-Means uses centroids and requires a specified number of clusters, while hierarchical clustering builds a hierarchy of clusters.
+
+Q26. What is the purpose of a dendrogram?
+
+To visualize the order and distance of cluster merging.
+
+Q27. Can agglomerative clustering undo a merge?
+
+No. Standard agglomerative clustering does not split merged clusters again.
+
+Q28. Is agglomerative clustering supervised or unsupervised?
+
+Unsupervised.
+
+Q29. What are applications of hierarchical clustering?
+
+Customer segmentation, document clustering, image segmentation and biological data analysis.
+
+Q30. What is the main disadvantage of agglomerative clustering?
+
+It can be computationally expensive for large datasets.
+
+PART 7 — IMPORTANT COMPARISON QUESTIONS FROM ALL FIVE IR PRACTICALS
+External examiners sometimes ask questions connecting different practicals. These are particularly useful for viva.
+1. Difference between all five practicals
+Practical	Main purpose	Most important concept
+1. Text Preprocessing	Clean and normalize text	Tokenization, stop words, stemming
+2. Inverted Files	Retrieve documents quickly	Dictionary and posting lists
+3. Bayesian Network	Estimate heart disease probability	Bayes' Theorem and DAG
+4. Spam Filtering	Classify emails	Naive Bayes and text classification
+5. Agglomerative Clustering	Group similar data	Hierarchical clustering and dendrogram
+
+2. Difference between Stemming and Lemmatization
+Stemming	Lemmatization
+Uses rules to remove word endings	Uses linguistic knowledge
+May produce invalid words	Produces dictionary forms
+Usually faster	Usually more computationally intensive
+Example: arguing → argu	Example: studies → study
+
+3. Difference between BoW and TF-IDF
+Bag of Words	TF-IDF
+Represents word counts	Represents weighted word importance
+Uses word occurrence/frequency	Uses TF and IDF
+Does not measure corpus-wide rarity directly	Gives greater weight to relatively rare terms
+Simple representation	More informative weighted representation
+
+4. Difference between Information Retrieval and Text Classification
+Information Retrieval	Text Classification
+Finds relevant documents	Assigns categories to documents
+Uses a search query	Uses predefined classes
+Example: Searching research papers	Example: Spam or Ham
+Returns relevant documents	Returns predicted labels
+
+5. Difference between Inverted Index and Positional Index
+Inverted Index	Positional Index
+Stores document IDs	Stores document IDs and term positions
+Supports basic term retrieval	Supports phrase and proximity queries
+Requires less storage	Requires more storage
+
+6. Difference between Bayesian Network and Naive Bayes
+Bayesian Network	Naive Bayes
+General probabilistic model	Specific simplified probabilistic classifier
+Can represent different dependencies	Assumes conditional independence of features given the class
+Uses DAG structure	Commonly has a class node and feature nodes
+Flexible	Simple and efficient
+
+7. Difference between Classification and Clustering
+
+
+
+
+
+
+
+
+vocal.media
+
+
+Classification	Clustering
+Supervised learning	Unsupervised learning
+Uses labelled data	Uses unlabelled data
+Predicts predefined classes	Discovers groups
+Example: Spam detection	Example: Customer segmentation
+
+8. Difference between Agglomerative and Divisive Clustering
+Agglomerative	Divisive
+Bottom-up	Top-down
+Starts with individual clusters	Starts with one large cluster
+Merges clusters	Splits clusters
+Commonly used	Less commonly used
+
+
+PART 8 — MOST IMPORTANT IR VIVA QUESTIONS
+These questions cover the general concepts that an external examiner may ask independently of a particular practical.
+No.	Question	Short answer
+1	What is IR?	Finding relevant information from a document collection.
+2	What is NLP?	Processing and understanding human language using computers.
+3	What is a corpus?	A collection of documents.
+4	What is a query?	A user's search request.
+5	What is a document?	An individual unit of information.
+6	What is indexing?	Organizing information for faster searching.
+7	What is an inverted index?	Mapping words to document IDs.
+8	What is tokenization?	Breaking text into smaller units.
+9	What are stop words?	Common words that may have little retrieval value.
+10	What is stemming?	Reducing words to common stems.
+11	What is lemmatization?	Finding dictionary base forms of words.
+12	What is POS tagging?	Assigning grammatical categories to words.
+13	What is TF?	Frequency of a term in a document.
+14	What is IDF?	A measure of how rare a term is across documents.
+15	What is TF-IDF?	Product of term frequency and inverse document frequency.
+16	What is Boolean retrieval?	Searching using AND, OR and NOT.
+17	What is precision?	Relevant retrieved documents divided by total retrieved documents.
+18	What is recall?	Relevant retrieved documents divided by all relevant documents.
+19	What is F1-score?	Harmonic mean of precision and recall.
+20	What is Bayes' Theorem?	A formula for updating probabilities using evidence.
+21	What is a Bayesian Network?	A probabilistic graphical model using a DAG.
+22	What is CPT?	Conditional Probability Table.
+23	What is inference?	Calculating unknown probabilities using evidence.
+24	What is classification?	Assigning predefined categories to data.
+25	What is Naive Bayes?	A probabilistic classification algorithm.
+26	What is spam?	Unwanted email.
+27	What is Ham?	Legitimate email.
+28	What is Bag of Words?	Numerical text representation based on word occurrence.
+29	What is Laplace Smoothing?	A method to avoid zero probabilities.
+30	What is clustering?	Grouping similar data points.
+31	What is hierarchical clustering?	Clustering that creates a hierarchy of groups.
+32	What is a dendrogram?	A tree diagram of cluster relationships.
+33	What is linkage?	A method of calculating distances between clusters.
+34	What is Euclidean distance?	Straight-line distance between two points.
+35	What is feature scaling?	Bringing numerical features to comparable scales.
+36	What is a Silhouette Score?	A measure of clustering quality.
+37	What is supervised learning?	Learning from labelled data.
+38	What is unsupervised learning?	Finding patterns in unlabelled data.
+39	What is a confusion matrix?	A table comparing actual and predicted classes.
+40	What is accuracy?	Percentage of correct predictions.
+
+
+PART 9 — HOW TO EXPLAIN YOUR PRACTICAL TO THE EXTERNAL MA'AM
+When the examiner asks you to explain a practical, do not start with complicated technical definitions.
+
+Use this simple four-step structure.
+
+Step 1: Explain the aim.
+
+Tell what the practical is supposed to achieve.
+
+Step 2: Explain the concept.
+
+Define the main algorithm or technique.
+
+Step 3: Explain the working.
+
+Tell the steps you performed.
+
+Step 4: Explain the output.
+
+Tell what result your program generates.
+
+For example, if the examiner asks about the inverted index:
+- Aim: Retrieve documents efficiently.
+- Concept: An inverted index maps terms to document IDs.
+- Working: Preprocess documents, create a dictionary and posting lists, and process the user's query.
+- Output: Relevant document IDs and their corresponding documents.
+This approach works for all five practicals.
+PART 10 — FINAL REVISION CHECKLIST
+Use this checklist to check whether you can explain every important topic without looking at the notes.
+IR theory preparation
+0/55 completed
+
+
+
+Practical 1 — Text Preprocessing
+[ ] Information Retrieval
+[ ] NLP
+[ ] Text preprocessing
+[ ] Lowercasing
+[ ] Tokenization
+[ ] Stop word removal
+[ ] Stemming
+[ ] Porter Stemmer
+[ ] Lemmatization
+[ ] POS tagging
+[ ] NLTK
+
+
+Practical 2 — Inverted Files
+[ ] Document retrieval
+[ ] Inverted index
+[ ] Dictionary
+[ ] Posting list
+[ ] Document frequency
+[ ] Term frequency
+[ ] Positional index
+[ ] Boolean retrieval
+[ ] TF-IDF
+[ ] Cosine similarity
+
+
+Practical 3 — Bayesian Network
+[ ] Probability
+[ ] Conditional probability
+[ ] Bayes' Theorem
+[ ] Prior and posterior
+[ ] Likelihood
+[ ] Bayesian Network
+[ ] DAG
+[ ] CPT
+[ ] Inference
+[ ] Heart Disease Dataset
+
+
+Practical 4 — Spam Filtering
+[ ] Spam and Ham
+[ ] Text classification
+[ ] Supervised learning
+[ ] Binary classification
+[ ] Naive Bayes
+[ ] Multinomial Naive Bayes
+[ ] Bag of Words
+[ ] TF-IDF vectorization
+[ ] Laplace smoothing
+[ ] Confusion matrix
+[ ] Precision, Recall and F1-score
+
+
+Practical 5 — Agglomerative Clustering
+[ ] Machine Learning
+[ ] Unsupervised learning
+[ ] Clustering
+[ ] Hierarchical clustering
+[ ] Agglomerative and Divisive
+[ ] Euclidean distance
+[ ] Single linkage
+[ ] Complete linkage
+[ ] Average linkage
+[ ] Ward linkage
+[ ] Dendrogram
+[ ] Feature scaling
+[ ] Silhouette score
+
+Reset checklist
+My final recommendation for your IR practical examination
+If you have limited time, study in this order:
+Priority	Topics
+Very high	Tokenization, stop word removal, stemming and lemmatization
+Very high	Inverted index, dictionary, posting list and Boolean retrieval
+Very high	Bayes' Theorem, Bayesian Network, DAG and CPT
+Very high	Naive Bayes, Spam/Ham, Bag of Words and TF-IDF
+Very high	Agglomerative clustering, dendrogram and linkage methods
+High	Precision, Recall, F1-score and Confusion Matrix
+High	Euclidean distance, feature scaling and Silhouette Score
+
+Five definitions you should never forget:
+1. Information Retrieval: Finding relevant information from a collection of documents.
+2. Inverted Index: A data structure that maps words to the documents containing them.
+3. Bayesian Network: A probabilistic graphical model representing dependencies using a DAG.
+4. Naive Bayes: A probabilistic classification algorithm based on Bayes' Theorem and conditional independence assumptions.
+5. Agglomerative Clustering: A bottom-up clustering algorithm that repeatedly merges the closest clusters.
+You now have the theory foundation for all five IR practicals, including the important mathematical concepts, terminology, working principles and viva preparation.
+
+My suggestion: Practise explaining each practical aloud without reading the ready-to-speak explanation. If you can explain the aim, main concept, working and output in your own words, you will be much better prepared for the external examination.
